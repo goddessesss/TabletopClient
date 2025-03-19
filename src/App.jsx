@@ -1,13 +1,13 @@
-import React from "react";
+import Navbar from "./components/Navbar/Navbar.jsx";
+import AppRouter from './AppRouter';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Navbar from "./components/Navbar/Navbar";
-import Home from "./pages/Home";
+import './index.css';
 
 function App() {
   return (
-    <div>
-      <Navbar/>
-      <Home/>
+    <div className="App">
+      <Navbar /> 
+      <AppRouter />
     </div>
   );
 }

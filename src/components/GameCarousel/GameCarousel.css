@@ -1,6 +1,6 @@
 .carousel {
     background-color: #f8f9fa;
-    margin-top: 50px;
+    margin-top: 300px;
     border-radius: 10px;
 }
 
@@ -25,13 +25,14 @@
     padding: 30px;
     border-radius: 8px;
     transition: transform 0.3s ease;
-    margin-top: 500px;
+    margin-top: 50px;
 }
 
 .game-slider .item {
     text-align: center;
     padding: 20px;
     transition: transform 0.3s ease;
+    position: relative;
 }
 
 .game-slider .item:hover {
@@ -52,10 +53,13 @@
     transform: scale(1.05);
 }
 
-h5 {
+.game-slider .item h5 {
     font-size: 21px;
-    color: #555;
+    color: #333;
     font-weight: 600;
+    margin-top: 15px;
+    position: relative;
+    z-index: 1;
 }
 
 @media (max-width: 480px) {
@@ -67,11 +71,12 @@ h5 {
         margin-bottom: 10px;
         margin-left: 30px;
     }
-    
+
     .carousel-description {
         font-size: 13px;
         margin-left: 30px;
     }
+
     .carousel-image {
         width: 50%;
     }
