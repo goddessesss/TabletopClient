@@ -26,7 +26,7 @@ function Navbar() {
   return (
     <BootstrapNavbar expand="lg" className={`w-100 ${scrolled ? 'scrolled' : ''} bg-body-tertiary`}>
       <Container fluid>
-        <BootstrapNavbar.Brand as={Link} to="/#home">
+        <BootstrapNavbar.Brand as={Link} to="/">
           <img
             src={logo}
             alt="Logo"
@@ -37,9 +37,9 @@ function Navbar() {
         <BootstrapNavbar.Toggle aria-controls="basic-navbar-nav" />
         <BootstrapNavbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto nav-links">
-            <Nav.Link as={Link} to="/#home" className="nav-item">Home</Nav.Link>
-            <Nav.Link as={Link} to="/#event" className="nav-item">Event</Nav.Link> 
-            <Nav.Link as={Link} to="/#contact" className="nav-item">Contact</Nav.Link>
+            <Nav.Link as={Link} to="/" className="nav-item">Home</Nav.Link>
+            <Nav.Link as={Link} to="/events" className="nav-item">Event</Nav.Link> 
+            <Nav.Link as={Link} to="/contact" className="nav-item">Contact</Nav.Link>
           </Nav>
 
           <div className="navbar-text">

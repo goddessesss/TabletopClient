@@ -3,7 +3,7 @@ import authLogo from '../assets/auth-logo.png';
 import { FaEye, FaEyeSlash, FaGoogle } from 'react-icons/fa';
 import '../styles/auth.css';
 
-const Auth = () => {
+function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoginMode, setLoginMode] = useState(true);
