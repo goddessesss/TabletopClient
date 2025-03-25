@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Card, Row, Col, Form } from 'react-bootstrap';
-import { FaRegHandshake } from 'react-icons/fa';
+import { Button, Card, Row, Col, Container } from 'react-bootstrap';
+import { FaRegHandshake, FaFilter } from 'react-icons/fa';
 import SearchBar from '../components/Search/SearchBar.jsx'; 
 import '../styles/Events.css';
 
 function Events() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortOption, setSortOption] = useState('default');
   const [events, setEvents] = useState([
     { id: 1, name: "Catan", date: "2025-03-25", time: "18:00", genre: "Strategy", players: 4, joined: 2 },
     { id: 2, name: "Monopoly", date: "2025-03-26", time: "19:00", genre: "Family", players: 6, joined: 0 },
@@ -26,46 +25,18 @@ function Events() {
     setSearchTerm(e.target.value);
   };
 
-  const handleSortChange = (e) => {
-    setSortOption(e.target.value);
-  };
-
-  const filteredEvents = events
-    .filter(event => event.name.toLowerCase().includes(searchTerm.toLowerCase()) || event.genre.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort((a, b) => {
-      if (sortOption === 'newest') {
-        return new Date(b.date) - new Date(a.date);
-      }
-      if (sortOption === 'name-asc') {
-        return a.name.localeCompare(b.name);
-      }
-      if (sortOption === 'name-desc') {
-        return b.name.localeCompare(a.name);
-      }
-      return 0;
-    });
+  const filteredEvents = events.filter(event => 
+    event.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.genre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="events-container">
+    <Container className="events-container"> 
       <h1 className="events-title">Events</h1>
 
-      <Row className="mb-5 align-items-center">
-        <Col xs={8} className="pe-2">
+      <Row className="mb-5 align-items-center w-100">
+        <Col xs={10} className="pe-2">
           <SearchBar searchTerm={searchTerm} setSearchTerm={handleSearchChange} />
-        </Col>
-
-        <Col xs={2} className="ps-0 text-end"> 
-          <Form.Control 
-            as="select" 
-            onChange={handleSortChange} 
-            value={sortOption} 
-            className="sort-dropdown"
-          >
-            <option value="default" disabled>Sort by</option>
-            <option value="newest">Sort by Newest</option>
-            <option value="name-asc">Sort by Name (A-Z)</option>
-            <option value="name-desc">Sort by Name (Z-A)</option>
-          </Form.Control>
         </Col>
 
         <Col xs={2} className="ps-0 text-end"> 
@@ -74,13 +45,14 @@ function Events() {
             size="xl" 
             className="w-100 filter-button"
           >
-            Filter
+            <FaFilter className="me-2" /> 
+            <span className="text">Filter</span>
           </Button>
         </Col>
       </Row>
 
-      <Row className="event-header">
-        <Col className="event-header-col">Date & Time</Col>
+      <Row className="event-header w-100">
+        <Col className="event-header-col">Date</Col>
         <Col className="event-header-col">Name</Col>
         <Col className="event-header-col">Genre</Col>
         <Col className="event-header-col">Players</Col>
@@ -88,14 +60,14 @@ function Events() {
       </Row>
 
       {filteredEvents.map(event => (
-        <Card key={event.id} className="event-card mb-4 shadow-lg">
+        <Card key={event.id} className="event-card mb-4 shadow-lg w-100">
           <Card.Body>
             <Row className="event-row">
               <Col className="event-col date-col">
                 {event.date} at {event.time}
               </Col>
-              <Col className="event-col">{event.name}</Col>
-              <Col className="event-col">{event.genre}</Col>
+              <Col className="event-col name-col">{event.name}</Col>
+              <Col className="event-col genre-col">{event.genre}</Col>
               <Col className="event-col">
                 {event.joined} / {event.players}
               </Col>
@@ -107,14 +79,15 @@ function Events() {
                   disabled={event.joined >= event.players}
                   size="xl"
                 >
-                  <FaRegHandshake /> Join
+                  <FaRegHandshake /> 
+                  <span className="text">Join</span>
                 </Button>
               </Col>
             </Row>
           </Card.Body>
         </Card>
       ))}
-    </div>
+    </Container>
   );
 }
 
