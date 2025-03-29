@@ -38,7 +38,7 @@ function Navbar() {
         <BootstrapNavbar.Collapse id="basic-navbar-nav">
           <Nav className="mx-auto nav-links">
             <Nav.Link as={Link} to="/" className="nav-item">Home</Nav.Link>
-            <Nav.Link as={Link} to="/events" className="nav-item">Event</Nav.Link> 
+            <Nav.Link as={Link} to="/events" className="nav-item">Events</Nav.Link> 
             <Nav.Link as={Link} to="/contact" className="nav-item">Contact</Nav.Link>
           </Nav>
 

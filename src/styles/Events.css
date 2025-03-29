@@ -1,7 +1,6 @@
 .events-container {
     max-width: 70%;
-    margin: 0 auto;
-    padding-top: 230px;
+    margin: 220px auto;
   }
   
   .events-header {
@@ -101,6 +100,13 @@
     background-color: #ccc;
   }
   
+  .no-results-message {
+    text-align: center;        
+    font-size: 24px;           
+    font-weight: bold;          
+    margin-top: 50px;           
+    color: #e67e22;              
+  }
   @media (max-width: 1800px) {
     .events-container {
       max-width: 80% !important;
@@ -161,7 +167,8 @@
   @media (max-width: 500px) {
     .events-container {
       max-width: 100% !important;
-      margin-top: 120px;
+      margin: 160px auto;
+
     }
   
     .events-title {

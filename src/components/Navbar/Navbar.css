@@ -157,16 +157,7 @@ nav.navbar .navbar-toggler[aria-expanded="true"] .navbar-toggler-icon {
   transition: margin-right 0.3s ease;
 }
 
-.nav-item::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0%;
-  height: 2px;
-  background-color: #e7d585;
-  transition: width 0.3s ease;
-}
+
 
 .nav-item:hover::after {
   width: 100%;
