@@ -3,11 +3,13 @@ import './Navbar.css';
 import { Navbar as BootstrapNavbar, Container, Nav } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo.png';  
-import { HashLink } from 'react-router-hash-link';
+import { useAuth } from '../Context/AuthContext.jsx';  
 
 function Navbar() {
-  const [activeLink, setActiveLink] = useState('home');
   const [scrolled, setScrolled] = useState(false);
+  const { handleLogout } = useAuth();
+
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const onScroll = () => {
@@ -43,9 +45,15 @@ function Navbar() {
           </Nav>
 
           <div className="navbar-text">
-            <HashLink to="/auth">
-              <button className="login-btn">Login</button>
-            </HashLink>
+            {token ? (
+              <Link to="/profile">
+                <button className="login-btn">Profile</button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <button className="login-btn">Login</button>
+              </Link>
+            )}
           </div>
         </BootstrapNavbar.Collapse>
       </Container>

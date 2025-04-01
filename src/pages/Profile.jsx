@@ -3,8 +3,20 @@ import "../styles/Profile.css";
 import avatar from "../assets/avatar.png";
 import { Tab, Nav, Form, Button, Row, Col } from "react-bootstrap";
 import { FaStar, FaCalendarCheck } from "react-icons/fa";
+import { useAuth } from "../components/Context/AuthContext";  
+import { useNavigate } from "react-router-dom";  
 
 function Profile() {
+  const { handleLogout } = useAuth();  
+  const navigate = useNavigate();  
+
+  const handleLogoutClick = () => {
+    handleLogout();  
+    localStorage.clear();  
+    console.log("Local Storage after logout:", localStorage);  
+    navigate("/");  
+  };
+
   return (
     <div className="profile-container">
       <h2 className="profile-title">Profile</h2>
@@ -125,6 +137,9 @@ function Profile() {
           </Tab.Content>
         </Tab.Container>
       </div>
+      <Button variant="danger" onClick={handleLogoutClick} className="logout-button">
+        Log Out
+      </Button>
     </div>
   );
 }

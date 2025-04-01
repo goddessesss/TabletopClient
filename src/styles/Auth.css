@@ -122,7 +122,7 @@
     .auth-container {
         flex-direction: column;
         height: auto;
-        margin-top: 200px;
+        margin-top: 50px;
         flex-wrap: wrap;
     }
 

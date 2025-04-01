@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
+import { authenticate } from '../api/authApi.js';
 import authLogo from '../assets/auth-logo.png'; 
+import { useAuth } from "../components/Context/AuthContext.jsx";
 import { FaEye, FaEyeSlash, FaGoogle } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';  
 import '../styles/auth.css';
 
 function Auth() {
+  const { handleLogin } = useAuth();
+  const navigate = useNavigate();  
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoginMode, setLoginMode] = useState(true);
@@ -18,20 +24,42 @@ function Auth() {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
-      setError("Please fill in both fields.");
+      setError('Please fill in both fields.');
       return;
     }
 
-    console.log(`${isLoginMode ? 'Login' : 'Registration'} attempt:`, { email, password });
+    setError('');
 
-    window.alert(`${isLoginMode ? 'Login' : 'Registration'} successful`);
+    try {
+      const response = await authenticate(isLoginMode, email, password);
+      const token = response.token;
 
-    setEmail('');
-    setPassword('');
+      if (typeof token !== 'string' || token.trim() === '') {
+        setError('Invalid token received.');
+        return;
+      }
+
+      localStorage.setItem('token', token);
+
+      handleLogin(token);
+
+      if (response.success) {
+        window.alert(`${isLoginMode ? 'Login' : 'Registration'} successful`);
+        setEmail('');
+        setPassword('');
+
+        navigate('/');
+      } else {
+        setError(response.message || 'An error occurred during authentication.');
+      }
+    } catch (error) {
+      setError('An unexpected error occurred.');
+      console.error(error);
+    }
   };
 
   return (
@@ -86,6 +114,8 @@ function Auth() {
           </button>
         </form>
 
+        {error && <p className="error-message">{error}</p>}
+
         {isLoginMode && (
           <button className="button-google">
             <FaGoogle style={{ fontSize: '20px', marginRight: '10px' }} />
@@ -106,6 +136,6 @@ function Auth() {
       </div>
     </div>
   );
-};
+}
 
 export default Auth;
