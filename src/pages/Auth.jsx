@@ -1,64 +1,121 @@
-import React, { useState } from 'react';
-import { authenticate } from '../api/authApi.js';
-import authLogo from '../assets/auth-logo.png'; 
+import React, { useState, useEffect } from 'react';
+import { authenticate, authenticateWithGoogle } from '../api/authApi.js';
+import authLogo from '../assets/auth-logo.png';
 import { useAuth } from "../components/Context/AuthContext.jsx";
-import { FaEye, FaEyeSlash, FaGoogle } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';  
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
+import AlertMessage from '../components/AlertMessages.jsx';
 import '../styles/auth.css';
 
 function Auth() {
-  const { handleLogin } = useAuth();
-  const navigate = useNavigate();  
+  const { handleLogin, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoginMode, setLoginMode] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      handleLogin(token);
+      navigate('/');
+    }
+  }, [navigate, handleLogin]);
+
+  if (isAuthenticated) {
+    return null;
+  }
 
   const handleToggleMode = () => {
-    setLoginMode((prevMode) => !prevMode);
+    setLoginMode(prevMode => !prevMode);
+    setError('');
+    setSuccessMessage('');
   };
 
   const handleTogglePasswordVisibility = () => {
-    setShowPassword((prevShowPassword) => !prevShowPassword);
+    setShowPassword(prev => !prev);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email || !password) {
-      setError('Please fill in both fields.');
+      setError('Please fill in all fields.');
+      return;
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!isLoginMode && !passwordRegex.test(password)) {
+      setError('Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one digit.');
       return;
     }
 
     setError('');
+    setSuccessMessage('');
 
     try {
       const response = await authenticate(isLoginMode, email, password);
-      const token = response.token;
+      console.log('Response from auth API:', response);
 
-      if (typeof token !== 'string' || token.trim() === '') {
-        setError('Invalid token received.');
+      if (response.success) {
+        if (isLoginMode) {
+          const token = response.token;
+          localStorage.setItem('token', token);
+          handleLogin(token);
+          setSuccessMessage('Login successful');
+          setEmail('');
+          setPassword('');
+          navigate('/');
+        } else {
+          setSuccessMessage('Registration successful! You can now log in.');
+          setEmail('');
+          setPassword('');
+          setLoginMode(true);
+        }
+      } else {
+        const msg = response.message?.toLowerCase() || '';
+
+        if (!isLoginMode && (msg.includes('already exists') || msg.includes('user exists') || msg.includes('email'))) {
+          setError('A user with this email already exists.');
+        } else if (isLoginMode && msg.includes('invalid credentials')) {
+          setError('Incorrect email or password.');
+        } else {
+          setError(response.message || 'An error occurred during authentication.');
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      setError('Unexpected error.');
+    }
+  };
+
+  const handleGoogleLogin = async (response) => {
+    try {
+      const googleToken = response.credential;
+
+      if (!googleToken) {
+        setError('Google authentication failed.');
         return;
       }
 
-      localStorage.setItem('token', token);
+      const authResponse = await authenticateWithGoogle(googleToken);
 
-      handleLogin(token);
-
-      if (response.success) {
-        window.alert(`${isLoginMode ? 'Login' : 'Registration'} successful`);
-        setEmail('');
-        setPassword('');
-
+      if (authResponse.token) {
+        localStorage.setItem('token', authResponse.token);
+        handleLogin(authResponse.token);
+        setSuccessMessage('Google login successful!');
         navigate('/');
       } else {
-        setError(response.message || 'An error occurred during authentication.');
+        setError(authResponse.message || 'Google login failed.');
       }
     } catch (error) {
-      setError('An unexpected error occurred.');
       console.error(error);
+      setError('Google login error.');
     }
   };
 
@@ -68,11 +125,14 @@ function Auth() {
         <h2 className="auth-title">
           {isLoginMode ? 'Welcome back!' : 'Create an Account!'}
         </h2>
-        {isLoginMode ? (
-          <h3 className="auth-info">Enter your details to sign in to your account</h3>
-        ) : (
-          <h3 className="auth-info">Join us and start your journey!</h3>
-        )}
+        <h3 className="auth-info">
+          {isLoginMode ? 'Log in to your account' : 'Join us now!'}
+        </h3>
+
+        <AlertMessage 
+          message={error || successMessage} 
+          variant={error ? "danger" : "success"} 
+        />
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
@@ -83,7 +143,7 @@ function Auth() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="Enter your email address"
+              placeholder="Enter email"
             />
           </div>
           <div className="form-group">
@@ -95,7 +155,7 @@ function Auth() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                placeholder="Enter your password"
+                placeholder="Enter password"
               />
               <button
                 onClick={handleTogglePasswordVisibility}
@@ -110,24 +170,29 @@ function Auth() {
             </div>
           </div>
           <button type="submit" className="button-submit">
-            {isLoginMode ? 'Login' : 'Register'}
+            {isLoginMode ? 'Log In' : 'Register'}
           </button>
         </form>
 
-        {error && <p className="error-message">{error}</p>}
-
-        {isLoginMode && (
-          <button className="button-google">
-            <FaGoogle style={{ fontSize: '20px', marginRight: '10px' }} />
-            Sign in with Google
-          </button>
+        {isLoginMode && !isAuthenticated && (
+          <>
+            <div className="or-divider">
+              <span>OR</span>
+            </div>
+            <div className="google-login-wrapper">
+              <GoogleLogin
+                onSuccess={handleGoogleLogin}
+                onError={() => setError('Google login failed.')}
+              />
+            </div>
+          </>
         )}
 
         <p className="form-toggle" onClick={handleToggleMode}>
           {isLoginMode ? (
-            <span>New here? <strong>Join us today!</strong></span>
+            <span>New here? <strong>Create an account!</strong></span>
           ) : (
-            <span>Already a member? <strong>Sign in here</strong></span>
+            <span>Already have an account? <strong>Log in here</strong></span>
           )}
         </p>
       </div>

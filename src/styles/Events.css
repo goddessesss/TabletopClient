@@ -13,6 +13,18 @@
     margin-bottom: 30px;
     font-family: 'Roboto', sans-serif;
   }
+  .or-divider {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 15px;
+    color: #888;
+  }
+  
+  .or-divider span {
+    background-color: #fff;
+    padding: 0 10px;
+    color: #333;
+  }
   
   .event-header {
     display: flex;

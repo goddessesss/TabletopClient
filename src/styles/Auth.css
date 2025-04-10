@@ -70,21 +70,12 @@
     background-color: #f1b765;
 }
 
-.button-google {
+.google-login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
-    padding: 15px;
-    font-size: 18px;
-    background-color: transparent;
-    border: 2px solid gray;
-    color: black;
-    font-weight: bold;
-    border-radius: 10px;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.button-google:hover {
-    background-color: #f3e5d1;
-    border-color: #e0a94f;
+    margin-top: 20px;
 }
 
 .password-input-container {
