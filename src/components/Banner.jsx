@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { BsArrowRightCircle } from 'react-icons/bs';
-import './Banner.css'; 
 
 function Banner() {
     const [loopNum, setLoopNum] = useState(0);
     const [text, setText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
     const [delta, setDelta] = useState(300 - Math.random() * 100);
-    const toRotate = ["PLAYERS!", "FUN!", "FRIENDS!"]; 
+    const toRotate = ["PLAYERS!", "FUN!", "FRIENDS!"];
     const period = 2000;
 
     useEffect(() => {
@@ -22,8 +21,8 @@ function Banner() {
     const tick = () => {
         let i = loopNum % toRotate.length;
         let fullText = toRotate[i];
-        let updatedText = isDeleting 
-            ? fullText.substring(0, text.length - 1) 
+        let updatedText = isDeleting
+            ? fullText.substring(0, text.length - 1)
             : fullText.substring(0, text.length + 1);
 
         setText(updatedText);
@@ -43,16 +42,14 @@ function Banner() {
     };
 
     return (
-        <section className="banner" id="home">
+        <div className='banner'>
             <div className="image-container">
-                <div className="background-image"></div>
             </div>
-            <Container
-                className="text-center text-container"
-            >
+            <Container className="text-center text-container">
                 <Row className="align-items-center">
                     <Col xs={12}>
-                        <span className="tagline">Welcome to Tabletop!</span>
+                        <span className="tagline">Welcome to</span>
+                        <span className="navbar-title" style={{ marginLeft: "10px" }}>TABLETOP!</span>
                         <h1 className="main-heading">FIND THE PERFECT BOARD GAME AND <span className="wrap">{text}</span></h1>
                         <p className="description">Gather the best players and create an unforgettable game!</p>
                         <button className="start-button" onClick={() => console.log("connect")}>
@@ -61,7 +58,7 @@ function Banner() {
                     </Col>
                 </Row>
             </Container>
-        </section>
+        </div>
     );
 }
 

@@ -6,12 +6,10 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import AlertMessage from '../components/AlertMessages.jsx';
-import '../styles/auth.css';
 
 function Auth() {
   const { handleLogin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoginMode, setLoginMode] = useState(true);

@@ -1,12 +1,14 @@
 import React from 'react';
-import GameCarousel from '../components/GameCarousel/GameCarousel';
-import Banner from '../components/Banner/Banner';
-import Footer from '../components/Footer/Footer';
+import GameCarousel from '../components/GameCarousel.jsx';
+import Banner from '../components/Banner.jsx';
+import Footer from '../components/Footer.jsx';
+import Info from '../components/Info';
 
 function Home() {
   return (
     <div className="home-container">
       <Banner />
+      <Info/>
       <GameCarousel />
       <Footer />
     </div>
