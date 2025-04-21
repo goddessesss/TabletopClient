@@ -175,6 +175,17 @@ $text-color-light-grey: #8c8a8a;
   }
 }
 
+@keyframes slideDown {
+  from {
+    transform: translateY(-10%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 //Footer
 
 .footer-container {
@@ -319,11 +330,11 @@ $text-color-light-grey: #8c8a8a;
       font-weight: bold;
       margin: 50px;
     }
-  }
+}
 
-  //Banner
+//Banner
 
-  .banner {
+.banner {
     position: relative;
     height: 87vh;
     color: white;
@@ -408,9 +419,9 @@ $text-color-light-grey: #8c8a8a;
         }
       }
     }
-  }
+}
 
-  //Game Carousel
+//Game Carousel
 
   .carousel-title, .carousel-description, .carousel-image {
     opacity: 0;
@@ -482,444 +493,518 @@ $text-color-light-grey: #8c8a8a;
 
 // Auth.jsx
 
-.auth-container, .auth-logo {
-  display: flex;
-  margin-top: 80px;
+  .auth-container, .auth-logo {
+    display: flex;
+    margin-top: 80px;
+  }
+
+  .auth-logo {
+    margin-left: 70px;
+  }
+
+  .auth-content {
+    width: 50%;
+    padding: 80px;
+    position: relative;
+    display: inline-block;
+  }
+
+  .auth-title {
+    color: #333;
+    font-size: 32px;
+    font-weight: bold;
+  }
+
+  .auth-info {
+    font-size: 15px;
+    font-weight: 300;
+  }
+
+  .auth-form {
+    margin-top: 30px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+        display: flex;
+        margin-bottom: 10px;
+        color: #555;
+    }
+  }
+
+  .form-toggle {
+    text-align: center;
+    color: #033a12;
+    cursor: pointer;
+    margin-top: 10px;
+
+    &:hover {
+        text-decoration: underline;
+    }
+  }
+
+  .button-submit {
+    padding: 15px;
+    font-size: 18px;
+    width: 100%;
+    background-color: #F1C68B;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+        background-color: #f1b765;
+    }
+  }
+
+  .google-login-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  .password-input-container {
+    position: relative;
+    width: 100%;
+  }
+
+  .eye-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: black;
+    font-size: 30px;
+  }
+
+  .input-field {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid black !important;
+    font-size: 18px;
+    height: 60px;
+  }
+
+  .form-toggle {
+    margin-top: 25px;
+    color: #020202;
+  }
+
+/* Стилі для контейнера */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.auth-logo {
-  margin-left: 70px;
-}
-
-.auth-content {
-  width: 50%;
-  padding: 80px;
-  position: relative;
-  display: inline-block;
-}
-
-.auth-title {
-  color: #333;
-  font-size: 32px;
+/* Стилі заголовка */
+h2.text-center {
+  font-size: 2.5rem;
   font-weight: bold;
+  color: #343a40;
+  margin-bottom: 30px;
 }
 
-.auth-info {
-  font-size: 15px;
-  font-weight: 300;
-}
-
-.auth-form {
-  margin-top: 30px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-
-  label {
-      display: flex;
-      margin-bottom: 10px;
-      color: #555;
-  }
-}
-
-.form-toggle {
-  text-align: center;
-  color: #033a12;
-  cursor: pointer;
-  margin-top: 10px;
-
+/* Стилі для карток */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
   &:hover {
-      text-decoration: underline;
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   }
 }
 
-.button-submit {
-  padding: 15px;
-  font-size: 18px;
-  width: 100%;
-  background-color: #F1C68B;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+// All Events
 
-  &:hover {
-      background-color: #f1b765;
-  }
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
 }
 
-.google-login-wrapper {
+.card-body {
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.card-text {
+  font-size: 1rem;
+  color: #6c757d;
+  height: 60px;
+  overflow: hidden;
+}
+
+.pagination {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  margin-top: 20px;
-}
+  margin-top: 40px;
+  
+  .pagination-item {
+    margin: 0 5px;
 
-.password-input-container {
-  position: relative;
-  width: 100%;
-}
+    a {
+      display: block;
+      padding: 10px 15px;
+      background-color: #f8f9fa;
+      color: #343a40;
+      border-radius: 5px;
+      text-decoration: none;
 
-.eye-icon {
-  position: absolute;
-  right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: black;
-  font-size: 30px;
-}
+      &:hover {
+        background-color: #007bff;
+        color: white;
+      }
+    }
 
-.input-field {
-  width: 100%;
-  padding: 15px;
-  border-radius: 10px;
-  border: 2px solid black !important;
-  font-size: 18px;
-  height: 60px;
-}
+    &.disabled a {
+      background-color: #e9ecef;
+      color: #6c757d;
+      cursor: not-allowed;
+    }
+  }
 
-.form-toggle {
-  margin-top: 25px;
-  color: #020202;
+  .pagination-item:first-child a,
+  .pagination-item:last-child a {
+    font-weight: bold;
+  }
 }
 
 
 //Media Query
 
-@media (max-width: 1200px) {
+  @media (max-width: 1200px) {
 
-  // Home.jsx
+    // Home.jsx
 
-  .navbar {
-    &-title {
-      font-size: 25px;
+    .navbar {
+      &-title {
+        font-size: 25px;
+      }
+
+      &-center {
+        gap: 100px;
+      }
     }
 
-    &-center {
-      gap: 100px;
+    .nav-item,
+    .dropdown-toggle {
+      font-size: 20px !important;
     }
-  }
 
-  .nav-item,
-  .dropdown-toggle {
-    font-size: 20px !important;
-  }
+    .auth-btn {
+      padding: 14px 20px !important;
+      font-size: 13px !important;
+    }
 
-  .auth-btn {
-    padding: 14px 20px !important;
-    font-size: 13px !important;
-  }
+    .banner {
+      height: 80vh;
+    }
 
-  .banner {
-    height: 80vh;
-  }
+    .main-heading {
+      font-size: 2.5rem !important;
+    }
 
-  .main-heading {
-    font-size: 2.5rem !important;
-  }
+    .info-title {
+      font-size: 24px !important;
+    }
 
-  .info-title {
-    font-size: 24px !important;
-  }
+    .info-description {
+      font-size: 17px !important;
+    }
 
-  .info-description {
-    font-size: 17px !important;
-  }
+    .dice-image {
+      width: 450px !important;
+      margin-left: 10px !important;
+    }
 
-  .dice-image {
-    width: 450px !important;
-    margin-left: 10px !important;
-  }
+    .block-label {
+      font-size: 16px !important;
+      font-weight: bold;
+      margin: 30px !important;
+    }
 
-  .block-label {
-    font-size: 16px !important;
-    font-weight: bold;
-    margin: 30px !important;
-  }
+    .info-component {
+      padding: 20px;
+    }
 
-  .info-component {
-    padding: 20px;
-  }
-
-  // Auth.jsx
-  .auth-container {
+    // Auth.jsx
+    .auth-container {
+      flex-direction: column;
+      height: auto;
+      margin-top: 50px;
+      flex-wrap: wrap;
+    }
+    .auth-content {
+      width: 100%;
+    }
+    .auth-title {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    .auth-info {
+      font-size: 14px;
+    }
+    .auth-image-container {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .auth-logo {
+      display: none;
+    }
+    .button-submit {
+      padding: 12px;
+      font-size: 16px;
+    }
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+    }
+    .auth-container {
     flex-direction: column;
     height: auto;
     margin-top: 50px;
     flex-wrap: wrap;
-  }
-  .auth-content {
+    }
+    .auth-content {
     width: 100%;
-  }
-  .auth-title {
+    }
+    .auth-title {
     font-size: 24px;
     margin-bottom: 15px;
-  }
-  .auth-info {
+    }
+
+    .auth-info {
     font-size: 14px;
-  }
-  .auth-image-container {
+    }
+    .auth-image-container {
     width: 100%;
     margin-bottom: 20px;
-  }
-  .auth-logo {
+    }
+
+    .auth-logo {
     display: none;
-  }
-  .button-submit {
+    }
+
+    .button-submit {
     padding: 12px;
     font-size: 16px;
-  }
-  .input-field {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-  }
-  .auth-container {
-   flex-direction: column;
-   height: auto;
-   margin-top: 50px;
-   flex-wrap: wrap;
-  }
-  .auth-content {
-   width: 100%;
-  }
-  .auth-title {
-   font-size: 24px;
-   margin-bottom: 15px;
-  }
-
-  .auth-info {
-   font-size: 14px;
-  }
-  .auth-image-container {
-   width: 100%;
-   margin-bottom: 20px;
-  }
-
-  .auth-logo {
-   display: none;
-  }
-
-  .button-submit {
-   padding: 12px;
-   font-size: 16px;
-  }
-}
-
-@media (max-width: 768px) {
-
-  // Home.jsx
-
-  .navbar {
-    &-center,
-    &-right {
-      display: none;
     }
+  }
 
-    .nav-item {
-      font-size: 18px;
-      padding: 10px 0;
-      margin-left: 16px;
-      color: #fff;
-      transition: color 0.3s ease;
+  @media (max-width: 768px) {
 
-      &:hover {
-        color: #f0c040;
+    // Home.jsx
+
+    .navbar {
+      &-center,
+      &-right {
+        display: none;
       }
-    }
 
-    .burger-menu {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 5px;
-      cursor: pointer;
-      z-index: 1001;
+      .nav-item {
+        font-size: 18px;
+        padding: 10px 0;
+        margin-left: 16px;
+        color: #fff;
+        transition: color 0.3s ease;
 
-      .burger-line {
-        width: 25px;
-        height: 3px;
-        background-color: #010101;
-        transition: background-color 0.3s ease;
+        &:hover {
+          color: #f0c040;
+        }
       }
-    }
 
-    .dropdown-arrow {
-      font-size: 12px;
-      margin-left: 4px;
-      transition: transform 0.3s ease;
-
-      &.open {
-        transform: rotate(180deg);
-      }
-    }
-
-    .mobile-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      background-color: rgba(30, 30, 30, 0.95);
-      padding: 24px 20px;
-      margin: 12px;
-      border-radius: 16px;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      animation: slideDown 0.3s ease-out;
-      backdrop-filter: blur(6px);
-
-      .dropdown-submenu {
-        margin-left: 20px;
+      .burger-menu {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        justify-content: center;
+        gap: 5px;
+        cursor: pointer;
+        z-index: 1001;
 
-        .dropdown-item {
+        .burger-line {
+          width: 25px;
+          height: 3px;
+          background-color: #010101;
+          transition: background-color 0.3s ease;
+        }
+      }
+
+      .dropdown-arrow {
+        font-size: 12px;
+        margin-left: 4px;
+        transition: transform 0.3s ease;
+
+        &.open {
+          transform: rotate(180deg);
+        }
+      }
+
+      .mobile-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        background-color: rgba(30, 30, 30, 0.95);
+        padding: 24px 20px;
+        margin: 12px;
+        border-radius: 16px;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        animation: slideDown 0.3s ease-out;
+        backdrop-filter: blur(6px);
+
+        .dropdown-submenu {
+          margin-left: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+
+          .dropdown-item {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+
+            &:hover {
+              color: #f0c040;
+            }
+          }
+        }
+      }
+      .auth-btn {
+        text-align: center;
+      }
+
+      .mobile-menu-header {
+        display: flex;
+        justify-content: flex-end;
+
+        .close-menu {
+          font-size: 28px;
+          background: none;
+          border: none;
           color: #fff;
-          text-decoration: none;
-          transition: color 0.3s ease;
+          cursor: pointer;
+          padding: 5px;
+          transition: transform 0.3s ease;
 
           &:hover {
+            transform: rotate(90deg);
             color: #f0c040;
           }
         }
       }
     }
-    .auth-btn {
-      text-align: center;
-    }
 
-    .mobile-menu-header {
-      display: flex;
-      justify-content: flex-end;
+    .info-component {
+      display: contents;
+      
+      .info-title,
+      .info-description {
+        text-align: center !important;
+        width: 100% !important;
+      }
 
-      .close-menu {
-        font-size: 28px;
-        background: none;
-        border: none;
-        color: #fff;
-        cursor: pointer;
-        padding: 5px;
-        transition: transform 0.3s ease;
-
-        &:hover {
-          transform: rotate(90deg);
-          color: #f0c040;
-        }
+      .info-img {
+        margin: 20px;
+        text-align: center;
       }
     }
-  }
 
-  .info-component {
-    display: contents;
-    
-    .info-title,
+    .dice-image {
+      width: 300px !important;
+    }
+
+    .banner {
+      height: 50vh;
+    }
+
+    .main-heading {
+      font-size: 1.5rem !important;
+    }
+
+    .info-title {
+      font-size: 17px !important;
+    }
+
     .info-description {
-      text-align: center !important;
-      width: 100% !important;
+      font-size: 10px !important;
     }
 
-    .info-img {
-      margin: 20px;
-      text-align: center;
+    .block {
+      max-width: 320px;
+      margin-top: 10px !important;
+    }
+
+    .block-img {
+      width: 5% !important;
+    }
+
+    .block-label {
+      font-size: 13px !important;
+    }
+
+    .game-slider .item .carousel-image {
+      max-width: 150px;
     }
   }
 
-  .dice-image {
-    width: 300px !important;
-  }
+  @media (max-width: 530px) {
 
-  .banner {
-    height: 50vh;
-  }
+    // Home.jsx
 
-  .main-heading {
-    font-size: 1.5rem !important;
-  }
+    .main-heading,
+    .item h5 {
+      font-size: 15px !important;
+    }
 
-  .info-title {
-    font-size: 17px !important;
-  }
+    .info-title,
+    .carousel-title {
+      font-size: 15px !important;
+    }
 
-  .info-description {
-    font-size: 10px !important;
-  }
+    .info-description,
+    .carousel-description,
+    .description {
+      font-size: 10px !important;
+    }
 
-  .block {
-    max-width: 320px;
-    margin-top: 10px !important;
-  }
+    .navbar-title,
+    .tagline {
+      font-size: 20px !important;
+    }
 
-  .block-img {
-    width: 5% !important;
-  }
+    .start-button {
+      padding: 5px 10px !important;
+      font-size: 10px !important;
+    }
 
-  .block-label {
-    font-size: 13px !important;
-  }
+    .start-button svg {
+      width: 15px !important;
+      margin-left: 5px !important;
+    }
 
-  .game-slider .item .carousel-image {
-    max-width: 150px;
+    .game-box {
+      margin-top: 20px;
+    }
   }
-}
-
-@media (max-width: 530px) {
-
-  // Home.jsx
-
-  .main-heading,
-  .item h5 {
-    font-size: 15px !important;
-  }
-
-  .info-title,
-  .carousel-title {
-    font-size: 15px !important;
-  }
-
-  .info-description,
-  .carousel-description,
-  .description {
-    font-size: 10px !important;
-  }
-
-  .navbar-title,
-  .tagline {
-    font-size: 20px !important;
-  }
-
-  .start-button {
-    padding: 5px 10px !important;
-    font-size: 10px !important;
-  }
-
-  .start-button svg {
-    width: 15px !important;
-    margin-left: 5px !important;
-  }
-
-  .game-box {
-    margin-top: 20px;
-  }
-}
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-10%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
