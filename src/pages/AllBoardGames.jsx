@@ -1,130 +1,117 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import CustomPagination from '../components/Pagination.jsx';
 import { getAllEvents } from '../api/eventsApi.js';
-import { Pagination as BootstrapPagination } from 'react-bootstrap';
+import BoardGameModal from '../components/BoardGameModal.jsx'; 
 
-function AllBoardGames() {
-  const [games, setGames] = useState([]);
-  const [pageNumber, setPageNumber] = useState(1);
+const AllBoardGames = () => {
+  const [events, setEvents] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
-  const PAGE_SIZE = 12;
-  const MAX_VISIBLE_PAGES = 8;
+  const [loading, setLoading] = useState(true);
+  const [pageSize, setPageSize] = useState(6);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState(null); 
 
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await getAllEvents(pageNumber, PAGE_SIZE);
-      if (result.success) {
-        setGames(result.data.boardGames || []);
-        const total = result.data.totalCount || 0;
-        setTotalPages(Math.ceil(total / PAGE_SIZE));
-      } else {
-        console.error(result.message);
+    const fetchEvents = async () => {
+      setLoading(true);
+      try {
+        const data = await getAllEvents(currentPage, pageSize);
+        if (data && data.boardGames) {
+          setEvents(data.boardGames);
+          setTotalPages(Math.ceil(data.totalCount / pageSize));
+        } else {
+          console.error("Data structure is not as expected:", data);
+        }
+      } catch (error) {
+        console.error("Error fetching events:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchData();
-  }, [pageNumber]);
+    fetchEvents();
+  }, [currentPage, pageSize]);
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setPageNumber(page);
-    }
+    setCurrentPage(page);
   };
 
-  const renderPaginationItems = () => {
-    const items = [];
-    let start = Math.max(1, pageNumber - Math.floor(MAX_VISIBLE_PAGES / 2));
-    let end = start + MAX_VISIBLE_PAGES - 1;
-
-    if (end > totalPages) {
-      end = totalPages;
-      start = Math.max(1, end - MAX_VISIBLE_PAGES + 1);
-    }
-
-    if (start > 1) {
-      items.push(
-        <BootstrapPagination.Item key={1} onClick={() => handlePageChange(1)}>
-          1
-        </BootstrapPagination.Item>
-      );
-      if (start > 2) {
-        items.push(<BootstrapPagination.Ellipsis key="start-ellipsis" disabled />);
-      }
-    }
-
-    for (let page = start; page <= end; page++) {
-      items.push(
-        <BootstrapPagination.Item
-          key={page}
-          active={page === pageNumber}
-          onClick={() => handlePageChange(page)}
-        >
-          {page}
-        </BootstrapPagination.Item>
-      );
-    }
-
-    if (end < totalPages) {
-      if (end < totalPages - 1) {
-        items.push(<BootstrapPagination.Ellipsis key="end-ellipsis" disabled />);
-      }
-      items.push(
-        <BootstrapPagination.Item key={totalPages} onClick={() => handlePageChange(totalPages)}>
-          {totalPages}
-        </BootstrapPagination.Item>
-      );
-    }
-
-    return items;
+  const handlePageSizeChange = (event) => {
+    const newPageSize = Number(event.target.value);
+    setPageSize(newPageSize);
+    setCurrentPage(1);
   };
 
-  const truncateDescription = (description) => {
-    const words = description.split(' ');
-    if (words.length > 9) {
-      return words.slice(0, 9).join(' ') + '...';
-    }
-    return description;
+  const handleShowModal = (eventId) => {
+    setSelectedEventId(eventId);
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedEventId(null);
   };
 
   return (
-    <div className="container my-4">
-      <h2 className="mb-3 text-dark">Board Games</h2>
-      <div className="row">
-        {games.length > 0 ? (
-          games.map((game, index) => (
-            <div className="col-md-4 mb-4" key={index}>
-              <div className="card shadow-lg border-0 rounded-3 overflow-hidden transform-hover">
-                <img
-                  src={game.imageUrl}
-                  alt={game.name}
-                  className="card-img-top"
-                  style={{ height: '200px', objectFit: 'cover' }}
-                />
-                <div className="card-body p-4">
-                  <h5 className="card-title text-dark">{game.name}</h5>
-                  <p className="card-text text-muted">{truncateDescription(game.description || '—')}</p>
+    <div className="container mt-4">
+      <h2>All Boardgames</h2>
+
+      <div>
+  <label>Games per page: </label>
+  <select
+    value={pageSize}
+    onChange={handlePageSizeChange}
+    className="form-select custom-select"
+  >
+    <option value={6}>6</option>
+    <option value={12}>12</option>
+    <option value={18}>18</option>
+  </select>
+</div>
+
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <div>
+          <div className="row">
+            {events.map((event, index) => (
+              <div key={index} className="col-md-4 mb-4">
+                <div
+                  className="card"
+                  onClick={() => handleShowModal(event.id)} 
+                >
+                  <img
+                    src={event.imageUrl}
+                    className="card-img-top"
+                    alt={event.title}
+                  />
+                  <div className="card-body">
+                    <h5 className="card-title">{event.title}</h5>
+                    <p className="card-text">{event.description.split(' ').slice(0, 9).join(' ')}...</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <div className="col-12 text-center text-muted">
-            <p>No games found.</p>
+            ))}
           </div>
-        )}
-      </div>
 
-      <div className="d-flex justify-content-center mt-4">
-        <BootstrapPagination>
-          <BootstrapPagination.First onClick={() => handlePageChange(1)} disabled={pageNumber === 1} />
-          <BootstrapPagination.Prev onClick={() => handlePageChange(pageNumber - 1)} disabled={pageNumber === 1} />
-          {renderPaginationItems()}
-          <BootstrapPagination.Next onClick={() => handlePageChange(pageNumber + 1)} disabled={pageNumber === totalPages} />
-          <BootstrapPagination.Last onClick={() => handlePageChange(totalPages)} disabled={pageNumber === totalPages} />
-        </BootstrapPagination>
-      </div>
+          <CustomPagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
+
+      {selectedEventId && (
+        <BoardGameModal
+          show={showModal}
+          onHide={handleCloseModal}
+          eventId={selectedEventId}
+        />
+      )}
     </div>
   );
-}
+};
 
 export default AllBoardGames;

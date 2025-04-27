@@ -14,8 +14,9 @@ export const AuthProvider = ({ children }) => {
     const extractUserInfoFromToken = (token) => {
       try {
         const decodedToken = jwt_decode(token);
-        const userId = decodedToken?.userId ?? null;
-        setUserId(userId);
+        const playerProfileId = decodedToken?.PlayerProfileId ?? null;
+        setUserId(playerProfileId); 
+        console.log('Player Profile ID from token:', playerProfileId); 
       } catch (error) {
         console.error('Error decoding token:', error);
       }
@@ -25,6 +26,7 @@ export const AuthProvider = ({ children }) => {
       extractUserInfoFromToken(token);
     } else {
       setUserId(null);
+      console.log('No token found, userId set to null');
     }
   }, [token]);
 
@@ -34,8 +36,8 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const decodedToken = jwt_decode(newToken);
-      const userId = decodedToken?.userId ?? null;
-      setUserId(userId);
+      const playerProfileId = decodedToken?.PlayerProfileId ?? null;
+      setUserId(playerProfileId);
     } catch (error) {
       console.error('Error decoding token:', error);
     }

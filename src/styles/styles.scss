@@ -601,90 +601,51 @@ $text-color-light-grey: #8c8a8a;
     color: #020202;
   }
 
-/* Стилі для контейнера */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
+  // All Events
 
-/* Стилі заголовка */
-h2.text-center {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #343a40;
-  margin-bottom: 30px;
-}
-
-/* Стилі для карток */
-.card {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
   
-  &:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  }
-}
-
-// All Events
-
-.card-img-top {
-  height: 200px;
-  object-fit: cover;
-}
-
-.card-body {
-  padding: 20px;
-}
-
-.card-title {
-  font-size: 1.25rem;
-  font-weight: bold;
-  color: #333;
-}
-
-.card-text {
-  font-size: 1rem;
-  color: #6c757d;
-  height: 60px;
-  overflow: hidden;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 40px;
-  
-  .pagination-item {
-    margin: 0 5px;
-
-    a {
-      display: block;
-      padding: 10px 15px;
-      background-color: #f8f9fa;
+    h2.text-center {
+      font-size: 2.5rem;
+      font-weight: bold;
       color: #343a40;
-      border-radius: 5px;
-      text-decoration: none;
-
-      &:hover {
-        background-color: #007bff;
-        color: white;
+      margin-bottom: 30px;
+    }
+  }
+  
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+    &:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+  
+    .card-img-top {
+      height: 200px;
+      object-fit: cover;
+    }
+  
+    .card-body {
+      padding: 20px;
+  
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #333;
+      }
+  
+      .card-text {
+        font-size: 1rem;
+        color: #6c757d;
+        height: 60px;
+        overflow: hidden;
       }
     }
-
-    &.disabled a {
-      background-color: #e9ecef;
-      color: #6c757d;
-      cursor: not-allowed;
-    }
-  }
-
-  .pagination-item:first-child a,
-  .pagination-item:last-child a {
-    font-weight: bold;
-  }
-}
+  } 
 
 
 //Media Query
