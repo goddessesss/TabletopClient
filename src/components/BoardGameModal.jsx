@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Badge } from 'react-bootstrap';
-import { getBoardGameById } from '../api/eventsApi.js';
+import { getBoardGameById } from '../api/boardgameApi.js';
 
 const BoardGameModal = ({ show, onHide, eventId }) => {
   const [data, setData] = useState(null);
@@ -10,8 +10,6 @@ const BoardGameModal = ({ show, onHide, eventId }) => {
     const fetchBoardGameDetails = async () => {
       setLoading(true);
       const result = await getBoardGameById(eventId);
-      console.log(result); 
-
       if (result.success) {
         setData(result.data);
       } else {
@@ -33,7 +31,11 @@ const BoardGameModal = ({ show, onHide, eventId }) => {
     return <div>Game information not found.</div>;
   }
 
-  const { boardGame, categories = [], mechanics = [], publishers = [], designers = [], themes = [] } = data;
+  const { boardGame, categories = [], family, mechanics = [], publishers = [], designers = [], themes = [] } = data;
+  
+  const familyBadge = family ? (
+    <Badge bg="success" className="me-1">{family.name}</Badge>
+  ) : <span>No family specified</span>;
 
   const categoryBadges = categories.length > 0
     ? categories.map((category, idx) => (
@@ -72,6 +74,11 @@ const BoardGameModal = ({ show, onHide, eventId }) => {
           ) : (
             <span>No mechanics specified</span>
           )}
+        </div>
+
+        <div className="mb-2">
+          <strong>Family: </strong>
+          {familyBadge}
         </div>
 
         <div className="mb-2">

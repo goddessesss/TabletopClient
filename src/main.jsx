@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client"; 
 import { BrowserRouter } from "react-router-dom"; 
 import { AuthProvider } from './components/Context/AuthContext.jsx'; 
+import { FilterProvider } from './components/Context/FilterContext.jsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { GOOGLE_CLIENT_ID } from "./utils/apiConfig.js";
 
@@ -14,9 +15,11 @@ if (root) {
     <React.StrictMode>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
         <AuthProvider>
-          <BrowserRouter> 
-            <App />
-          </BrowserRouter>
+          <FilterProvider>
+            <BrowserRouter> 
+              <App />
+            </BrowserRouter>
+          </FilterProvider>
         </AuthProvider>
       </GoogleOAuthProvider>
     </React.StrictMode>
