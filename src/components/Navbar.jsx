@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
+import { useAuth } from '../components/Context/AuthContext.jsx';
 
 function Navbar() {
+  const { isAuthenticated } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [gamesDropdownOpen, setGamesDropdownOpen] = useState(false);
-
-  const token = localStorage.getItem('token');
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
@@ -45,7 +44,7 @@ function Navbar() {
         </div>
 
         <div className="navbar-right">
-          {token ? (
+          {isAuthenticated ? (
             <Link to="/profile">
               <button className="auth-btn">Profile</button>
             </Link>
@@ -84,9 +83,12 @@ function Navbar() {
 
           <Link to="/events" className="nav-item" onClick={() => setMenuOpen(false)}>EVENTS</Link>
           <Link to="/contact" className="nav-item" onClick={() => setMenuOpen(false)}>CONTACT</Link>
-          <Link to={token ? "/profile" : "/auth"} className="auth-btn" onClick={() => setMenuOpen(false)}>
-            {token ? "Profile" : "Login"}
-          </Link>
+
+          {isAuthenticated ? (
+            <Link to="/profile" className="auth-btn" onClick={() => setMenuOpen(false)}>Profile</Link>
+          ) : (
+            <Link to="/auth" className="auth-btn" onClick={() => setMenuOpen(false)}>Login</Link>
+          )}
         </div>
       )}
     </nav>

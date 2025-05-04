@@ -54,7 +54,7 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
   };
 
   return (
-    <div className="d-flex justify-content-center mt-4">
+    <div className="d-flex justify-content-center mt-4 mb-4">
       <BootstrapPagination>
         <BootstrapPagination.First 
           onClick={() => onPageChange(1)} 

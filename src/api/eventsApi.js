@@ -78,3 +78,29 @@ export const getEventTypes = async () => {
     throw error;
   }
 };
+
+export async function getAllEvents() {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(
+      `${BASE_URL}/Events/filtered`, 
+      {}, 
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,  
+        }
+      }
+    );
+
+    return {
+      success: true,
+      data: response.data
+    };
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    return {
+      success: false,
+      message: 'Error fetching events'
+    };
+  }
+}

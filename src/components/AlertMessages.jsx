@@ -1,45 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { Alert } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 
-function AlertMessage({ message, onClose }) {
-  const [visible, setVisible] = useState(true);
+function AlertMessage({ message, variant, onClose, id }) {
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    if (message) {
-      setVisible(true);
-      const timer = setTimeout(() => {
-        setVisible(false);
-        if (onClose) onClose();
-      }, 3000); 
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+    }, 4500);
 
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) {
+      const timer = setTimeout(() => {
+        onClose(id);
+      }, 500);
       return () => clearTimeout(timer);
     }
-  }, [message, onClose]);
+  }, [isVisible, onClose, id]);
 
-  if (!visible || !message) return null;
+  if (!message) return null;
 
-  const variant = message.toLowerCase().includes('успішн') ? 'success' : 'danger';
+  const alertClass = `alert ${variant === 'danger' ? 'alert-danger' : 'alert-success'} ${isVisible ? 'fade-in' : 'fade-out'}`;
 
   return (
-    <div
-      style={{
-        position: 'fixed',
-        top: '200px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        zIndex: 9999,
-        width: '70%',
-      }}
-    >
-      <Alert
-        variant={variant}
-        onClose={() => setVisible(false)}
-        dismissible
-      >
-        {message}
-      </Alert>
+    <div className={alertClass}>
+      <span>{message}</span>
+      <button className="close-btn" onClick={() => onClose(id)}>&times;</button>
     </div>
   );
 }
+
+AlertMessage.propTypes = {
+  message: PropTypes.string.isRequired,
+  variant: PropTypes.oneOf(['danger', 'success']).isRequired,
+  onClose: PropTypes.func.isRequired,
+  id: PropTypes.number.isRequired,
+};
 
 export default AlertMessage;

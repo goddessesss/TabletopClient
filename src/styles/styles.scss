@@ -5,6 +5,13 @@ $secondary-color: #f39c12;
 $dark-color: #2c3e50;
 $text-color: black;
 $text-color-light-grey: #8c8a8a;
+$primary-bg-color: #F1C68B;
+$hover-bg-color: #f1b765;
+$text-color-dark: #333;
+$text-color-medium: #777;
+$text-color-light: #555;
+$border-radius: 10px;
+$box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 
 
 //Navbar
@@ -492,82 +499,110 @@ $text-color-light-grey: #8c8a8a;
   }
 
 // Auth.jsx
-
-  .auth-container, .auth-logo {
-    display: flex;
-    margin-top: 80px;
-  }
-
-  .auth-logo {
-    margin-left: 70px;
-  }
+.auth-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
 
   .auth-content {
-    width: 50%;
-    padding: 80px;
-    position: relative;
-    display: inline-block;
-  }
+    flex: 0 0 50%; 
+    background: #fff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 
-  .auth-title {
-    color: #333;
-    font-size: 32px;
-    font-weight: bold;
-  }
+    h2.auth-title {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: $text-color-dark;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
 
-  .auth-info {
-    font-size: 15px;
-    font-weight: 300;
-  }
+    h3.auth-info {
+      font-size: 1.2rem;
+      font-weight: 400;
+      color: $text-color-medium;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
 
-  .auth-form {
-    margin-top: 30px;
-  }
+    .form-group {
+      margin-bottom: 20px;
 
-  .form-group {
-    margin-bottom: 20px;
-
-    label {
+      label {
         display: flex;
         margin-bottom: 10px;
-        color: #555;
+        color: $text-color-light;
+      }
     }
-  }
 
-  .form-toggle {
-    text-align: center;
-    color: #033a12;
-    cursor: pointer;
-    margin-top: 10px;
+    .button-submit {
+      padding: 15px;
+      font-size: 18px;
+      width: 100%;
+      background-color: $primary-bg-color;
+      color: white;
+      border: none;
+      border-radius: $border-radius;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
 
-    &:hover {
+      &:hover {
+        background-color: $hover-bg-color;
+      }
+    }
+
+    .form-toggle {
+      text-align: center;
+      color: #033a12;
+      cursor: pointer;
+      margin-top: 10px;
+
+      &:hover {
         text-decoration: underline;
+      }
+    }
+
+    .google-login-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-top: 20px;
     }
   }
 
-  .button-submit {
-    padding: 15px;
-    font-size: 18px;
-    width: 100%;
-    background-color: #F1C68B;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-
-    &:hover {
-        background-color: #f1b765;
-    }
-  }
-
-  .google-login-wrapper {
+  .auth-image-container {
+    flex: 0 0 50%; 
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    margin-top: 20px;
+
+    .auth-logo {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+
+  .or-divider {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+
+    span {
+      font-size: 1rem;
+      color: $text-color-medium;
+      margin: 0 1rem;
+    }
   }
 
   .password-input-container {
@@ -590,20 +625,16 @@ $text-color-light-grey: #8c8a8a;
   .input-field {
     width: 100%;
     padding: 15px;
-    border-radius: 10px;
+    border-radius: $border-radius;
     border: 2px solid black !important;
     font-size: 18px;
     height: 60px;
   }
-
-  .form-toggle {
-    margin-top: 25px;
-    color: #020202;
-  }
+}
 
   // All Boardgames
 
-  .card {
+.card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   
     &:hover {
@@ -632,7 +663,206 @@ $text-color-light-grey: #8c8a8a;
         overflow: hidden;
       }
     }
-  } 
+} 
+
+.all-wrapper, .profile-wrapper {
+  background: linear-gradient(145deg, #e1e1e1, #f8f8f8);
+  padding: 50px;
+}
+
+.all-container, .profile-container {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+// Profile
+
+.profile-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.profile-content {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.profile-card {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+  width: 100%;
+}
+
+.profile-info-left {
+  flex: 0 0 150px;
+  align-self: flex-start;
+}
+
+.profile-info-right {
+  flex: 1;
+}
+
+.profile-nickName {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.profile-email, .profile-firstName, .profile-lastName, .profile-biography {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, $primary-color, $secondary-color);
+  color: white;
+  padding: 20px;
+  border-radius: $border-radius;
+  text-align: center;
+  flex: 1;
+  box-shadow: $box-shadow;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.profile-tabs-container {
+  margin-top: 40px;
+}
+
+.profile-tabs-nav {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.profile-tabs-nav .nav-item {
+  font-size: 1rem;
+}
+
+.profile-tabs-nav .nav-link {
+  color: #000;
+  font-weight: 600;
+  background-color: transparent;
+  border: none;
+  padding: 10px 15px;
+  transition: all 0.3s ease;
+  text-align: center;
+  width: 100%;
+  border-bottom: 2px solid transparent;
+}
+
+.profile-tabs-nav .nav-link:hover {
+  background-color: #ff8c00;
+  color: #fff;
+}
+
+.profile-tabs-nav .nav-link.active {
+  color: #fff !important;
+  background-color: #ff8c00 !important;
+  transform: scale(1.05);
+}
+
+.profile-tabs-nav .nav-link.active:hover {
+  background-color: #ff8c00;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.profile-tabs-content {
+  padding-top: 20px;
+}
+
+.profile-details-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.profile-form {
+  background-color: $secondary-color;
+  padding: 30px;
+  border-radius: $border-radius;
+  box-shadow: $box-shadow;
+}
+
+.profile-form .form-control {
+  border-radius: $border-radius;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+.profile-form .form-label {
+  font-weight: 600;
+  color: #555;
+}
+
+
+//Alerts
+
+.alerts-container {
+  position: fixed;
+  top: 150px;
+  right: 20px;
+  z-index: 9999;
+  width: 300px;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: inherit;
+  cursor: pointer;
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+
+.alert {
+  animation: fadeIn 0.5s ease-in-out, fadeOut 0.5s ease-in-out 4s forwards;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
 
 
 //Media Query
@@ -915,8 +1145,94 @@ $text-color-light-grey: #8c8a8a;
     .game-slider .item .carousel-image {
       max-width: 150px;
     }
-  }
 
+    //Profile
+    .profile-title {
+      font-size: 2rem;
+      margin-bottom: 15px;
+    }
+  
+    .profile-content {
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .profile-card {
+      flex-direction: column;
+      gap: 15px;
+      padding: 15px;
+    }
+  
+    .profile-info-left {
+      align-self: center;
+    }
+  
+    .profile-info-right {
+      text-align: center;
+    }
+  
+    .profile-nickName {
+      font-size: 1.3rem;
+    }
+  
+    .profile-email, .profile-firstName, .profile-lastName, .profile-biography {
+      font-size: 0.9rem;
+    }
+  
+    .profile-statistics {
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 20px;
+    }
+  
+    .stat-card {
+      padding: 15px;
+      text-align: center;
+      width: 100%;
+    }
+  
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+  
+    .stat-value {
+      font-size: 1.3rem;
+    }
+  
+    .profile-tabs-container {
+      margin-top: 30px;
+    }
+  
+    .profile-tabs-nav {
+      display: block;
+      text-align: center;
+      padding: 0;
+    }
+  
+    .profile-tabs-nav .nav-item {
+      display: inline-block;
+      margin: 5px;
+    }
+  
+    .profile-tabs-nav .nav-link {
+      padding: 8px 12px;
+      font-size: 1rem;
+    }
+  
+    .profile-form {
+      padding: 20px;
+    }
+  
+    .profile-form .form-control {
+      margin-bottom: 10px;
+    }
+  
+    .profile-form button {
+      width: 100%;
+      padding: 10px;
+    }
+  }
 
   @media (max-width: 530px) {
 
@@ -955,5 +1271,31 @@ $text-color-light-grey: #8c8a8a;
 
     .game-box {
       margin-top: 20px;
+    }
+    .profile-title {
+      font-size: 1.8rem;
+    }
+  
+    .profile-nickName {
+      font-size: 1.2rem;
+    }
+  
+    .profile-statistics {
+      flex-direction: column;
+      gap: 15px;
+    }
+  
+    .stat-card {
+      padding: 10px;
+      width: 100%;
+    }
+  
+    .profile-tabs-nav .nav-link {
+      padding: 6px 10px;
+      font-size: 0.9rem;
+    }
+  
+    .profile-form button {
+      padding: 8px;
     }
   }

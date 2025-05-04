@@ -16,6 +16,7 @@ function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -58,7 +59,6 @@ function Auth() {
 
     try {
       const response = await authenticate(isLoginMode, email, password);
-      console.log('Response from auth API:', response);
 
       if (response.success) {
         if (isLoginMode) {
@@ -77,7 +77,6 @@ function Auth() {
         }
       } else {
         const msg = response.message?.toLowerCase() || '';
-
         if (!isLoginMode && (msg.includes('already exists') || msg.includes('user exists') || msg.includes('email'))) {
           setError('A user with this email already exists.');
         } else if (isLoginMode && msg.includes('invalid credentials')) {
@@ -117,8 +116,42 @@ function Auth() {
     }
   };
 
+  const addAlert = (message, variant) => {
+    setAlerts((prevAlerts) => [
+      ...prevAlerts,
+      { message, variant, id: Date.now() },
+    ]);
+  };
+
+  const removeAlert = (id) => {
+    setAlerts((prevAlerts) => prevAlerts.filter((alert) => alert.id !== id));
+  };
+
+  useEffect(() => {
+    if (error) {
+      addAlert(error, 'danger');
+      setError('');
+    }
+    if (successMessage) {
+      addAlert(successMessage, 'success');
+      setSuccessMessage('');
+    }
+  }, [error, successMessage]);
+
   return (
     <div className="auth-container">
+      <div className="alerts-container">
+        {alerts.map((alert) => (
+          <AlertMessage
+            key={alert.id}
+            id={alert.id}
+            message={alert.message}
+            variant={alert.variant}
+            onClose={removeAlert}
+          />
+        ))}
+      </div>
+
       <div className="auth-content">
         <h2 className="auth-title">
           {isLoginMode ? 'Welcome back!' : 'Create an Account!'}
@@ -126,11 +159,6 @@ function Auth() {
         <h3 className="auth-info">
           {isLoginMode ? 'Log in to your account' : 'Join us now!'}
         </h3>
-
-        <AlertMessage 
-          message={error || successMessage} 
-          variant={error ? "danger" : "success"} 
-        />
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">

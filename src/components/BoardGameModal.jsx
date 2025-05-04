@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Badge } from 'react-bootstrap';
-import { getBoardGameById } from '../api/boardgameApi.js';
+import { FaHeart, FaRegHeart } from 'react-icons/fa';
+import { getBoardGameById, toggleFavoriteGame } from '../api/boardgameApi.js';
 
 const BoardGameModal = ({ show, onHide, eventId }) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     const fetchBoardGameDetails = async () => {
@@ -12,16 +14,24 @@ const BoardGameModal = ({ show, onHide, eventId }) => {
       const result = await getBoardGameById(eventId);
       if (result.success) {
         setData(result.data);
+        setIsFavorite(result.data.boardGame.isFavorite || false);
       } else {
         console.error("Failed to fetch board game details:", result.message);
       }
       setLoading(false);
     };
-
+  
     if (eventId) {
       fetchBoardGameDetails();
     }
   }, [eventId]);
+
+  const handleFavoriteToggle = async () => {
+    const result = await toggleFavoriteGame(data.boardGame.id);
+    if (result.success) {
+      setIsFavorite(!isFavorite);
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -114,7 +124,18 @@ const BoardGameModal = ({ show, onHide, eventId }) => {
           )}
         </div>
       </Modal.Body>
-      <Modal.Footer>
+
+      <Modal.Footer className="d-flex justify-content-between">
+        <span
+          style={{ cursor: 'pointer' }}
+          onClick={handleFavoriteToggle}
+        >
+          {isFavorite ? (
+            <FaHeart color="red" size={24} />
+          ) : (
+            <FaRegHeart color="gray" size={24} />
+          )}
+        </span>
         <Button variant="secondary" onClick={onHide}>
           Close
         </Button>

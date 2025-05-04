@@ -84,8 +84,8 @@ const AllBoardGames = () => {
   const hasSelectedFilters = Object.values(filters).some((filter) => filter.length > 0);
 
   return (
-    <div className="wrapper px-4">
-      <div className="container-fluid mt-4">
+    <div className="all-wrapper">
+      <div className="all-container">
         <h2 className="mb-4">All Board Games</h2>
 
         <div className="mb-3">
@@ -157,9 +157,11 @@ const AllBoardGames = () => {
                         alt={game.name}
                         style={{ height: '200px', objectFit: 'cover' }}
                       />
-                      <div className="card-body">
-                        <h5 className="card-title">{game.name}</h5>
-                        <p className="card-text">{game.description?.substring(0, 80)}...</p>
+                      <div className="card-body d-flex flex-column justify-content-between">
+                        <div>
+                          <h5 className="card-title">{game.name}</h5>
+                          <p className="card-text">{game.description?.substring(0, 80)}...</p>
+                        </div>
                       </div>
                     </div>
                   </div>

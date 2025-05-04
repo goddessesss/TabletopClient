@@ -1,61 +1,61 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { jwtDecode as jwt_decode } from 'jwt-decode';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const [token, setToken] = useState(() => localStorage.getItem('authToken'));
   const [userId, setUserId] = useState(null);
-  const [token, setToken] = useState(() => {
-    const storedToken = localStorage.getItem('authToken');
-    return storedToken || null;
+  const [userProfile, setUserProfile] = useState(() => {
+    const savedProfile = localStorage.getItem('userProfile');
+    return savedProfile ? JSON.parse(savedProfile) : null;
   });
 
-  useEffect(() => {
-    const extractUserInfoFromToken = (token) => {
-      try {
-        const decodedToken = jwt_decode(token);
-        const playerProfileId = decodedToken?.PlayerProfileId ?? null;
-        setUserId(playerProfileId); 
-        console.log('Player Profile ID from token:', playerProfileId); 
-      } catch (error) {
-        console.error('Error decoding token:', error);
-      }
-    };
+  const extractUserIdFromToken = (jwtToken) => {
+    try {
+      const decoded = jwt_decode(jwtToken);
+      return decoded?.PlayerProfileId ?? null;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      return null;
+    }
+  };
 
+  useEffect(() => {
     if (token) {
-      extractUserInfoFromToken(token);
+      const id = extractUserIdFromToken(token);
+      setUserId(id);
     } else {
       setUserId(null);
       console.log('No token found, userId set to null');
     }
   }, [token]);
 
-  const handleLogin = (newToken) => {
-    setToken(newToken);
-    localStorage.setItem('authToken', newToken);
+  const updateUserProfile = (profileData) => {
+    setUserProfile(profileData);
+    localStorage.setItem('userProfile', JSON.stringify(profileData));
+  };
 
-    try {
-      const decodedToken = jwt_decode(newToken);
-      const playerProfileId = decodedToken?.PlayerProfileId ?? null;
-      setUserId(playerProfileId);
-    } catch (error) {
-      console.error('Error decoding token:', error);
-    }
+  const handleLogin = (newToken) => {
+    localStorage.setItem('authToken', newToken);
+    setToken(newToken);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userProfile');
     setToken(null);
     setUserId(null);
-    localStorage.removeItem('authToken');
+    setUserProfile(null);
   };
 
+  const isAuthenticated = !!token;
+
   return (
-    <AuthContext.Provider value={{ token, userId, handleLogin, handleLogout }}>
+    <AuthContext.Provider value={{ token, userId, userProfile, isAuthenticated, handleLogin, handleLogout, updateUserProfile }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);
