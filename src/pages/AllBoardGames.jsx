@@ -1,36 +1,31 @@
 import React, { useState, useEffect } from 'react';
+import { Badge, InputGroup, Form, Button } from 'react-bootstrap';
+import { FaTimes, FaSearch, FaFilter } from 'react-icons/fa';
+
+import BoardGameList from '../components/BoardGame/BoardGameList.jsx';
 import CustomPagination from '../components/Pagination.jsx';
-import { getAllBoardGames, fetchClassifiers } from '../api/boardgameApi.js';
 import BoardGameModal from '../components/BoardGameModal.jsx';
-import Sidebar from '../components/SidebarFilters.jsx';
+import SidebarFilters from '../components/Filters/SidebarFilter.jsx';
 import { useFilterContext } from '../components/Context/FilterContext.jsx';
-import { Badge, Spinner } from 'react-bootstrap';
-import { FaTimes } from 'react-icons/fa';
+import { getAllBoardGames, fetchClassifiers } from '../api/boardgameApi.js';
 
 const AllBoardGames = () => {
   const [games, setGames] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [pageSize, setPageSize] = useState(6);
+  const [pageSize, setPageSize] = useState(9);
   const [showModal, setShowModal] = useState(false);
   const [selectedGameId, setSelectedGameId] = useState(null);
   const [search, setSearch] = useState('');
   const [classifiers, setClassifiers] = useState({
     genres: [],
-    designers: [],
     families: [],
     mechanics: [],
     themes: [],
-    publishers: [],
   });
+  const [mobileShowFilters, setMobileShowFilters] = useState(false);
 
-  const {
-    filters,
-    updateFilter,
-    clearFilters,
-    removeSingleFilter,
-  } = useFilterContext();
+  const { filters, updateFilter, clearFilters, removeSingleFilter } = useFilterContext();
 
   useEffect(() => {
     const fetchClassifiersData = async () => {
@@ -46,23 +41,19 @@ const AllBoardGames = () => {
 
   useEffect(() => {
     const fetchGames = async () => {
-      setLoading(true);
       try {
         const data = await getAllBoardGames(currentPage, pageSize, search, filters);
         setGames(data.boardGames || []);
         setTotalPages(Math.ceil(data.totalCount / pageSize));
       } catch (error) {
         console.error('Failed to fetch games:', error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchGames();
   }, [currentPage, pageSize, search, filters]);
 
-  const handleFilterChange = (event, key) => {
-    const selected = Array.from(event.target.selectedOptions, (option) => Number(option.value));
-    updateFilter(key, selected);
+  const handleFilterChange = (key, newValues) => {
+    updateFilter(key, newValues);
     setCurrentPage(1);
   };
 
@@ -84,21 +75,30 @@ const AllBoardGames = () => {
   const hasSelectedFilters = Object.values(filters).some((filter) => filter.length > 0);
 
   return (
-    <div className="all-wrapper">
-      <div className="all-container">
-        <h2 className="mb-4">All Board Games</h2>
-
-        <div className="mb-3">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="form-control"
-            placeholder="Search by title..."
-          />
+    <div className="d-flex justify-content-center align-items-center all-wrapper" style={{ minHeight: '100vh', color: '#333' }}>
+      <div className="all-container" style={{ width: '100%', maxWidth: '1700px', padding: '50px', background: '#fafafa', borderRadius: '15px', boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)' }}>
+        <div className="search-wrapper mb-3 d-flex align-items-center" style={{ gap: '1rem' }}>
+          <InputGroup className="shadow-sm rounded flex-grow-1">
+            <InputGroup.Text>
+              <FaSearch />
+            </InputGroup.Text>
+            <Form.Control
+              type="text"
+              placeholder="Search games"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ borderLeft: 'none' }}
+            />
+          </InputGroup>
+          <div className="d-md-none">
+            <Button
+              variant="warning"
+              onClick={() => setMobileShowFilters(!mobileShowFilters)}
+              title={mobileShowFilters ? 'Close filters' : 'Open filters'}
+            >
+              <FaFilter />
+            </Button>
+          </div>
         </div>
 
         <div className="mb-3">
@@ -109,9 +109,15 @@ const AllBoardGames = () => {
                 values.map((id) => (
                   <Badge
                     key={`${key}-${id}`}
-                    bg="secondary"
+                    bg="warning"
+                    text="dark"
                     className="me-2"
-                    style={{ cursor: 'pointer' }}
+                    style={{
+                      cursor: 'pointer',
+                      borderRadius: '20px',
+                      fontSize: '1rem',
+                      padding: '0.6rem 1rem',
+                    }}
                     onClick={() => removeSingleFilter(key, id)}
                   >
                     {getFilterLabel(key, id)} <FaTimes className="ms-1" />
@@ -120,75 +126,81 @@ const AllBoardGames = () => {
               )}
             </div>
           ) : (
-            <span className="mt-2 d-block">Filters not selected</span>
+            <span className="mt-2 d-block">No filters selected</span>
           )}
         </div>
 
-        <div className="row">
-          <Sidebar
-            classifiers={classifiers}
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClearFilters={clearFilters}
-          />
-
-          <div className="col-md-9">
-            {loading ? (
-              <div className="text-center mt-4">
-                <Spinner animation="border" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </Spinner>
-              </div>
-            ) : games.length === 0 ? (
-              <p>No board games found.</p>
-            ) : (
-              <div className="row">
-                {games.map((game) => (
-                  <div
-                    key={game.id}
-                    className="col-md-4 mb-4"
-                    onClick={() => handleGameClick(game.id)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <div className="card h-100">
-                      <img
-                        src={game.imageUrl}
-                        className="card-img-top"
-                        alt={game.name}
-                        style={{ height: '200px', objectFit: 'cover' }}
-                      />
-                      <div className="card-body d-flex flex-column justify-content-between">
-                        <div>
-                          <h5 className="card-title">{game.name}</h5>
-                          <p className="card-text">{game.description?.substring(0, 80)}...</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {totalPages > 1 && (
-              <CustomPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            )}
+        <div className="d-flex justify-content-between mb-3">
+          <div></div>
+          <div style={{ marginLeft: 'auto' }}>
+            <label htmlFor="pageSize">Games per page: </label>
+            <select
+              id="pageSize"
+              className="form-select"
+              value={pageSize}
+              onChange={(e) => {
+                const newSize = Number(e.target.value);
+                if (newSize < 9) return;
+                setPageSize(newSize);
+                setCurrentPage(1);
+              }}
+              style={{ width: 'auto', display: 'inline-block' }}
+            >
+              <option value={9}>9</option>
+              <option value={12}>12</option>
+            </select>
           </div>
         </div>
 
-        {selectedGameId && (
-          <BoardGameModal
-            show={showModal}
-            onHide={() => {
-              setShowModal(false);
-              setSelectedGameId(null);
-            }}
-            eventId={selectedGameId}
-          />
-        )}
+        <div className="d-flex" style={{ gap: '1rem' }}>
+          <div className="col-md-3 d-none d-md-block" style={{ minWidth: '320px' }}>
+            <SidebarFilters
+              classifiers={classifiers}
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onClearFilters={clearFilters}
+            />
+          </div>
+
+          {mobileShowFilters && (
+            <div className="position-fixed top-0 start-0 bg-white shadow" style={{ height: '100vh', zIndex: 1050, overflowY: 'auto', borderRight: '1px solid #ddd', paddingTop: '3.5rem' }}>
+              <Button
+                variant="light"
+                onClick={() => setMobileShowFilters(false)}
+                style={{
+                  position: 'absolute',
+                  top: '1rem',
+                  right: '1rem',
+                  zIndex: 1060,
+                  borderRadius: '50%',
+                  padding: '0.5rem',
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <FaTimes />
+              </Button>
+              <div className="p-3">
+                <SidebarFilters
+                  classifiers={classifiers}
+                  filters={filters}
+                  onFilterChange={handleFilterChange}
+                  onClearFilters={clearFilters}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="games-content">
+            <BoardGameList games={games} onGameClick={handleGameClick} />
+            <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+          </div>
+        </div>
+
+        <BoardGameModal show={showModal} onHide={() => setShowModal(false)} gameId={selectedGameId} />
       </div>
     </div>
   );

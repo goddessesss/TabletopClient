@@ -50,6 +50,14 @@ input:focus, textarea:focus, select:focus {
   outline: none;
 }
 
+.page-item:not(.active) .page-link {
+  color: black;
+}
+
+.page-item.active .page-link {
+  color: rgb(242, 174, 47);
+}
+
 @media (min-width:1700px) {
 	main .container {
 		max-width: 100%;

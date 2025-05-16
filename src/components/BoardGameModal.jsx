@@ -3,30 +3,34 @@ import { Modal, Button, Badge } from 'react-bootstrap';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { getBoardGameById, toggleFavoriteGame } from '../api/boardgameApi.js';
 
-const BoardGameModal = ({ show, onHide, eventId }) => {
+const BoardGameModal = ({ show, onHide, gameId }) => {
   const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     const fetchBoardGameDetails = async () => {
       setLoading(true);
-      const result = await getBoardGameById(eventId);
+      const result = await getBoardGameById(gameId);
       if (result.success) {
         setData(result.data);
         setIsFavorite(result.data.boardGame.isFavorite || false);
       } else {
         console.error("Failed to fetch board game details:", result.message);
+        setData(null);
       }
       setLoading(false);
     };
-  
-    if (eventId) {
+
+    if (gameId) {
       fetchBoardGameDetails();
+    } else {
+      setData(null);
     }
-  }, [eventId]);
+  }, [gameId]);
 
   const handleFavoriteToggle = async () => {
+    if (!data) return;
     const result = await toggleFavoriteGame(data.boardGame.id);
     if (result.success) {
       setIsFavorite(!isFavorite);
@@ -34,15 +38,22 @@ const BoardGameModal = ({ show, onHide, eventId }) => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Modal show={show} onHide={onHide} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Loading...</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Loading game details...</Modal.Body>
+      </Modal>
+    );
   }
 
-  if (!data || !data.boardGame) {
-    return <div>Game information not found.</div>;
+  if (!data) {
+    return null;
   }
 
   const { boardGame, categories = [], family, mechanics = [], publishers = [], designers = [], themes = [] } = data;
-  
+
   const familyBadge = family ? (
     <Badge bg="success" className="me-1">{family.name}</Badge>
   ) : <span>No family specified</span>;
@@ -117,31 +128,19 @@ const BoardGameModal = ({ show, onHide, eventId }) => {
           <strong>Themes: </strong>
           {themes.length > 0 ? (
             themes.map((theme, idx) => (
-              <Badge key={idx} bg="warning" className="me-1">{theme.name}</Badge>
-            ))
-          ) : (
-            <span>No themes specified</span>
-          )}
-        </div>
-      </Modal.Body>
+                  <Badge key={idx} bg="warning" className="me-1 text-dark">{theme.name}</Badge>
+        ))
+      ) : (
+        <span>No themes specified</span>
+      )}
+    </div>
 
-      <Modal.Footer className="d-flex justify-content-between">
-        <span
-          style={{ cursor: 'pointer' }}
-          onClick={handleFavoriteToggle}
-        >
-          {isFavorite ? (
-            <FaHeart color="red" size={24} />
-          ) : (
-            <FaRegHeart color="gray" size={24} />
-          )}
-        </span>
-        <Button variant="secondary" onClick={onHide}>
-          Close
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
+    <Button variant={isFavorite ? "danger" : "outline-danger"} onClick={handleFavoriteToggle}>
+      {isFavorite ? <FaHeart /> : <FaRegHeart />} {isFavorite ? "Remove from favorites" : "Add to favorites"}
+    </Button>
+  </Modal.Body>
+</Modal>
+);
 };
 
 export default BoardGameModal;

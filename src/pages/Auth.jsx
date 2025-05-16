@@ -207,6 +207,12 @@ function Auth() {
             </div>
             <div className="google-login-wrapper">
               <GoogleLogin
+              theme='filled_black'
+              type='standard'
+              size='lardge'
+              locale='en'
+              shape='pill'
+
                 onSuccess={handleGoogleLogin}
                 onError={() => setError('Google login failed.')}
               />

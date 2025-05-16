@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pagination as BootstrapPagination } from 'react-bootstrap';
 
 function Pagination({ currentPage, totalPages, onPageChange }) {
@@ -8,10 +7,10 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
 
     if (currentPage - delta > 1) {
       items.push(
-        <BootstrapPagination.Item 
-          key={1} 
+        <BootstrapPagination.Item
+          key={1}
           onClick={() => onPageChange(1)}
-          disabled={currentPage === 1}
+          style={{ color: 'black' }}
         >
           1
         </BootstrapPagination.Item>
@@ -21,14 +20,23 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
       }
     }
 
-    for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      const isActive = i === currentPage;
       items.push(
-        <BootstrapPagination.Item 
-          key={i} 
-          active={i === currentPage}
+        <BootstrapPagination.Item
+          key={i}
+          active={isActive}
           onClick={() => onPageChange(i)}
-          disabled={i === currentPage}
-          style={i === currentPage ? { backgroundColor: '#6c757d', borderColor: '#6c757d', color: '#fff' } : {}}
+          disabled={isActive}
+          style={
+            isActive
+              ? { backgroundColor: 'gold', borderColor: 'gold', color: 'black' }
+              : { color: 'black' }
+          }
         >
           {i}
         </BootstrapPagination.Item>
@@ -40,10 +48,10 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
         items.push(<BootstrapPagination.Ellipsis key="end-ellipsis" />);
       }
       items.push(
-        <BootstrapPagination.Item 
-          key={totalPages} 
+        <BootstrapPagination.Item
+          key={totalPages}
           onClick={() => onPageChange(totalPages)}
-          disabled={currentPage === totalPages}
+          style={{ color: 'black' }}
         >
           {totalPages}
         </BootstrapPagination.Item>
@@ -56,22 +64,22 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
   return (
     <div className="d-flex justify-content-center mt-4 mb-4">
       <BootstrapPagination>
-        <BootstrapPagination.First 
-          onClick={() => onPageChange(1)} 
-          disabled={currentPage === 1} 
+        <BootstrapPagination.First
+          onClick={() => onPageChange(1)}
+          disabled={currentPage === 1}
         />
-        <BootstrapPagination.Prev 
-          onClick={() => onPageChange(currentPage - 1)} 
-          disabled={currentPage === 1} 
+        <BootstrapPagination.Prev
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
         />
         {renderPaginationItems()}
-        <BootstrapPagination.Next 
-          onClick={() => onPageChange(currentPage + 1)} 
-          disabled={currentPage === totalPages} 
+        <BootstrapPagination.Next
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
         />
-        <BootstrapPagination.Last 
-          onClick={() => onPageChange(totalPages)} 
-          disabled={currentPage === totalPages} 
+        <BootstrapPagination.Last
+          onClick={() => onPageChange(totalPages)}
+          disabled={currentPage === totalPages}
         />
       </BootstrapPagination>
     </div>
