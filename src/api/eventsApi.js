@@ -3,22 +3,22 @@ import { BASE_URL } from '../utils/apiConfig';
 
 export const getCitiesBySearch = async (searchTerm) => {
   try {
-    const token = localStorage.getItem('token');
+    const authToken = localStorage.getItem('authToken');
     const response = await axios.get(
-      `${BASE_URL}/Geo/locations?search=${searchTerm}&limit=10`,
+      `${BASE_URL}/Geo/locations?search=${encodeURIComponent(searchTerm)}&limit=10`,
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authToken}`,
           'accept': '*/*',
         }
       }
     );
 
-    console.log('API Response:', response);  
+    console.log('API Response data:', response.data);
+
     if (response.status === 200 && Array.isArray(response.data)) {
       return { success: true, data: response.data };
     } else {
-      console.error('Unexpected response data format:', response.data);
       return { success: false, message: 'Invalid response data format' };
     }
   } catch (error) {
@@ -33,13 +33,13 @@ export const getCitiesBySearch = async (searchTerm) => {
 
 export const addEvent = async (eventData) => {
   try {
-    const token = localStorage.getItem('token');
+    const authToken = localStorage.getItem('authToken');
     const response = await axios.post(
       `${BASE_URL}/Events`,
       eventData,
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authToken}`,
           'Content-Type': 'application/json',
           'accept': '*/*',
         }
@@ -63,12 +63,12 @@ export const addEvent = async (eventData) => {
 
 export const getEventTypes = async () => {
   try {
-    const token = localStorage.getItem('token'); 
+    const authToken = localStorage.getItem('authToken'); 
     const response = await axios.get(
       `${BASE_URL}/Classifiers/categories`,
       {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${authToken}`,
         }
       }
     );
@@ -79,28 +79,76 @@ export const getEventTypes = async () => {
   }
 };
 
-export async function getAllEvents() {
+export async function getAllEvents(pageNumber, pageSize, search, filters) {
   try {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
-      `${BASE_URL}/Events/filtered`, 
-      {}, 
+    const response = await axios.post(`${BASE_URL}/Events/filtered`, {
+      pageNumber,
+      pageSize,
+      search,
+      Filter: filters,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching events:', error);
+    throw error;
+  }
+}
+
+export const getCreatedEvents = async () => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+
+    const response = await axios.get(
+      `${BASE_URL}/PlayerProfiles/created-events`,
       {
         headers: {
-          'Authorization': `Bearer ${token}`,  
+          'Authorization': `Bearer ${authToken}`,
+          'accept': '*/*'
         }
       }
     );
 
-    return {
-      success: true,
-      data: response.data
-    };
+    if (response.status === 200) {
+      return { success: true, data: response.data };
+    }
+
+    return { success: false, message: 'Failed to fetch created events' };
   } catch (error) {
-    console.error('Error fetching events:', error);
+    const serverMsg = error.response?.data?.message || 'Error loading created events';
+    console.error("Error fetching created events:", serverMsg);
     return {
       success: false,
-      message: 'Error fetching events'
+      message: serverMsg,
     };
   }
-}
+};
+export const getBoardGamesNames = async (search = "") => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.post(
+      `${BASE_URL}/BoardGames/names`,
+      { search },
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        }
+      }
+    );
+
+    if (response.status === 200 && response.data && Array.isArray(response.data.boardGames)) {
+      return { success: true, data: response.data.boardGames, total: response.data.total };
+    } else {
+      return { success: false, message: 'Invalid response data format' };
+    }
+  } catch (error) {
+    const serverMsg = error.response?.data?.message || '';
+    console.error("Error fetching board games:", serverMsg);
+    return {
+      success: false,
+      message: serverMsg || "Fetching board games failed"
+    };
+  }
+};
