@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, InputGroup, Form, Button } from 'react-bootstrap';
+import { Badge, InputGroup, Form, Button, Offcanvas } from 'react-bootstrap'; 
 import { FaTimes, FaSearch, FaFilter } from 'react-icons/fa';
-
 import BoardGameList from '../components/BoardGame/BoardGameList.jsx';
 import CustomPagination from '../components/Pagination.jsx';
 import BoardGameModal from '../components/BoardGameModal.jsx';
@@ -23,7 +22,7 @@ const AllBoardGames = () => {
     mechanics: [],
     themes: [],
   });
-  const [mobileShowFilters, setMobileShowFilters] = useState(false);
+  const [showFiltersOffcanvas, setShowFiltersOffcanvas] = useState(false);
 
   const { filters, updateFilter, clearFilters, removeSingleFilter } = useFilterContext();
 
@@ -77,6 +76,7 @@ const AllBoardGames = () => {
   return (
     <div className="d-flex justify-content-center align-items-center all-wrapper" style={{ minHeight: '100vh', color: '#333' }}>
       <div className="all-container" style={{ width: '100%', maxWidth: '1700px', padding: '50px', background: '#fafafa', borderRadius: '15px', boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)' }}>
+        
         <div className="search-wrapper mb-3 d-flex align-items-center" style={{ gap: '1rem' }}>
           <InputGroup className="shadow-sm rounded flex-grow-1">
             <InputGroup.Text>
@@ -90,11 +90,12 @@ const AllBoardGames = () => {
               style={{ borderLeft: 'none' }}
             />
           </InputGroup>
+
           <div className="d-md-none">
             <Button
               variant="warning"
-              onClick={() => setMobileShowFilters(!mobileShowFilters)}
-              title={mobileShowFilters ? 'Close filters' : 'Open filters'}
+              onClick={() => setShowFiltersOffcanvas(true)} 
+              title="Open filters"
             >
               <FaFilter />
             </Button>
@@ -162,45 +163,34 @@ const AllBoardGames = () => {
             />
           </div>
 
-          {mobileShowFilters && (
-            <div className="position-fixed top-0 start-0 bg-white shadow" style={{ height: '100vh', zIndex: 1050, overflowY: 'auto', borderRight: '1px solid #ddd', paddingTop: '3.5rem' }}>
-              <Button
-                variant="light"
-                onClick={() => setMobileShowFilters(false)}
-                style={{
-                  position: 'absolute',
-                  top: '1rem',
-                  right: '1rem',
-                  zIndex: 1060,
-                  borderRadius: '50%',
-                  padding: '0.5rem',
-                  width: '40px',
-                  height: '40px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <FaTimes />
-              </Button>
-              <div className="p-3">
-                <SidebarFilters
-                  classifiers={classifiers}
-                  filters={filters}
-                  onFilterChange={handleFilterChange}
-                  onClearFilters={clearFilters}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="games-content">
+          <div className="games-content" style={{ flexGrow: 1 }}>
             <BoardGameList games={games} onGameClick={handleGameClick} />
             <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
           </div>
         </div>
 
         <BoardGameModal show={showModal} onHide={() => setShowModal(false)} gameId={selectedGameId} />
+
+        <Offcanvas
+          show={showFiltersOffcanvas}
+          onHide={() => setShowFiltersOffcanvas(false)}
+          placement="start"
+          scroll={true}
+          backdrop={true}
+        >
+          <Offcanvas.Header closeButton>
+            <Offcanvas.Title>Filters</Offcanvas.Title>
+          </Offcanvas.Header>
+          <Offcanvas.Body>
+            <SidebarFilters
+              classifiers={classifiers}
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onClearFilters={clearFilters}
+            />
+          </Offcanvas.Body>
+        </Offcanvas>
+
       </div>
     </div>
   );

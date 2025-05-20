@@ -15,9 +15,6 @@ const AppRouter = () => {
       <Route path="/profile" element={<Profile />} />
       <Route path="/addevent" element={<AddEvent />} />
       <Route path="/all" element={<AllBoardGames />} />
-
-
-
     </Routes>
   );
 };

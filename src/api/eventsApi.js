@@ -79,13 +79,14 @@ export const getEventTypes = async () => {
   }
 };
 
-export async function getAllEvents(pageNumber, pageSize, search, filters) {
+export async function getAllEvents(pageNumber, pageSize, search, filters, sorting) {
   try {
     const response = await axios.post(`${BASE_URL}/Events/filtered`, {
       pageNumber,
       pageSize,
       search,
       Filter: filters,
+      Sorting: sorting
     });
 
     return response.data;
