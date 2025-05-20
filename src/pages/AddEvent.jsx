@@ -127,7 +127,6 @@ function AddEvent() {
     setTimeout(() => setSubmitMessage(''), 3000);
   };
 
-  // Проверка дат на прошлое
   const isDateInPast = (dateString) => {
     if (!dateString) return false;
     const now = new Date();
@@ -397,8 +396,7 @@ function AddEvent() {
                     </form>
                   </div>
                 </div>
-
-);
-}
+              );
+            }
 
 export default AddEvent;

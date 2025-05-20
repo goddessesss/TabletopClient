@@ -18,7 +18,7 @@ const EventFilter = ({
   setIsOnlineFilter,
   selectedCity,
   setSelectedCity,
-  minAvailableSlots,
+  minAvaliableSlots,
   setMinAvailableSlots,
   maxPrice,
   setMaxPrice,
@@ -128,12 +128,11 @@ const EventFilter = ({
       style={{
         position: 'relative',
         borderRadius: '12px',
-        padding: '20px',
+        padding: '30px',
         backgroundColor: '#fff',
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
       }}
     >
-      {/* Фільтр за форматом події */}
       <Form.Group>
         <Form.Label className="fw-semibold d-flex align-items-center gap-2">
           <FaFilter /> Event Format
@@ -163,7 +162,6 @@ const EventFilter = ({
         </div>
       </Form.Group>
 
-      {/* Місто */}
       <Form.Group style={{ position: 'relative' }}>
         <Form.Label className="fw-semibold d-flex align-items-center gap-2">
           <FaMapMarkerAlt /> City (optional)
@@ -204,7 +202,6 @@ const EventFilter = ({
         )}
       </Form.Group>
 
-      {/* Вільні місця */}
       <Form.Group>
         <Form.Label className="fw-semibold d-flex align-items-center gap-2">
           <FaUsers /> Min Available Slots
@@ -213,7 +210,8 @@ const EventFilter = ({
           type="number"
           min={0}
           placeholder="Minimum available slots"
-          value={minAvailableSlots ?? ''}
+          value={minAvaliableSlots
+             ?? ''}
           onChange={(e) => {
             const val = e.target.value;
             setMinAvailableSlots(val === '' ? null : Number(val));
@@ -221,10 +219,9 @@ const EventFilter = ({
         />
       </Form.Group>
 
-      {/* Максимальна ціна */}
       <Form.Group>
         <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-          <FaDollarSign /> Max Price
+          <FaDollarSign />Price
         </Form.Label>
         <Form.Control
           type="number"
@@ -238,30 +235,33 @@ const EventFilter = ({
         />
       </Form.Group>
 
-      {/* Дата і час */}
-      <Form.Group controlId="minDateTime">
-        <Form.Label>Min Date and Time</Form.Label>
-        <Form.Control
-          type="datetime-local"
-          value={minDate ? minDate.toISOString().slice(0, 16) : ''}
-          onChange={(e) => {
-            setMinDate(e.target.value ? new Date(e.target.value) : null);
-          }}
-        />
-      </Form.Group>
+     <Form.Group controlId="minDateTime">
+  <Form.Label className="fw-semibold d-flex align-items-center gap-2">
+    <FaCalendarAlt /> From Date
+  </Form.Label>
+  <Form.Control
+    type="datetime-local"
+    value={minDate ? minDate.toISOString().slice(0, 16) : ''}
+    onChange={(e) => {
+      setMinDate(e.target.value ? new Date(e.target.value) : null);
+    }}
+  />
+</Form.Group>
 
-      <Form.Group controlId="maxDateTime">
-        <Form.Label>Max Date and Time</Form.Label>
-        <Form.Control
-          type="datetime-local"
-          value={maxDate ? maxDate.toISOString().slice(0, 16) : ''}
-          onChange={(e) => {
-            setMaxDate(e.target.value ? new Date(e.target.value) : null);
-          }}
-        />
-      </Form.Group>
+<Form.Group controlId="maxDateTime">
+  <Form.Label className="fw-semibold d-flex align-items-center gap-2">
+    <FaCalendarAlt /> To Date
+  </Form.Label>
+  <Form.Control
+    type="datetime-local"
+    value={maxDate ? maxDate.toISOString().slice(0, 16) : ''}
+    onChange={(e) => {
+      setMaxDate(e.target.value ? new Date(e.target.value) : null);
+    }}
+  />
+</Form.Group>
 
-      {/* Сортування */}
+
       <Form.Group>
         <Form.Label className="fw-semibold d-flex align-items-center gap-2">
           <FaSort /> Sort by
@@ -291,7 +291,6 @@ const EventFilter = ({
         </div>
       </Form.Group>
 
-      {/* Кнопка очищення */}
       <div className="d-flex justify-content-end mt-3">
         <Button variant="danger" onClick={clearFilters}>
           Clear

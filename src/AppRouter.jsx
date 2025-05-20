@@ -5,6 +5,7 @@ import Events from './pages/Events.jsx';
 import Profile from './pages/Profile.jsx';
 import AddEvent from './pages/AddEvent.jsx';
 import AllBoardGames from './pages/AllBoardGames.jsx';
+import EventDetail from './pages/EventDetail.jsx';
 
 const AppRouter = () => {
   return (
@@ -15,6 +16,8 @@ const AppRouter = () => {
       <Route path="/profile" element={<Profile />} />
       <Route path="/addevent" element={<AddEvent />} />
       <Route path="/all" element={<AllBoardGames />} />
+      <Route path="/events/:eventId" element={<EventDetail />} />
+
     </Routes>
   );
 };

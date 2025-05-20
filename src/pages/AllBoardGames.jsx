@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Badge, InputGroup, Form, Button, Offcanvas } from 'react-bootstrap'; 
-import { FaTimes, FaSearch, FaFilter } from 'react-icons/fa';
+import { Badge, Button, Offcanvas } from 'react-bootstrap'; 
+import { FaTimes, FaFilter } from 'react-icons/fa';
 import BoardGameList from '../components/BoardGame/BoardGameList.jsx';
 import CustomPagination from '../components/Pagination.jsx';
 import BoardGameModal from '../components/BoardGameModal.jsx';
 import SidebarFilters from '../components/Filters/SidebarFilter.jsx';
 import { useFilterContext } from '../components/Context/FilterContext.jsx';
 import { getAllBoardGames, fetchClassifiers } from '../api/boardgameApi.js';
+import SearchBar from '../components/SearchBar.jsx'; 
 
 const AllBoardGames = () => {
   const [games, setGames] = useState([]);
@@ -74,23 +75,15 @@ const AllBoardGames = () => {
   const hasSelectedFilters = Object.values(filters).some((filter) => filter.length > 0);
 
   return (
-    <div className="d-flex justify-content-center align-items-center all-wrapper" style={{ minHeight: '100vh', color: '#333' }}>
-      <div className="all-container" style={{ width: '100%', maxWidth: '1700px', padding: '50px', background: '#fafafa', borderRadius: '15px', boxShadow: '0 6px 12px rgba(0, 0, 0, 0.1)' }}>
+    <div className=" all-wrapper" style={{ minHeight: '100vh', color: '#333' }}>
+      <div className="all-container">
         
         <div className="search-wrapper mb-3 d-flex align-items-center" style={{ gap: '1rem' }}>
-          <InputGroup className="shadow-sm rounded flex-grow-1">
-            <InputGroup.Text>
-              <FaSearch />
-            </InputGroup.Text>
-            <Form.Control
-              type="text"
-              placeholder="Search games"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{ borderLeft: 'none' }}
-            />
-          </InputGroup>
-
+          <SearchBar 
+            value={search} 
+            onChange={(value) => setSearch(value)} 
+            placeholder="Search games" 
+          />
           <div className="d-md-none">
             <Button
               variant="warning"
@@ -164,8 +157,16 @@ const AllBoardGames = () => {
           </div>
 
           <div className="games-content" style={{ flexGrow: 1 }}>
-            <BoardGameList games={games} onGameClick={handleGameClick} />
-            <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            {games.length === 0 ? (
+              <div className="text-center" style={{ fontSize: '1.25rem' }}>
+                🔍 No results found
+              </div>
+            ) : (
+              <>
+                <BoardGameList games={games} onGameClick={handleGameClick} />
+                <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+              </>
+            )}
           </div>
         </div>
 
@@ -190,7 +191,6 @@ const AllBoardGames = () => {
             />
           </Offcanvas.Body>
         </Offcanvas>
-
       </div>
     </div>
   );

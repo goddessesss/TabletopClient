@@ -659,8 +659,8 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
 .all-container,
 .profile-container, 
 .add-event-container {
+  max-width: 1500px !important ;
   width: 100%;
-  max-width: 1700px;
   background-color: $white-color;
   padding: 50px;
   border-radius: 20px;
@@ -1463,5 +1463,4 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
       padding: 8px;
     }
   }
-
-
+  

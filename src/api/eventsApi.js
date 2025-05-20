@@ -153,3 +153,64 @@ export const getBoardGamesNames = async (search = "") => {
     };
   }
 };
+
+export async function fetchCityName(latitude, longitude) {
+  if (!latitude || !longitude) return null;
+
+  const cacheKey = `cityName_${latitude}_${longitude}`;
+
+  const cachedCity = localStorage.getItem(cacheKey);
+  if (cachedCity) {
+    return cachedCity;
+  }
+
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+    );
+    const data = await response.json();
+
+    const cityName =
+      data.address.city ||
+      data.address.town ||
+      data.address.village ||
+      data.address.county ||
+      'Unknown location';
+
+    localStorage.setItem(cacheKey, cityName);
+
+    return cityName;
+  } catch (error) {
+    console.error('Error fetching city name:', error);
+    return null;
+  }
+}
+
+export const joinEvent = async (eventId, playerId) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.post(
+      `${BASE_URL}/Events/${eventId}/participations/${playerId}`,
+      null,
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'accept': '*/*',
+        }
+      }
+    );
+
+    if (response.status === 200 || response.status === 201) {
+      return { success: true, data: response.data };
+    } else {
+      return { success: false, message: 'Failed to join event' };
+    }
+  } catch (error) {
+    const serverMsg = error.response?.data?.message || '';
+    console.error('Error joining event:', serverMsg);
+    return {
+      success: false,
+      message: serverMsg || 'Joining event failed',
+    };
+  }
+};

@@ -1,26 +1,27 @@
 import React, { Component } from 'react';
-import CustomPagination from '../components/Pagination.jsx';
-import { getAllEvents } from '../api/eventsApi.js';
+import Pagination from '../components/Pagination.jsx';
+import { getAllEvents, fetchCityName } from '../api/eventsApi.js';
 import {
-  Badge,
   Spinner,
   Row,
   Col,
-  Card,
   Button,
+  Offcanvas,
   InputGroup,
   Form,
-  Offcanvas,
 } from 'react-bootstrap';
-import {
-  FaCalendarAlt,
-  FaWifi,
-  FaMapMarkerAlt,
-  FaUsers,
-  FaSearch,
-  FaFilter,
-} from 'react-icons/fa';
+import { FaSearch, FaFilter } from 'react-icons/fa';
 import EventFilter from '../components/Filters/EventFilter.jsx';
+import EventList from '../components/Events/EventList.jsx';
+import SearchBar from '../components/SearchBar.jsx';
+import { useNavigate } from 'react-router-dom';
+
+function withRouter(Component) {
+  return function(props) {
+    const navigate = useNavigate();
+    return <Component {...props} navigate={navigate} />;
+  };
+}
 
 class Events extends Component {
   constructor(props) {
@@ -37,11 +38,13 @@ class Events extends Component {
       maxDate: null,
       isOnlineFilter: null,
       selectedCity: null,
-      minAvailableSlots: 0,
+      minAvaliableSlots: 0,
       maxPrice: 0,
       search: '',
       sorting: { participantsCount: null, price: null, startDate: null },
       showFilterSidebar: false,
+
+      cityNamesByEventId: {},
     };
   }
 
@@ -54,7 +57,7 @@ class Events extends Component {
       prevState.search !== this.state.search ||
       prevState.isOnlineFilter !== this.state.isOnlineFilter ||
       prevState.selectedCity !== this.state.selectedCity ||
-      prevState.minAvailableSlots !== this.state.minAvailableSlots ||
+      prevState.minAvaliableSlots !== this.state.minAvaliableSlots ||
       prevState.maxPrice !== this.state.maxPrice ||
       JSON.stringify(prevState.sorting) !== JSON.stringify(this.state.sorting) ||
       prevState.minDate !== this.state.minDate ||
@@ -66,7 +69,6 @@ class Events extends Component {
     if (filterChanged) {
       if (this.state.currentPage !== 1) {
         this.setState({ currentPage: 1 });
-        return;
       } else {
         this.fetchEvents();
       }
@@ -84,7 +86,7 @@ class Events extends Component {
         search,
         isOnlineFilter,
         selectedCity,
-        minAvailableSlots,
+        minAvaliableSlots,
         maxPrice,
         sorting,
         minDate,
@@ -99,7 +101,7 @@ class Events extends Component {
         isOnline: isOnlineFilter === null ? [] : [isOnlineFilter],
         latitude: selectedCity?.latitude ?? null,
         longitude: selectedCity?.longitude ?? null,
-        minAvailableSlots: minAvailableSlots ?? 0,
+        minAvaliableSlots: minAvaliableSlots ?? 0,
         maxPrice: maxPrice ?? 0,
         minDate: minDateISO,
         maxDate: maxDateISO,
@@ -113,25 +115,52 @@ class Events extends Component {
           events: data.events,
           totalPages: Math.ceil(data.totalCount / pageSize),
         });
+
+        const cityNamesByEventId = {};
+        await Promise.all(
+          data.events.map(async (event) => {
+            if (event.location?.latitude && event.location?.longitude) {
+              const cityName = await this.fetchCityName(
+                event.location.latitude,
+                event.location.longitude
+              );
+              cityNamesByEventId[event.id] = cityName;
+            } else {
+              cityNamesByEventId[event.id] = 'No location';
+            }
+          })
+        );
+
+        this.setState({ cityNamesByEventId });
       } else {
         this.setState({
           events: [],
           totalPages: 1,
+          cityNamesByEventId: {},
         });
       }
     } catch (error) {
-      console.error('Ошибка при загрузке событий:', error);
+      console.error('Error fetching events:', error);
       this.setState({
         events: [],
         totalPages: 1,
+        cityNamesByEventId: {},
       });
     } finally {
       this.setState({ loading: false });
     }
   };
 
+  fetchCityName = async (latitude, longitude) => {
+    try {
+      return await fetchCityName(latitude, longitude);
+    } catch {
+      return 'Unknown city';
+    }
+  };
+
   handleEventClick = (id) => {
-    console.log('Клик по событию с id:', id);
+    this.props.navigate(`/event/${id}`);
   };
 
   render() {
@@ -140,24 +169,24 @@ class Events extends Component {
       currentPage,
       totalPages,
       loading,
-      pageSize,
-      selectedEventTypes,
-      minDate,
-      maxDate,
+      search,
       isOnlineFilter,
       selectedCity,
-      minAvailableSlots,
+      minAvaliableSlots,
       maxPrice,
-      search,
       sorting,
+      minDate,
+      maxDate,
+      selectedEventTypes,
       showFilterSidebar,
+      cityNamesByEventId,
     } = this.state;
 
     return (
       <div className="events-wrapper py-4 d-flex justify-content-center">
         <div className="events-container">
           <div className="d-flex justify-content-between align-items-center mb-3 d-md-none">
-            <InputGroup style={{ flex: 1, marginRight: '0.5rem' }}>
+            <InputGroup>
               <InputGroup.Text>
                 <FaSearch />
               </InputGroup.Text>
@@ -166,7 +195,6 @@ class Events extends Component {
                 placeholder="Search events"
                 value={search}
                 onChange={(e) => this.setState({ search: e.target.value })}
-                style={{ borderLeft: 'none', borderRadius: '0.375rem 0 0 0.375rem' }}
               />
             </InputGroup>
             <Button
@@ -177,6 +205,7 @@ class Events extends Component {
               <FaFilter />
             </Button>
           </div>
+
           <div className="row justify-content-center">
             <div className="col-md-3 d-none d-md-block">
               <div className="event-filter">
@@ -185,8 +214,8 @@ class Events extends Component {
                   setIsOnlineFilter={(val) => this.setState({ isOnlineFilter: val })}
                   selectedCity={selectedCity}
                   setSelectedCity={(val) => this.setState({ selectedCity: val })}
-                  minAvailableSlots={minAvailableSlots}
-                  setMinAvailableSlots={(val) => this.setState({ minAvailableSlots: val })}
+                  minAvaliableSlots={minAvaliableSlots}
+                  setMinAvailableSlots={(val) => this.setState({ minAvaliableSlots: val })}
                   maxPrice={maxPrice}
                   setMaxPrice={(val) => this.setState({ maxPrice: val })}
                   sorting={sorting}
@@ -202,19 +231,11 @@ class Events extends Component {
             </div>
 
             <div className="col-md-7">
-              <div className="d-none d-md-block mb-3">
-                <InputGroup className="shadow-sm" style={{ borderRadius: '1rem' }}>
-                  <InputGroup.Text>
-                    <FaSearch />
-                  </InputGroup.Text>
-                  <Form.Control
-                    type="text"
-                    placeholder="Search events"
-                    value={search}
-                    onChange={(e) => this.setState({ search: e.target.value })}
-                    style={{ borderLeft: 'none', borderRadius: '0 1rem 1rem 0' }}
-                  />
-                </InputGroup>
+              <div className="d-none d-md-block">
+                <SearchBar
+                  value={search}
+                  onChange={(val) => this.setState({ search: val })}
+                />
               </div>
 
               {loading ? (
@@ -222,80 +243,27 @@ class Events extends Component {
                   <Spinner animation="border" variant="primary" />
                 </div>
               ) : events.length === 0 ? (
-                <p className="text-center fs-5">No events found.</p>
+                <p className="text-center fs-5">🔍 No results found</p>
               ) : (
-                <Row key={currentPage} className="g-4">
-                  {events.map((event) => (
-                    <Col key={event.id} xs={12} md={6}>
-                      <Card
-                        className="card-event shadow-sm h-100 border-0"
-                        onClick={() => this.handleEventClick(event.id)}
-                        style={{ cursor: 'pointer', borderRadius: '1rem' }}
-                      >
-                        <Card.Body className="d-flex flex-column">
-                          <div className="mb-3">
-                            <Card.Title className="mb-2 fs-5 text-truncate">{event.name}</Card.Title>
-                            <div className="text-muted small d-flex align-items-center">
-                              <FaCalendarAlt className="me-2" />
-                              {new Date(event.startDate).toLocaleString()}
-                            </div>
-                          </div>
-
-                          <div className="mb-3 d-flex flex-wrap gap-2">
-                            <Badge bg={event.isOnline ? 'success' : 'secondary'}>
-                              {event.isOnline ? (
-                                <>
-                                  <FaWifi className="me-1" /> Online
-                                </>
-                              ) : (
-                                <>
-                                  <FaMapMarkerAlt className="me-1" /> Offline
-                                </>
-                              )}
-                            </Badge>
-                            <Badge bg="info">{event.eventTypeName}</Badge>
-                            <Badge bg="light" text="dark" className="d-flex align-items-center">
-                              <FaUsers className="me-1" />
-                              {event.registeredPlayer
-                                ? `${event.registeredPlayer}/${event.maxPlayers}`
-                                : `0/${event.maxPlayers}`}
-                            </Badge>
-                          </div>
-
-                          <div className="mt-auto text-end">
-                            <Button
-                              variant="primary"
-                              className="rounded-pill px-4"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                this.handleEventClick(event.id);
-                              }}
-                            >
-                              Join
-                            </Button>
-                          </div>
-                        </Card.Body>
-                      </Card>
-                    </Col>
-                  ))}
-                </Row>
+                <EventList
+                  events={events}
+                  cityNamesByEventId={cityNamesByEventId}
+                  onEventClick={this.handleEventClick}
+                />
               )}
 
-              <div className="d-flex justify-content-center mt-5">
-                <CustomPagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={(page) => this.setState({ currentPage: page })}
-                  pageSize={pageSize}
-                />
-              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => this.setState({ currentPage: page })}
+              />
             </div>
           </div>
 
           <Offcanvas
             show={showFilterSidebar}
             onHide={() => this.setState({ showFilterSidebar: false })}
-            placement="start"
+            placement="end"
           >
             <Offcanvas.Header closeButton>
               <Offcanvas.Title>Filters</Offcanvas.Title>
@@ -306,8 +274,8 @@ class Events extends Component {
                 setIsOnlineFilter={(val) => this.setState({ isOnlineFilter: val })}
                 selectedCity={selectedCity}
                 setSelectedCity={(val) => this.setState({ selectedCity: val })}
-                minAvailableSlots={minAvailableSlots}
-                setMinAvailableSlots={(val) => this.setState({ minAvailableSlots: val })}
+                minAvaliableSlots={minAvaliableSlots}
+                setMinAvailableSlots={(val) => this.setState({ minAvaliableSlots: val })}
                 maxPrice={maxPrice}
                 setMaxPrice={(val) => this.setState({ maxPrice: val })}
                 sorting={sorting}
@@ -327,4 +295,4 @@ class Events extends Component {
   }
 }
 
-export default Events;
+export default withRouter(Events);
