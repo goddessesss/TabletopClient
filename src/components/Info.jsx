@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Dice from "../assets/dice.png";
 import Event from "../assets/event.png";
 import Find from "../assets/find.png";
@@ -6,6 +7,7 @@ import People from "../assets/people.png";
 import Game from "../assets/game.png";
 
 function Info() {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [visibleBlocks, setVisibleBlocks] = useState([]);
 
@@ -28,58 +30,42 @@ function Info() {
 
   useEffect(() => {
     if (isVisible) {
-      offers.forEach((_, i) => {
+      t('info.offers', { returnObjects: true }).forEach((_, i) => {
         setTimeout(() => {
           setVisibleBlocks(prev => [...prev, i]);
         }, i * 200);
       });
     }
-  }, [isVisible]);
+  }, [isVisible, t]);
 
-  const offers = [
-    {
-      text: "Create your own tabletop events",
-      image: Game
-    },
-    {
-      text: "Find players nearby",
-      image: Find
-    },
-    {
-      text: "Join clubs and communities",
-      image: People
-    },
-    {
-      text: "Explore upcoming local game nights",
-      image: Event
-    }
-  ];
+  const offersImages = [Game, Find, People, Event];
+  const offersTexts = t('info.offers', { returnObjects: true });
 
   return (
     <div className="info-component">
       <div className={`info-img ${isVisible ? 'visible' : ''}`}>
         <h1 className={`info-title ${isVisible ? 'visible' : ''}`}>
-          Play Together — Discover the World of Board Games!
+          {t('info.title')}
         </h1>
-        <p className={`info-description ${isVisible ? 'visible' : ''}`}>
-          <strong>Tabletop</strong> is your gateway to the vibrant world of real-life socializing through your favorite tabletop games.<br />
-          Create an event, find your crew, or just show up — because in games, it’s not about winning, it’s about the good company!
-        </p>
+        <p
+          className={`info-description ${isVisible ? 'visible' : ''}`}
+          dangerouslySetInnerHTML={{ __html: t('info.description') }}
+        />
         <img
           src={Dice}
-          alt="Tabletop Game Preview"
+          alt={t('info.diceAlt')}
           className={`dice-image ${isVisible ? 'visible' : ''}`}
         />
       </div>
 
       <div className="info-block">
-        {offers.map((offer, index) => (
+        {offersTexts.map((text, index) => (
           <div className={`block ${visibleBlocks.includes(index) ? 'visible' : ''}`} key={index}>
             <div className="block-img">
-              <img src={offer.image} alt={`Offer ${index + 1}`} />
+              <img src={offersImages[index]} alt={`Offer ${index + 1}`} />
             </div>
             <div className="block-label">
-              {offer.text}
+              {text}
             </div>
           </div>
         ))}

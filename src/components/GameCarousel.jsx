@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import 'react-multi-carousel/lib/styles.css';
 import Carousel from 'react-multi-carousel';
 import { Container, Row, Col } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
 
 import ImageSlider1 from '../assets/ImageSlider1.png';
 import ImageSlider2 from '../assets/ImageSlider2.png';
 import ImageSlider3 from '../assets/ImageSlider3.png';
 import ImageSlider4 from '../assets/ImageSlider4.png';
-import ImageSlider5 from '../assets/ImageSlider4.png'; 
-import ImageSlider6 from '../assets/ImageSlider4.png'; 
+import ImageSlider5 from '../assets/ImageSlider4.png';
+import ImageSlider6 from '../assets/ImageSlider4.png';
 
 function GameCarousel() {
   const [isVisible, setIsVisible] = useState(false);
+  const { t } = useTranslation();
 
   const responsive = {
     desktop: {
@@ -52,7 +54,7 @@ function GameCarousel() {
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
-    handleScroll(); 
+    handleScroll();
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -64,9 +66,11 @@ function GameCarousel() {
         <Row className="justify-content-center text-center">
           <Col xs={12}>
             <div className="game-box">
-              <h2 className={`carousel-title ${isVisible ? 'visible' : ''}`}>EXPLORE OUR GAMES</h2>
+              <h2 className={`carousel-title ${isVisible ? 'visible' : ''}`}>
+                {t('carousel.title')}
+              </h2>
               <p className={`carousel-description ${isVisible ? 'visible' : ''}`}>
-                Discover a variety of exciting games that will keep you entertained for hours!
+                {t('carousel.description')}
               </p>
               <Carousel
                 responsive={responsive}
@@ -74,28 +78,28 @@ function GameCarousel() {
                 className="game-slider"
               >
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider1} alt="Adventure" className={`carousel-image ${isVisible ? 'visible' : ''}`} />
-                  <h5>Adventure</h5>
+                  <img src={ImageSlider1} alt={t('carousel.alts.adventure')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <h5>{t('carousel.items.adventure')}</h5>
                 </div>
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider2} alt="Dice" className={`carousel-image ${isVisible ? 'visible' : ''}`} />
-                  <h5>Dice</h5>
+                  <img src={ImageSlider2} alt={t('carousel.alts.dice')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <h5>{t('carousel.items.dice')}</h5>
                 </div>
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider3} alt="Strategy" className={`carousel-image ${isVisible ? 'visible' : ''}`} />
-                  <h5>Strategy</h5>
+                  <img src={ImageSlider3} alt={t('carousel.alts.strategy')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <h5>{t('carousel.items.strategy')}</h5>
                 </div>
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider4} alt="Family" className={`carousel-image ${isVisible ? 'visible' : ''}`} />
-                  <h5>Family</h5>
+                  <img src={ImageSlider4} alt={t('carousel.alts.family')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <h5>{t('carousel.items.family')}</h5>
                 </div>
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider5} alt="Adventure" className={`carousel-image ${isVisible ? 'visible' : ''}`} />
-                  <h5>Adventure</h5>
+                  <img src={ImageSlider5} alt={t('carousel.alts.adventure')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <h5>{t('carousel.items.adventure')}</h5>
                 </div>
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider6} alt="Party" className={`carousel-image ${isVisible ? 'visible' : ''}`} />
-                  <h5>Party</h5>
+                  <img src={ImageSlider6} alt={t('carousel.alts.party')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <h5>{t('carousel.items.party')}</h5>
                 </div>
               </Carousel>
             </div>

@@ -8,8 +8,11 @@ import SidebarFilters from '../components/Filters/SidebarFilter.jsx';
 import { useFilterContext } from '../components/Context/FilterContext.jsx';
 import { getAllBoardGames, fetchClassifiers } from '../api/boardgameApi.js';
 import SearchBar from '../components/SearchBar.jsx'; 
+import { useTranslation } from 'react-i18next';
 
 const AllBoardGames = () => {
+  const { t } = useTranslation();
+
   const [games, setGames] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -75,20 +78,20 @@ const AllBoardGames = () => {
   const hasSelectedFilters = Object.values(filters).some((filter) => filter.length > 0);
 
   return (
-    <div className=" all-wrapper" style={{ minHeight: '100vh', color: '#333' }}>
+    <div className="all-wrapper" style={{ minHeight: '100vh', color: '#333' }}>
       <div className="all-container">
-        
+
         <div className="search-wrapper mb-3 d-flex align-items-center" style={{ gap: '1rem' }}>
           <SearchBar 
             value={search} 
             onChange={(value) => setSearch(value)} 
-            placeholder="Search games" 
+            placeholder={t('search.placeholder')} 
           />
           <div className="d-md-none">
             <Button
               variant="warning"
               onClick={() => setShowFiltersOffcanvas(true)} 
-              title="Open filters"
+              title={t('filters.openFilters')}
             >
               <FaFilter />
             </Button>
@@ -96,7 +99,7 @@ const AllBoardGames = () => {
         </div>
 
         <div className="mb-3">
-          <strong>Selected filters:</strong>
+          <strong>{t('filters.selectedFilters')}</strong>
           {hasSelectedFilters ? (
             <div className="mt-2">
               {Object.entries(filters).flatMap(([key, values]) =>
@@ -120,14 +123,14 @@ const AllBoardGames = () => {
               )}
             </div>
           ) : (
-            <span className="mt-2 d-block">No filters selected</span>
+            <span className="mt-2 d-block">{t('filters.noFiltersSelected')}</span>
           )}
         </div>
 
         <div className="d-flex justify-content-between mb-3">
           <div></div>
           <div style={{ marginLeft: 'auto' }}>
-            <label htmlFor="pageSize">Games per page: </label>
+            <label htmlFor="pageSize">{t('pagination.gamesPerPage')} </label>
             <select
               id="pageSize"
               className="form-select"
@@ -159,7 +162,7 @@ const AllBoardGames = () => {
           <div className="games-content" style={{ flexGrow: 1 }}>
             {games.length === 0 ? (
               <div className="text-center" style={{ fontSize: '1.25rem' }}>
-                🔍 No results found
+                {t('games.noResultsFound')}
               </div>
             ) : (
               <>
@@ -180,7 +183,7 @@ const AllBoardGames = () => {
           backdrop={true}
         >
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Filters</Offcanvas.Title>
+            <Offcanvas.Title>{t('filters.title')}</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
             <SidebarFilters

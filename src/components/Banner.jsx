@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { BsArrowRightCircle } from 'react-icons/bs';
+import { useTranslation } from 'react-i18next';
 
 function Banner() {
+    const { t } = useTranslation();
+
     const [loopNum, setLoopNum] = useState(0);
     const [text, setText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
     const [delta, setDelta] = useState(300 - Math.random() * 100);
-    const toRotate = ["PLAYERS!", "FUN!", "FRIENDS!"];
+
+    const toRotate = [
+        t('banner.words.players'),
+        t('banner.words.fun'),
+        t('banner.words.friends'),
+    ];
     const period = 2000;
 
     useEffect(() => {
@@ -43,17 +51,18 @@ function Banner() {
 
     return (
         <div className='banner'>
-            <div className="image-container">
-            </div>
+            <div className="image-container"></div>
             <Container className="text-center text-container">
                 <Row className="align-items-center">
                     <Col xs={12}>
-                        <span className="tagline">Welcome to</span>
-                        <span className="navbar-title" style={{ marginLeft: "10px" }}>TABLETOP!</span>
-                        <h1 className="main-heading">FIND THE PERFECT BOARD GAME AND <span className="wrap">{text}</span></h1>
-                        <p className="description">Gather the best players and create an unforgettable game!</p>
+                        <span className="tagline">{t('banner.welcomeTo')}</span>
+                        <span className="navbar-title" style={{ marginLeft: "10px" }}>{t('banner.tabletop')}</span>
+                        <h1 className="main-heading">
+                            {t('banner.findPerfect')} <span className="wrap">{text}</span>
+                        </h1>
+                        <p className="description">{t('banner.description')}</p>
                         <button className="start-button" onClick={() => console.log("connect")}>
-                            GET STARTED <BsArrowRightCircle size={25} />
+                            {t('banner.getStarted')} <BsArrowRightCircle size={25} />
                         </button>
                     </Col>
                 </Row>

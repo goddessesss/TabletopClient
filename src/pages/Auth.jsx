@@ -6,8 +6,10 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import AlertMessage from '../components/AlertMessages.jsx';
+import { useTranslation } from 'react-i18next';
 
 function Auth() {
+  const { t } = useTranslation();
   const { handleLogin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -44,13 +46,13 @@ function Auth() {
     e.preventDefault();
 
     if (!email || !password) {
-      setError('Please fill in all fields.');
+      setError(t('auth.errors.fillAllFields'));
       return;
     }
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!isLoginMode && !passwordRegex.test(password)) {
-      setError('Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one digit.');
+      setError(t('auth.errors.passwordComplexity'));
       return;
     }
 
@@ -65,12 +67,12 @@ function Auth() {
           const token = response.token;
           localStorage.setItem('token', token);
           handleLogin(token);
-          setSuccessMessage('Login successful');
+          setSuccessMessage(t('auth.messages.loginSuccess'));
           setEmail('');
           setPassword('');
           navigate('/');
         } else {
-          setSuccessMessage('Registration successful! You can now log in.');
+          setSuccessMessage(t('auth.messages.registrationSuccess'));
           setEmail('');
           setPassword('');
           setLoginMode(true);
@@ -78,16 +80,16 @@ function Auth() {
       } else {
         const msg = response.message?.toLowerCase() || '';
         if (!isLoginMode && (msg.includes('already exists') || msg.includes('user exists') || msg.includes('email'))) {
-          setError('A user with this email already exists.');
+          setError(t('auth.errors.emailExists'));
         } else if (isLoginMode && msg.includes('invalid credentials')) {
-          setError('Incorrect email or password.');
+          setError(t('auth.errors.invalidCredentials'));
         } else {
-          setError(response.message || 'An error occurred during authentication.');
+          setError(response.message || t('auth.errors.general'));
         }
       }
     } catch (error) {
       console.error(error);
-      setError('Unexpected error.');
+      setError(t('auth.errors.unexpected'));
     }
   };
 
@@ -96,7 +98,7 @@ function Auth() {
       const googleToken = response.credential;
 
       if (!googleToken) {
-        setError('Google authentication failed.');
+        setError(t('auth.errors.googleFailed'));
         return;
       }
 
@@ -105,14 +107,14 @@ function Auth() {
       if (authResponse.token) {
         localStorage.setItem('token', authResponse.token);
         handleLogin(authResponse.token);
-        setSuccessMessage('Google login successful!');
+        setSuccessMessage(t('auth.messages.googleSuccess'));
         navigate('/');
       } else {
-        setError(authResponse.message || 'Google login failed.');
+        setError(authResponse.message || t('auth.errors.googleFailed'));
       }
     } catch (error) {
       console.error(error);
-      setError('Google login error.');
+      setError(t('auth.errors.googleError'));
     }
   };
 
@@ -154,26 +156,26 @@ function Auth() {
 
       <div className="auth-content">
         <h2 className="auth-title">
-          {isLoginMode ? 'Welcome back!' : 'Create an Account!'}
+          {isLoginMode ? t('auth.titles.welcomeBack') : t('auth.titles.createAccount')}
         </h2>
         <h3 className="auth-info">
-          {isLoginMode ? 'Log in to your account' : 'Join us now!'}
+          {isLoginMode ? t('auth.titles.loginToContinue') : t('auth.titles.joinUs')}
         </h3>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Email:</label>
+            <label>{t('auth.labels.email')}</label>
             <input
               className="input-field"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="Enter email"
+              placeholder={t('auth.placeholders.email')}
             />
           </div>
           <div className="form-group">
-            <label>Password:</label>
+            <label>{t('auth.labels.password')}</label>
             <div className="password-input-container">
               <input
                 className="input-field"
@@ -181,40 +183,39 @@ function Auth() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                placeholder="Enter password"
+                placeholder={t('auth.placeholders.password')}
               />
               <button
                 onClick={handleTogglePasswordVisibility}
                 className="eye-icon"
                 type="button"
               >
-                {showPassword ? 
-                  <FaEyeSlash style={{ fontSize: '30px' }} /> : 
+                {showPassword ?
+                  <FaEyeSlash style={{ fontSize: '30px' }} /> :
                   <FaEye style={{ fontSize: '30px' }} />
                 }
               </button>
             </div>
           </div>
           <button type="submit" className="button-submit">
-            {isLoginMode ? 'Log In' : 'Register'}
+            {isLoginMode ? t('auth.buttons.login') : t('auth.buttons.register')}
           </button>
         </form>
 
         {isLoginMode && !isAuthenticated && (
           <>
             <div className="or-divider">
-              <span>OR</span>
+              <span>{t('auth.or')}</span>
             </div>
             <div className="google-login-wrapper">
               <GoogleLogin
-              theme='filled_black'
-              type='standard'
-              size='lardge'
-              locale='en'
-              shape='pill'
-
+                theme='filled_black'
+                type='standard'
+                size='large'
+                locale='en'
+                shape='pill'
                 onSuccess={handleGoogleLogin}
-                onError={() => setError('Google login failed.')}
+                onError={() => setError(t('auth.errors.googleFailed'))}
               />
             </div>
           </>
@@ -222,12 +223,13 @@ function Auth() {
 
         <p className="form-toggle" onClick={handleToggleMode}>
           {isLoginMode ? (
-            <span>New here? <strong>Create an account!</strong></span>
+            <span>{t('auth.toggle.registerPrompt')}</span>
           ) : (
-            <span>Already have an account? <strong>Log in here</strong></span>
+            <span>{t('auth.toggle.loginPrompt')}</span>
           )}
         </p>
       </div>
+
       <div className="auth-image-container">
         <img src={authLogo} alt="Auth Logo" className="auth-logo" />
       </div>

@@ -1,0 +1,112 @@
+{
+  "navbar": {
+    "games": "GAMES",
+    "allBoardgames": "All board games",
+    "game2": "Game 2",
+    "game3": "Game 3",
+    "events": "EVENTS",
+    "contact": "CONTACT",
+    "profile": "Profile",
+    "login": "Login"
+  },
+  "banner": {
+    "welcomeTo": "Welcome to",
+    "tabletop": "TABLETOP GAMES!",
+    "findPerfect": "FIND THE PERFECT BOARD GAME AND",
+    "description": "Gather the best players and create an unforgettable game!",
+    "getStarted": "GET STARTED",
+    "words": {
+      "players": "PLAYERS!",
+      "fun": "FUN!",
+      "friends": "FRIENDS!"
+    }
+  },
+  "info": {
+    "title": "Let's play together — discover the world of board games!",
+    "description": "<strong>Tabletop</strong> is your way into the vibrant world of live communication through your favorite board games.<br />Create events, find a team, or just come along — because in games, it's not the victory that matters, but good company!",
+    "offers": [
+      "Create your own board game events",
+      "Find players nearby",
+      "Join clubs and communities",
+      "Learn about upcoming local game nights"
+    ],
+    "diceAlt": "Board game preview"
+  },
+  "carousel": {
+    "title": "EXPLORE OUR GAMES",
+    "description": "Discover a variety of exciting games that will entertain you for hours!",
+    "items": {
+      "adventure": "Adventure",
+      "dice": "Dice",
+      "strategy": "Strategy",
+      "family": "Family",
+      "party": "Party"
+    },
+    "alts": {
+      "adventure": "Adventure game",
+      "dice": "Dice game",
+      "strategy": "Strategy game",
+      "family": "Family game",
+      "party": "Party game"
+    }
+  },
+  "auth": {
+    "titles": {
+      "welcomeBack": "Welcome back!",
+      "createAccount": "Create an account!",
+      "loginToContinue": "Log into your account",
+      "joinUs": "Join us!"
+    },
+    "labels": {
+      "email": "Email:",
+      "password": "Password:"
+    },
+    "placeholders": {
+      "email": "Enter your email",
+      "password": "Enter your password"
+    },
+    "buttons": {
+      "login": "Login",
+      "register": "Register"
+    },
+    "or": "OR",
+    "toggle": {
+      "registerPrompt": "New here? Create an account!",
+      "loginPrompt": "Already have an account? Login"
+    },
+    "messages": {
+      "loginSuccess": "Login successful",
+      "registrationSuccess": "Registration successful! You can now log in.",
+      "googleSuccess": "Successfully signed in with Google!"
+    },
+    "errors": {
+      "fillAllFields": "Please fill in all fields.",
+      "passwordComplexity": "Password must be at least 8 characters long and contain one uppercase letter, one lowercase letter, and one number.",
+      "emailExists": "A user with this email already exists.",
+      "invalidCredentials": "Incorrect email or password.",
+      "general": "An error occurred during authentication.",
+      "unexpected": "Unexpected error.",
+      "googleFailed": "Google authentication failed.",
+      "googleError": "Error logging in with Google."
+    }
+  },
+  "search": {
+    "placeholder": "Search games"
+  },
+  "filters": {
+    "title": "Filters",
+    "openFilters": "Open filters",
+    "selectedFilters": "Selected filters:",
+    "noFiltersSelected": "No filters selected"
+  },
+  "pagination": {
+    "gamesPerPage": "Games per page:"
+  },
+  "games": {
+    "noResultsFound": "🔍 No results found"
+  },
+  "errors": {
+    "fetchClassifiersFailed": "Failed to fetch classifiers",
+    "fetchGamesFailed": "Failed to fetch games"
+  }
+}

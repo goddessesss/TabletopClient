@@ -2,17 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { useAuth } from '../components/Context/AuthContext.jsx';
+import { Dropdown } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '../components/Context/LanguageContext';
 
 function Navbar() {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
+  const { language, changeLanguage } = useLanguage();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [gamesDropdownOpen, setGamesDropdownOpen] = useState(false);
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -29,28 +33,47 @@ function Navbar() {
 
         <div className="navbar-center">
           <div className="dropdown">
-            <span className="dropdown-toggle">
-              GAMES
-              <span className="dropdown-arrow"></span>
-            </span>
+            <span className="dropdown-toggle">{t('navbar.games')}</span>
             <div className="dropdown-menu">
-              <a href="/all" className="dropdown-item">All Boardgames</a>
-              <a href="#" className="dropdown-item">Game 2</a>
-              <a href="#" className="dropdown-item">Game 3</a>
+              <a href="/all" className="dropdown-item">{t('navbar.allBoardgames')}</a>
+              <a href="#" className="dropdown-item">{t('navbar.game2')}</a>
+              <a href="#" className="dropdown-item">{t('navbar.game3')}</a>
             </div>
           </div>
-          <Link to="/events" className="nav-item">EVENTS</Link>
-          <Link to="/contact" className="nav-item">CONTACT</Link>
+          <Link to="/events" className="nav-item">{t('navbar.events')}</Link>
+          <Link to="/contact" className="nav-item">{t('navbar.contact')}</Link>
         </div>
 
-        <div className="navbar-right">
+        <div
+          className="navbar-right d-none d-md-flex"
+          style={{ flexDirection: 'row', alignItems: 'center', gap: '0.5rem', width: 'auto' }}
+        >
+          <Dropdown onSelect={changeLanguage} style={{ width: 'auto' }}>
+            <Dropdown.Toggle
+              variant="light"
+              id="dropdown-language"
+              className="language-switcher"
+              style={{ width: 'auto', textAlign: 'center' }}
+            >
+              {language === 'uk' ? 'UA' : 'EN'}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item eventKey="en" active={language === 'en'}>English</Dropdown.Item>
+              <Dropdown.Item eventKey="uk" active={language === 'uk'}>Українська</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+
           {isAuthenticated ? (
-            <Link to="/profile">
-              <button className="auth-btn">Profile</button>
+            <Link to="/profile" style={{ width: 'auto' }}>
+              <button className="auth-btn btn btn-primary">
+                {t('navbar.profile')}
+              </button>
             </Link>
           ) : (
-            <Link to="/auth">
-              <button className="auth-btn">Login</button>
+            <Link to="/auth" style={{ width: 'auto' }}>
+              <button className="auth-btn btn btn-outline-primary">
+                {t('navbar.login')}
+              </button>
             </Link>
           )}
         </div>
@@ -67,28 +90,106 @@ function Navbar() {
           <div className="mobile-menu-header">
             <button className="close-menu" onClick={() => setMenuOpen(false)}>✖</button>
           </div>
+
           <div className="mobile-dropdown">
             <div className="nav-item" onClick={() => setGamesDropdownOpen(!gamesDropdownOpen)}>
-              GAMES
+              {t('navbar.games')}
               <span className={`dropdown-arrow ${gamesDropdownOpen ? 'open' : ''}`}>▼</span>
             </div>
             {gamesDropdownOpen && (
               <div className="dropdown-submenu">
-                <a href="/all" className="dropdown-item">All boardgames</a>
-                <a href="#" className="dropdown-item">Game 2</a>
-                <a href="#" className="dropdown-item">Game 3</a>
+                <a href="/all" className="dropdown-item">{t('navbar.allBoardgames')}</a>
+                <a href="#" className="dropdown-item">{t('navbar.game2')}</a>
+                <a href="#" className="dropdown-item">{t('navbar.game3')}</a>
               </div>
             )}
           </div>
 
-          <Link to="/events" className="nav-item" onClick={() => setMenuOpen(false)}>EVENTS</Link>
-          <Link to="/contact" className="nav-item" onClick={() => setMenuOpen(false)}>CONTACT</Link>
+          <Link to="/events" className="nav-item" onClick={() => setMenuOpen(false)}>
+            {t('navbar.events')}
+          </Link>
+          <Link to="/contact" className="nav-item" onClick={() => setMenuOpen(false)}>
+            {t('navbar.contact')}
+          </Link>
 
-          {isAuthenticated ? (
-            <Link to="/profile" className="auth-btn" onClick={() => setMenuOpen(false)}>Profile</Link>
-          ) : (
-            <Link to="/auth" className="auth-btn" onClick={() => setMenuOpen(false)}>Login</Link>
-          )}
+          <div style={{ marginTop: '1rem', position: 'relative', width: '100%' }}>
+            <div
+              onClick={() => setLanguageDropdownOpen(prev => !prev)}
+              style={{
+                background: '#f8f9fa',
+                padding: '12px 16px',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                textAlign: 'center',
+                fontWeight: '600',
+                fontSize: '16px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                transition: 'background 0.3s',
+              }}
+            >
+              {language === 'uk' ? 'UA' : 'EN'}
+              <span
+                style={{
+                  marginLeft: '10px',
+                  fontSize: '12px',
+                  transition: 'transform 0.3s ease',
+                  transform: languageDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                }}
+              >
+                ▼
+              </span>
+            </div>
+
+            {languageDropdownOpen && (
+              <div
+                style={{
+                  marginTop: '6px',
+                  background: '#fff',
+                  border: '1px solid #dee2e6',
+                  borderRadius: '10px',
+                  overflow: 'hidden',
+                  zIndex: 999,
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                }}
+              >
+                {[{ code: 'en', label: 'English' }, { code: 'uk', label: 'Українська' }].map(({ code, label }) => (
+                  <div
+                    key={code}
+                    onClick={() => {
+                      changeLanguage(code);
+                      setLanguageDropdownOpen(false);
+                      setMenuOpen(false);
+                    }}
+                    style={{
+                      padding: '12px 16px',
+                      textAlign: 'center',
+                      cursor: 'pointer',
+                      backgroundColor: language === code ? '#f1f3f5' : 'transparent',
+                      fontWeight: language === code ? 'bold' : 'normal',
+                      transition: 'background 0.2s',
+                    }}
+                  >
+                    {label}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="nav-item">
+            {isAuthenticated ? (
+              <Link to="/profile" onClick={() => setMenuOpen(false)}>
+                <button className="auth-btn btn btn-primary w-100">{t('navbar.profile')}</button>
+              </Link>
+            ) : (
+              <Link to="/auth" onClick={() => setMenuOpen(false)}>
+                <button className="auth-btn btn btn-outline-primary w-100">{t('navbar.login')}</button>
+              </Link>
+            )}
+          </div>
         </div>
       )}
     </nav>
