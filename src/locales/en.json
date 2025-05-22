@@ -108,5 +108,25 @@
   "errors": {
     "fetchClassifiersFailed": "Failed to fetch classifiers",
     "fetchGamesFailed": "Failed to fetch games"
+  },
+  "calendar": {
+    "title": "Board Game Events Calendar",
+    "tooltip": "View and add your board game events here",
+    "buttonAddEvent": "Add Event",
+    "messages": {
+      "week": "Week",
+      "work_week": "Work Week",
+      "day": "Day",
+      "month": "Month",
+      "previous": "Previous",
+      "next": "Next",
+      "today": "Today",
+      "agenda": "Agenda",
+      "date": "Date",
+      "time": "Time",
+      "event": "Event",
+      "noEventsInRange": "No events in this range."
+    },
+    "description": "Easily track and plan your favorite board game events"
   }
 }
