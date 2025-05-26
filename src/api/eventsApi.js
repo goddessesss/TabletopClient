@@ -85,7 +85,7 @@ export async function getAllEvents(pageNumber, pageSize, search, filters, sortin
       pageNumber,
       pageSize,
       search,
-      Filter: filters,
+      Filter: filters || {},  // якщо filters null, то пустий об’єкт
       Sorting: sorting
     });
 
@@ -186,7 +186,36 @@ export async function fetchCityName(latitude, longitude) {
   }
 }
 
-export const joinEvent = async (eventId, playerId) => {
+export const getEventById = async (eventId) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${BASE_URL}/Events/${eventId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'accept': '*/*',
+        }
+      }
+    );
+
+    if (response.status === 200 && response.data) {
+      return { success: true, data: response.data };
+    } else {
+      return { success: false, message: 'Failed to fetch event details' };
+    }
+  } catch (error) {
+    const serverMsg = error.response?.data?.message || '';
+    console.error('Error fetching event by ID:', serverMsg);
+    return {
+      success: false,
+      message: serverMsg || 'Fetching event details failed'
+    };
+  }
+};
+
+
+export const joinEvents = async (eventId, playerId) => {
   try {
     const authToken = localStorage.getItem('authToken');
     const response = await axios.post(
@@ -211,6 +240,35 @@ export const joinEvent = async (eventId, playerId) => {
     return {
       success: false,
       message: serverMsg || 'Joining event failed',
+    };
+  }
+};
+
+
+export const getParticipants = async (eventId) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${BASE_URL}/Events/${eventId}/participations`,
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'accept': '*/*',
+        }
+      }
+    );
+
+    if (response.status === 200 && response.data) {
+      return { success: true, data: response.data };
+    } else {
+      return { success: false, message: 'Failed to fetch event details' };
+    }
+  } catch (error) {
+    const serverMsg = error.response?.data?.message || '';
+    console.error('Error fetching event by ID:', serverMsg);
+    return {
+      success: false,
+      message: serverMsg || 'Fetching event details failed'
     };
   }
 };

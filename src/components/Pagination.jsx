@@ -1,3 +1,4 @@
+import React from 'react';
 import { Pagination as BootstrapPagination } from 'react-bootstrap';
 
 function Pagination({ currentPage, totalPages, onPageChange }) {

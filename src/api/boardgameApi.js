@@ -105,3 +105,23 @@ export const getFavoriteBoardGames = async () => {
     };
   }
 };
+
+export const getCreatedEvents = async () => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+    
+    const response = await axios.get(`${BASE_URL}/PlayerProfiles/created-events`, { headers });
+
+    return {
+      success: true,
+      favorites: response.data.favorites || [],
+    };
+  } catch (error) {
+    console.error("Error fetching favorite games:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to get favorite games.',
+    };
+  }
+};

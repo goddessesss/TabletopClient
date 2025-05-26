@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Form, Button, ListGroup, Spinner } from 'react-bootstrap';
+import { Form, Button, ListGroup, Spinner, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import {
   FaGlobe,
   FaMapMarkerAlt,
@@ -10,6 +10,7 @@ import {
   FaUsers,
   FaDollarSign,
   FaCalendarAlt,
+  FaQuestionCircle,
 } from 'react-icons/fa';
 import { getCitiesBySearch } from '../../api/eventsApi.js';
 
@@ -122,6 +123,27 @@ const EventFilter = ({
     setMaxDate(null);
   };
 
+  const renderTooltip = (props, text) => (
+    <Tooltip id="tooltip" {...props}>
+      {text}
+    </Tooltip>
+  );
+
+  const LabelWithTooltip = ({ icon, text, tooltipText }) => (
+    <Form.Label className="fw-semibold d-flex align-items-center gap-2" style={{ userSelect: 'none' }}>
+      {icon} {text}
+      <OverlayTrigger
+        placement="top"
+        delay={{ show: 250, hide: 400 }}
+        overlay={(props) => renderTooltip(props, tooltipText)}
+      >
+        <span style={{ marginLeft: 6, color: 'black', cursor: 'help' }}>
+          <FaQuestionCircle />
+        </span>
+      </OverlayTrigger>
+    </Form.Label>
+  );
+
   return (
     <div
       className="d-flex flex-column gap-4"
@@ -134,9 +156,11 @@ const EventFilter = ({
       }}
     >
       <Form.Group>
-        <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-          <FaFilter /> Event Format
-        </Form.Label>
+        <LabelWithTooltip
+          icon={<FaFilter />}
+          text="Event Format"
+          tooltipText="Filter events by format: All, Online, or Offline"
+        />
         <div className="d-flex gap-2 flex-wrap">
           <Button
             variant={isOnlineFilter === null ? 'secondary' : 'outline-secondary'}
@@ -163,9 +187,11 @@ const EventFilter = ({
       </Form.Group>
 
       <Form.Group style={{ position: 'relative' }}>
-        <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-          <FaMapMarkerAlt /> City (optional)
-        </Form.Label>
+        <LabelWithTooltip
+          icon={<FaMapMarkerAlt />}
+          text="City (optional)"
+          tooltipText="Filter events by selected city (optional)"
+        />
         <Form.Control
           type="text"
           placeholder="For example: Kyiv"
@@ -203,15 +229,16 @@ const EventFilter = ({
       </Form.Group>
 
       <Form.Group>
-        <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-          <FaUsers /> Min Available Slots
-        </Form.Label>
+        <LabelWithTooltip
+          icon={<FaUsers />}
+          text="Min Available Slots"
+          tooltipText="Minimum number of available slots for participants"
+        />
         <Form.Control
           type="number"
           min={0}
           placeholder="Minimum available slots"
-          value={minAvaliableSlots
-             ?? ''}
+          value={minAvaliableSlots ?? ''}
           onChange={(e) => {
             const val = e.target.value;
             setMinAvailableSlots(val === '' ? null : Number(val));
@@ -220,9 +247,11 @@ const EventFilter = ({
       </Form.Group>
 
       <Form.Group>
-        <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-          <FaDollarSign />Price
-        </Form.Label>
+        <LabelWithTooltip
+          icon={<FaDollarSign />}
+          text="Price"
+          tooltipText="Maximum event price"
+        />
         <Form.Control
           type="number"
           min={0}
@@ -235,67 +264,77 @@ const EventFilter = ({
         />
       </Form.Group>
 
-     <Form.Group controlId="minDateTime">
-  <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-    <FaCalendarAlt /> From Date
-  </Form.Label>
-  <Form.Control
-    type="datetime-local"
-    value={minDate ? minDate.toISOString().slice(0, 16) : ''}
-    onChange={(e) => {
-      setMinDate(e.target.value ? new Date(e.target.value) : null);
-    }}
-  />
-</Form.Group>
+      <Form.Group controlId="minDateTime">
+        <LabelWithTooltip
+          icon={<FaCalendarAlt />}
+          text="From Date"
+          tooltipText="Select minimum date and time to filter events"
+        />
+        <Form.Control
+          type="datetime-local"
+          value={minDate ? minDate.toISOString().slice(0, 16) : ''}
+          onChange={(e) => {
+            setMinDate(e.target.value ? new Date(e.target.value) : null);
+          }}
+        />
+      </Form.Group>
 
-<Form.Group controlId="maxDateTime">
-  <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-    <FaCalendarAlt /> To Date
-  </Form.Label>
-  <Form.Control
-    type="datetime-local"
-    value={maxDate ? maxDate.toISOString().slice(0, 16) : ''}
-    onChange={(e) => {
-      setMaxDate(e.target.value ? new Date(e.target.value) : null);
-    }}
-  />
-</Form.Group>
-
+      <Form.Group controlId="maxDateTime">
+        <LabelWithTooltip
+          icon={<FaCalendarAlt />}
+          text="To Date"
+          tooltipText="Select maximum date and time to filter events"
+        />
+        <Form.Control
+          type="datetime-local"
+          value={maxDate ? maxDate.toISOString().slice(0, 16) : ''}
+          onChange={(e) => {
+            setMaxDate(e.target.value ? new Date(e.target.value) : null);
+          }}
+        />
+      </Form.Group>
 
       <Form.Group>
-        <Form.Label className="fw-semibold d-flex align-items-center gap-2">
-          <FaSort /> Sort by
-        </Form.Label>
+        <LabelWithTooltip
+          icon={<FaSort />}
+          text="Sort by"
+          tooltipText="Sort events by date, price, or participant count"
+        />
         <div className="d-flex gap-2 flex-wrap">
           <Button
-            variant={sorting.startDate !== null ? 'primary' : 'outline-primary'}
+            variant={sorting.startDate !== null ? 'info' : 'outline-info'}
             className="rounded-pill px-3 py-1 d-flex align-items-center gap-1"
             onClick={() => toggleSort('startDate')}
           >
-            <FaCalendarAlt /> Date {renderSortIcon('startDate')}
+            <FaCalendarAlt />
+            Date {renderSortIcon('startDate')}
           </Button>
           <Button
-            variant={sorting.price !== null ? 'success' : 'outline-success'}
+            variant={sorting.price !== null ? 'info' : 'outline-info'}
             className="rounded-pill px-3 py-1 d-flex align-items-center gap-1"
             onClick={() => toggleSort('price')}
           >
-            <FaDollarSign /> Price {renderSortIcon('price')}
+            <FaDollarSign />
+            Price {renderSortIcon('price')}
           </Button>
           <Button
             variant={sorting.participantsCount !== null ? 'info' : 'outline-info'}
             className="rounded-pill px-3 py-1 d-flex align-items-center gap-1"
             onClick={() => toggleSort('participantsCount')}
           >
-            <FaUsers /> Participants {renderSortIcon('participantsCount')}
+            <FaUsers />
+            Participants {renderSortIcon('participantsCount')}
           </Button>
         </div>
       </Form.Group>
 
-      <div className="d-flex justify-content-end mt-3">
-        <Button variant="danger" onClick={clearFilters}>
-          Clear
-        </Button>
-      </div>
+      <Button
+        variant="outline-danger"
+        onClick={clearFilters}
+        className="mt-3"
+      >
+        Clear All Filters
+      </Button>
     </div>
   );
 };

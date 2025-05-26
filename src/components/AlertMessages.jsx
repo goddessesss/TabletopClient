@@ -26,7 +26,7 @@ function AlertMessage({ message, variant, onClose, id }) {
   const alertClass = `alert ${variant === 'danger' ? 'alert-danger' : 'alert-success'} ${isVisible ? 'fade-in' : 'fade-out'}`;
 
   return (
-    <div className={alertClass}>
+    <div className={`alert-wrapper ${alertClass}`}>
       <span>{message}</span>
       <button className="close-btn" onClick={() => onClose(id)}>&times;</button>
     </div>

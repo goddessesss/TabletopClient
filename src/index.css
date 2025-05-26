@@ -15,6 +15,7 @@ body {
   overflow-x: hidden;
   position: relative;
   overflow-x: hidden; 
+  background: linear-gradient(145deg, #f1f4fa, #ffffff);
   font-family: "Kanit", sans-serif;
 }
 
