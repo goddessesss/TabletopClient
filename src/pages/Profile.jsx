@@ -201,7 +201,17 @@ function Profile() {
 
   return (
     <div className="profile-wrapper">
-      <BreadCrumbs items={[{ label: "Home", path: "/" }, { label: "Profile" }]} />
+      <div className="container my-2">
+        <div className="pt-4">
+            <BreadCrumbs
+              items={[
+                { label: 'Home', path: '/' },
+                { label: 'Profile' },
+              ]}
+            />
+        </div>
+        <h1 className="fw-bold mb-0">Profile</h1>
+      </div>
 
       {successMessage && (
         <AlertMessage

@@ -2,7 +2,7 @@ import React from 'react';
 import { InputGroup, Form } from 'react-bootstrap';
 import { FaSearch } from 'react-icons/fa';
 
-const SearchBar = ({ value, onChange }) => {
+const SearchBar = ({ value, onChange, placeholder }) => {
   return (
     <InputGroup className="shadow-sm mb-3" style={{ borderRadius: '1rem' }}>
       <InputGroup.Text>
@@ -10,7 +10,7 @@ const SearchBar = ({ value, onChange }) => {
       </InputGroup.Text>
       <Form.Control
         type="text"
-        placeholder="Search events"
+        placeholder={placeholder || "Search"}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         style={{ borderLeft: 'none', borderRadius: '0 1rem 1rem 0' }}

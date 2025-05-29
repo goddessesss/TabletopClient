@@ -1,4 +1,5 @@
 import Navbar from "./components/Navbar.jsx";
+import Footer from "./components/Footer.jsx"
 import AppRouter from './AppRouter';
 import { useLocation } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,6 +14,7 @@ function App() {
     <div className="App">
       {!isAdminRoute && <Navbar />}
       <AppRouter />
+      <Footer/>
     </div>
   );
 }

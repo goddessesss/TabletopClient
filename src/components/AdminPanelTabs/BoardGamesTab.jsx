@@ -38,7 +38,7 @@ function BoardGamesTab() {
 
   return (
     <div className="boardgames-container">
-      <SearchBar value={searchTerm} onChange={setSearchTerm} />
+      <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder={t('search.boardGamesPlaceholder')} />
       <div className="boardgames-list">
         {boardGames.length === 0 ? (
           <p>No board games found.</p>

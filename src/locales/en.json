@@ -2,8 +2,6 @@
   "navbar": {
     "games": "GAMES",
     "allBoardgames": "All board games",
-    "game2": "Game 2",
-    "game3": "Game 3",
     "events": "EVENTS",
     "contact": "CONTACT",
     "profile": "Profile",
@@ -23,7 +21,7 @@
   },
   "info": {
     "title": "Let's play together — discover the world of board games!",
-    "description": "<strong>Tabletop</strong> is your way into the vibrant world of live communication through your favorite board games.<br />Create events, find a team, or just come along — because in games, it's not the victory that matters, but good company!",
+    "description": "<strong>Tabletop Connect</strong> is your way into the vibrant world of live communication through your favorite board games.<br />Create events, find a team, or just come along — because in games, it's not the victory that matters, but good company!",
     "offers": [
       "Create your own board game events",
       "Find players nearby",
@@ -91,7 +89,9 @@
     }
   },
   "search": {
-    "placeholder": "Search games"
+    "boardGamesPlaceholder": "Search board game by name",
+    "eventsPlaceholder": "Search event by name",
+    "noResultsFound": "🔍 No results found"
   },
   "filters": {
     "title": "Filters",
@@ -102,9 +102,6 @@
   "pagination": {
     "gamesPerPage": "Games per page:"
   },
-  "games": {
-    "noResultsFound": "🔍 No results found"
-  },
   "errors": {
     "fetchClassifiersFailed": "Failed to fetch classifiers",
     "fetchGamesFailed": "Failed to fetch games"
@@ -112,7 +109,7 @@
   "calendar": {
     "title": "Board Game Events Calendar",
     "tooltip": "View and add your board game events here",
-    "buttonAddEvent": "Add Event",
+    "buttonAddEvent": "Create Event",
     "messages": {
       "week": "Week",
       "work_week": "Work Week",
@@ -131,6 +128,5 @@
   },
   "events":{
     "events.home":"Home"
-
   }
 }

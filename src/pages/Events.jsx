@@ -17,8 +17,10 @@ import SearchBar from '../components/SearchBar.jsx';
 import { useNavigate } from 'react-router-dom';
 import { FaPlus } from 'react-icons/fa';
 import { BreadCrumbs } from '../components/BreadCrumbs/BreadCrumbs.jsx';
+import { useTranslation } from 'react-i18next';
 
 const Events = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -134,7 +136,7 @@ const Events = () => {
     navigate(`/events/${id}`);
   };
 
-return (
+  return (
    <div className="container my-2">
     <div className="pt-4">
       <BreadCrumbs
@@ -144,16 +146,15 @@ return (
         ]}
       />
     </div>
-    <div className="bg-white shadow d-flex align-items-center justify-content-between px-3 py-3 mb-4" style={{borderRadius:'10px'}}>
+    <div className="d-flex align-items-center justify-content-between">
       <h1 className="fw-bold mb-0">Events</h1>
-
       <Button
         variant="warning"
         onClick={() => navigate('/events/addevent')}
         className="d-none d-md-flex align-items-center"
       >
         <FaPlus className="me-2" />
-        Add Event
+        Create Event
       </Button>
 
       <Button
@@ -161,7 +162,7 @@ return (
         onClick={() => navigate('/events/add')}
         className="d-flex d-md-none align-items-center justify-content-center p-2"
         style={{ width: '40px', height: '40px', fontSize: '1.25rem' }}
-        aria-label="Add Event"
+        aria-label="Create Event"
       >
         <FaPlus />
       </Button>
@@ -206,7 +207,7 @@ return (
         </div>
 
         <div className="d-none d-md-block mb-3">
-          <SearchBar value={search} onChange={setSearch} />
+          <SearchBar value={search} onChange={setSearch} placeholder={t('search.eventsPlaceholder')} />
         </div>
 
         <div className="flex-grow-1" style={{ minHeight: '300px' }}>
@@ -215,7 +216,7 @@ return (
               <Spinner animation="border" variant="primary" />
             </div>
           ) : events.length === 0 ? (
-            <p className="text-center fs-5 text-muted">🔍 No results found</p>
+            <p className="text-center fs-5 text-muted">{t('search.noResultsFound')}</p>
           ) : (
             <EventList
               events={events}
