@@ -6,6 +6,7 @@ import {
   getUserProfile,
   updateUserProfile,
   sendEmailConfirmation,
+  sendPasswordResetEmail,  // добавляем импорт
 } from "../api/profileApi.js";
 import { getCreatedEvents } from "../api/eventsApi.js";
 import { getSettings } from "../api/profileApi.js";
@@ -54,6 +55,7 @@ function Profile() {
   const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
 
   const [emailConfirming, setEmailConfirming] = useState(false);
+  const [passwordResetting, setPasswordResetting] = useState(false); // новый стейт для кнопки сброса пароля
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -157,6 +159,24 @@ function Profile() {
     setEmailConfirming(false);
   };
 
+  // Новая функция для отправки письма сброса пароля
+  const handleSendPasswordReset = async () => {
+    setPasswordResetting(true);
+    setSuccessMessage("");
+    setError(null);
+    try {
+      const result = await sendPasswordResetEmail(formData.email);
+      if (result.success) {
+        setSuccessMessage("Лист для скидання пароля надіслано.");
+      } else {
+        setError("Помилка: " + result.message);
+      }
+    } catch (error) {
+      setError("Не вдалося надіслати лист для скидання пароля.");
+    }
+    setPasswordResetting(false);
+  };
+
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     const token = credentialResponse.credential;
     const result = await linkGoogleAccount(token);
@@ -179,7 +199,7 @@ function Profile() {
 
   if (loadingProfile) return <div>Завантаження профілю...</div>;
 
-    return (
+  return (
     <div className="profile-wrapper">
       <BreadCrumbs items={[{ label: "Home", path: "/" }, { label: "Profile" }]} />
 
@@ -277,10 +297,20 @@ function Profile() {
                     onError={handleGoogleLoginError}
                   />
 
-                  <Button variant="outline-secondary" style={{ marginTop: "10px" }}>
-                    Reset Password
+                  <Button
+                    variant="outline-secondary"
+                    style={{ marginTop: "10px" }}
+                    onClick={handleSendPasswordReset}
+                    disabled={passwordResetting}
+                  >
+                    {passwordResetting ? "Sending..." : "Reset Password"}
                   </Button>
-                  <Button variant="danger" onClick={handleLogoutClick} style={{ marginTop: "10px" }}>
+
+                  <Button
+                    variant="danger"
+                    onClick={handleLogoutClick}
+                    style={{ marginTop: "10px" }}
+                  >
                     Logout
                   </Button>
                 </div>

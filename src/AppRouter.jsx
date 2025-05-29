@@ -8,7 +8,9 @@ import AllBoardGames from './pages/AllBoardGames.jsx';
 import EventDetail from './pages/EventDetail.jsx';
 import EventCalendar from './pages/EventCalendar.jsx';
 import AdminPanel from './pages/AdminPanel.jsx';
-import ConfirmEmail from './pages/ConfirmEmail.jsx';
+import EmailConfirmationPage from './pages/ConfirmEmail.jsx';
+import ResetPasswordConfirm from './pages/ResetPassword.jsx';
+
 const AppRouter = () => {
   return (
     <Routes>
@@ -21,7 +23,8 @@ const AppRouter = () => {
       <Route path="/events/:id" element={<EventDetail />} />
       <Route path="/calendar" element={<EventCalendar />} />
       <Route path="/adminpanel" element={<AdminPanel />} />
-      <Route path="/confirm-email/confirm" element={<ConfirmEmail />} />
+      <Route path="/confirm-email/confirm" element={<EmailConfirmationPage />} />
+        <Route path="/reset-password/confirm" element={<ResetPasswordConfirm />} />
 
 
     </Routes>

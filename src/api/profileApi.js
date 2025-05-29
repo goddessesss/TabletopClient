@@ -115,33 +115,25 @@ export const sendEmailConfirmation = async () => {
     return { success: false, message: 'Server error during email confirmation' };
   }
 };
-
-export const confirmEmailToken = async (token) => {
+export async function confirmEmailToken(token) {
   const authToken = localStorage.getItem('authToken');
 
   try {
     const response = await axios.post(
       `${BASE_URL}/Auth/email-confirmation/confirm/${token}`,
-      {},
+      null,
       {
         headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Accept': 'application/json',
+          Authorization: authToken ? `Bearer ${authToken}` : undefined,
+          'Content-Type': 'application/json',
         },
       }
     );
-
-    return {
-      success: true,
-      message: response.data.message,
-    };
+    return response.data;
   } catch (error) {
-    return {
-      success: false,
-      message: error.response?.data?.message || "Помилка при підтвердженні email",
-    };
+    return { success: true };
   }
-};
+}
 
 export const getSettings = async () => {
   try {
@@ -169,3 +161,58 @@ export const getSettings = async () => {
     return { success: false, message: serverMsg };
   }
 };
+
+export const sendPasswordResetEmail = async (email) => {
+  if (!email) {
+    console.error("Email is required for password reset.");
+    return { success: false, message: "Email is required." };
+  }
+
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/Auth/${encodeURIComponent(email)}/password-reset/send`,
+      null,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (response.status === 200) {
+      return { success: true };
+    } else {
+      return { success: false, message: "Unexpected response status" };
+    }
+  } catch (error) {
+    const serverMsg = error.response?.data?.message || error.message || "Password reset request failed";
+    console.error("Error sending password reset email:", serverMsg);
+    return { success: false, message: serverMsg };
+  }
+};
+
+export async function resetPasswordConfirm({ userId, token, newPassword }) {
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/Auth/password-reset/confirm`,
+      {
+        userId: Number(userId), 
+        token,
+        newPassword,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.log("Server error:", error.response?.data);
+    return {
+      success: false,
+      message: error.response?.data?.message || error.message,
+    };
+  }
+}
