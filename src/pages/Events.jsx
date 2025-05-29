@@ -146,7 +146,7 @@ const Events = () => {
         ]}
       />
     </div>
-    <div className="d-flex align-items-center justify-content-between">
+    <div className="d-flex align-items-center justify-content-between mb-2 px-2">
       <h1 className="fw-bold mb-0">Events</h1>
       <Button
         variant="warning"

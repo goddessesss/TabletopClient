@@ -88,7 +88,7 @@ const AllBoardGames = () => {
           ]}
         />
       </div>
-        <h1 className="fw-bold mb-0">Board Games</h1>
+        <h1 className="fw-bold mb-2 px-2">Board Games</h1>
         <div className="search-wrapper mb-3 d-flex align-items-center" style={{ gap: '1rem' }}>
           <SearchBar 
             value={search} 

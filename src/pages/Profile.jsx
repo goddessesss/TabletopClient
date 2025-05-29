@@ -210,7 +210,7 @@ function Profile() {
               ]}
             />
         </div>
-        <h1 className="fw-bold mb-0">Profile</h1>
+        <h1 className="fw-bold mb-2 px-2">Profile</h1>
       </div>
 
       {successMessage && (
