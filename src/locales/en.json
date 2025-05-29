@@ -128,5 +128,9 @@
       "noEventsInRange": "No events in this range."
     },
     "description": "Easily track and plan your favorite board game events"
+  },
+  "events":{
+    "events.home":"Home"
+
   }
 }

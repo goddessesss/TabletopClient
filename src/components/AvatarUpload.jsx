@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Spinner, Alert } from "react-bootstrap";
+import { Button, Alert } from "react-bootstrap";
 import { uploadProfilePicture } from "../api/profileApi.js";
 import avatarDefault from "../assets/avatar.png";
 
@@ -7,7 +7,6 @@ const AvatarUpload = ({ avatarPath, setAvatarPath, setError }) => {
   const [newAvatar, setNewAvatar] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
-  const [imageLoading, setImageLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState(null);
 
   const handleAvatarClick = () => {
@@ -18,7 +17,6 @@ const AvatarUpload = ({ avatarPath, setAvatarPath, setError }) => {
     const file = e.target.files[0];
     if (file) {
       setNewAvatar(file);
-      setImageLoading(true);
 
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -48,53 +46,32 @@ const AvatarUpload = ({ avatarPath, setAvatarPath, setError }) => {
       setPreviewUrl(null);
       setError(null);
       setTimeout(() => setSuccessMessage(null), 3000);
-
       window.location.reload();
     } else {
       setError(result.message || "Failed to upload avatar");
     }
   };
 
-  useEffect(() => {
-    setImageLoading(true);
-  }, [avatarPath]);
-
-  const currentImage = previewUrl || avatarPath || avatarDefault;
+  const isValidPath = avatarPath && typeof avatarPath === "string" && avatarPath.trim() !== "";
+  const currentImage = previewUrl || (isValidPath ? avatarPath : avatarDefault);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "20px" }}>
       <div style={{ width: "120px", height: "120px", position: "relative" }}>
-        {imageLoading && (
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "#f0f0f0",
-              borderRadius: "50%",
-              zIndex: 2,
-            }}
-          >
-            <Spinner animation="border" variant="secondary" />
-          </div>
-        )}
         <img
           src={currentImage}
           alt="Profile"
           onClick={handleAvatarClick}
-          onLoad={() => setImageLoading(false)}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = avatarDefault;
+          }}
           style={{
             width: "120px",
             height: "120px",
             borderRadius: "50%",
             objectFit: "cover",
             cursor: "pointer",
-            zIndex: 1,
           }}
         />
       </div>

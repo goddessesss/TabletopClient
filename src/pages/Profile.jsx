@@ -2,17 +2,35 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../components/Context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getFavoriteBoardGames } from "../api/boardgameApi.js";
-import { getUserProfile, updateUserProfile } from "../api/profileApi.js";
+import {
+  getUserProfile,
+  updateUserProfile,
+  sendEmailConfirmation,
+} from "../api/profileApi.js";
+import { getCreatedEvents } from "../api/eventsApi.js";
+import { getSettings } from "../api/profileApi.js";
+import { linkGoogleAccount } from "../api/authApi.js";
+
 import AvatarUpload from "../components/AvatarUpload.jsx";
 import AlertMessage from "../components/AlertMessages.jsx";
-import ProfileDetails from "../components/ProfileDetails.jsx";
+import ProfileDetails from "../components/ProfileTabs/ProfileDetails.jsx";
+import CreatedEvents from "../components/ProfileTabs/CreatedEventsTab.jsx";
+import { BreadCrumbs } from "../components/BreadCrumbs/BreadCrumbs.jsx";
+
 import { Tab, Nav, Button } from "react-bootstrap";
-import { FaRegCalendarCheck, FaRegClipboard } from 'react-icons/fa';
+import {
+  FaRegCalendarCheck,
+  FaRegClipboard,
+  FaGoogle,
+  FaCheckCircle,
+} from "react-icons/fa";
+import { GoogleLogin } from "@react-oauth/google";
 
 function Profile() {
   const { handleLogout } = useAuth();
   const navigate = useNavigate();
 
+  const [settings, setSettings] = useState(null);
   const [userProfile, setUserProfile] = useState({});
   const [formData, setFormData] = useState({
     firstName: "",
@@ -29,13 +47,25 @@ function Profile() {
   const [successMessage, setSuccessMessage] = useState("");
 
   const [totalEventsParticipated, setTotalEventsParticipated] = useState(0);
-  const [totalEventsSuccessfullyHosted, setTotalEventsSuccessfullyHosted] = useState(0);
+  const [totalEventsSuccessfullyHosted, setTotalEventsSuccessfullyHosted] =
+    useState(0);
 
-  const handleLogoutClick = () => {
-    handleLogout();
-    localStorage.clear();
-    navigate("/");
-  };
+  const [createdEvents, setCreatedEvents] = useState([]);
+  const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
+
+  const [emailConfirming, setEmailConfirming] = useState(false);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const result = await getSettings();
+      if (result.success) {
+        setSettings(result.data);
+      } else {
+        console.error("Error fetching settings:", result.message);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -52,10 +82,10 @@ function Profile() {
         });
         setTotalEventsParticipated(data.totalEventsParticipated || 0);
         setTotalEventsSuccessfullyHosted(data.totalEventsSuccessfullyHosted || 0);
-        setLoadingProfile(false);
       } else {
         setError(result.message);
       }
+      setLoadingProfile(false);
     };
     fetchUserProfile();
   }, []);
@@ -73,6 +103,23 @@ function Profile() {
     fetchFavoriteGames();
   }, []);
 
+  useEffect(() => {
+    const fetchCreatedEvents = async () => {
+      try {
+        const result = await getCreatedEvents();
+        if (result.success) {
+          setCreatedEvents(result.data || []);
+        } else {
+          setError(result.message);
+        }
+      } catch (error) {
+        setError("Помилка при завантаженні подій");
+      }
+      setLoadingCreatedEvents(false);
+    };
+    fetchCreatedEvents();
+  }, []);
+
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
@@ -80,25 +127,62 @@ function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const payload = { ...formData };
-
     try {
-      const result = await updateUserProfile(payload);
+      const result = await updateUserProfile({ ...formData });
       if (result.success) {
-        setSuccessMessage("Profile updated successfully");
-        setUserProfile((prev) => ({ ...prev, ...payload }));
+        setSuccessMessage("Профіль оновлено успішно");
+        setUserProfile((prev) => ({ ...prev, ...formData }));
       } else {
-        setError("Update error: " + result.message);
+        setError("Помилка оновлення: " + result.message);
       }
-    } catch {
-      setError("Error while updating profile");
+    } catch (error) {
+      setError("Помилка при оновленні профілю: " + (error.message || "Невідома помилка"));
     }
   };
 
-  if (loadingProfile) return <div>Loading...</div>;
+  const handleSendEmailConfirmation = async () => {
+    setEmailConfirming(true);
+    setSuccessMessage("");
+    setError(null);
+    try {
+      const result = await sendEmailConfirmation();
+      if (result.success) {
+        setSuccessMessage("Лист для підтвердження email надіслано.");
+      } else {
+        setError("Помилка: " + result.message);
+      }
+    } catch (error) {
+      setError("Не вдалося надіслати лист для підтвердження email.");
+    }
+    setEmailConfirming(false);
+  };
 
-  return (
+  const handleGoogleLoginSuccess = async (credentialResponse) => {
+    const token = credentialResponse.credential;
+    const result = await linkGoogleAccount(token);
+    if (result.success) {
+      setSuccessMessage("Google акаунт прив'язано успішно!");
+    } else {
+      setError("Не вдалося прив'язати акаунт: " + result.message);
+    }
+  };
+
+  const handleGoogleLoginError = () => {
+    setError("Помилка при авторизації через Google");
+  };
+
+  const handleLogoutClick = () => {
+    handleLogout();
+    localStorage.clear();
+    navigate("/");
+  };
+
+  if (loadingProfile) return <div>Завантаження профілю...</div>;
+
+    return (
     <div className="profile-wrapper">
+      <BreadCrumbs items={[{ label: "Home", path: "/" }, { label: "Profile" }]} />
+
       {successMessage && (
         <AlertMessage
           variant="success"
@@ -106,13 +190,7 @@ function Profile() {
           onClose={() => setSuccessMessage("")}
         />
       )}
-      {error && (
-        <AlertMessage
-          variant="danger"
-          message={error}
-          onClose={() => setError("")}
-        />
-      )}
+      {error && <AlertMessage variant="danger" message={error} onClose={() => setError("")} />}
 
       <div className="profile-container">
         <div className="profile-content">
@@ -129,24 +207,44 @@ function Profile() {
             </div>
             <div className="profile-info-right">
               <h3 className="profile-nickName" style={{ marginBottom: "20px" }}>
-                <span>{userProfile.nickname || "Unknown User"}</span>
+                <span>{userProfile.nickname?.trim() ? userProfile.nickname : "User"}</span>
               </h3>
-              <p className="profile-email">Email: {userProfile.email}</p>
-              <p className="profile-firstName">First Name: {userProfile.firstName || "No firstname"}</p>
-              <p className="profile-lastName">Last Name: {userProfile.lastName || "No lastname"}</p>
-              <p className="profile-biography">Biography: {userProfile.bio || "No biography provided"}</p>
+              {userProfile.email && (
+                <p className="profile-email">
+                  Email: {userProfile.email}
+                  {settings?.isEmailConfirmed === false && (
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      onClick={handleSendEmailConfirmation}
+                      disabled={emailConfirming}
+                    >
+                      {emailConfirming ? "Sending..." : "Confirm"}
+                    </Button>
+                  )}
+                  {settings?.isEmailConfirmed && (
+                    <FaCheckCircle
+                      style={{ color: "green", marginLeft: "10px" }}
+                      title="Email successfully confirmed"
+                    />
+                  )}
+                </p>
+              )}
+              <p className="profile-firstName">First name: {userProfile.firstName || "—"}</p>
+              <p className="profile-lastName">Last name: {userProfile.lastName || "—"}</p>
+              <p className="profile-biography">Bio: {userProfile.bio || "—"}</p>
             </div>
           </div>
 
           <div className="profile-statistics" style={{ display: "flex", gap: "10px" }}>
             <div className="stat-card">
               <FaRegCalendarCheck className="stat-icon" />
-              <p>Total Events Participated</p>
+              <p>Total event participations</p>
               <p className="stat-value">{totalEventsParticipated}</p>
             </div>
             <div className="stat-card">
               <FaRegClipboard className="stat-icon" />
-              <p>Total Events Successfully Hosted</p>
+              <p>Successfully hosted events</p>
               <p className="stat-value">{totalEventsSuccessfullyHosted}</p>
             </div>
           </div>
@@ -155,7 +253,7 @@ function Profile() {
         <div className="profile-tabs-container">
           <Tab.Container id="profile-tabs" defaultActiveKey="details">
             <Nav variant="tabs" className="profile-tabs-nav">
-              <Nav.Item><Nav.Link eventKey="details">Details</Nav.Link></Nav.Item>
+              <Nav.Item><Nav.Link eventKey="details">Profile</Nav.Link></Nav.Item>
               <Nav.Item><Nav.Link eventKey="settings">Settings</Nav.Link></Nav.Item>
               <Nav.Item><Nav.Link eventKey="myevents">My Events</Nav.Link></Nav.Item>
               <Nav.Item><Nav.Link eventKey="recommendations">Recommendations</Nav.Link></Nav.Item>
@@ -169,18 +267,52 @@ function Profile() {
                   handleSubmit={handleSubmit}
                 />
               </Tab.Pane>
+
+              <Tab.Pane eventKey="settings">
+                <div style={{ padding: "20px" }}>
+                  <h5>Account Settings</h5>
+
+                  <GoogleLogin
+                    onSuccess={handleGoogleLoginSuccess}
+                    onError={handleGoogleLoginError}
+                  />
+
+                  <Button variant="outline-secondary" style={{ marginTop: "10px" }}>
+                    Reset Password
+                  </Button>
+                  <Button variant="danger" onClick={handleLogoutClick} style={{ marginTop: "10px" }}>
+                    Logout
+                  </Button>
+                </div>
+              </Tab.Pane>
+
+              <Tab.Pane eventKey="myevents">
+                <CreatedEvents loading={loadingCreatedEvents} events={createdEvents} />
+              </Tab.Pane>
+
+              <Tab.Pane eventKey="recommendations">
+                <div>Recommendations...</div>
+              </Tab.Pane>
+
+              <Tab.Pane eventKey="favouritegames">
+                <div>
+                  {loadingFavorites ? (
+                    <p>Loading...</p>
+                  ) : favoriteGames.length > 0 ? (
+                    <ul>
+                      {favoriteGames.map((game) => (
+                        <li key={game.id}>{game.name}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No favorite games found.</p>
+                  )}
+                </div>
+              </Tab.Pane>
             </Tab.Content>
           </Tab.Container>
         </div>
       </div>
-
-      <Button
-        variant="danger"
-        style={{ width: "100%", marginTop: "20px" }}
-        onClick={handleLogoutClick}
-      >
-        Logout
-      </Button>
     </div>
   );
 }

@@ -149,7 +149,7 @@ return (
 
       <Button
         variant="warning"
-        onClick={() => navigate('/events/add')}
+        onClick={() => navigate('/events/addevent')}
         className="d-none d-md-flex align-items-center"
       >
         <FaPlus className="me-2" />
