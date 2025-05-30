@@ -9,6 +9,7 @@ import { useFilterContext } from '../components/Context/FilterContext.jsx';
 import { getAllBoardGames, fetchClassifiers } from '../api/boardgameApi.js';
 import SearchBar from '../components/SearchBar.jsx'; 
 import { useTranslation } from 'react-i18next';
+import { BreadCrumbs } from '../components/BreadCrumbs/BreadCrumbs.jsx';
 
 const AllBoardGames = () => {
   const { t } = useTranslation();
@@ -78,14 +79,21 @@ const AllBoardGames = () => {
   const hasSelectedFilters = Object.values(filters).some((filter) => filter.length > 0);
 
   return (
-    <div className="all-wrapper" style={{ minHeight: '100vh', color: '#333' }}>
-      <div className="all-container">
-
+    <div className="container my-2">
+      <div className="pt-4">
+        <BreadCrumbs
+          items={[
+            { label: 'Home', path: '/' },
+            { label: 'Board Games' },
+          ]}
+        />
+      </div>
+        <h1 className="fw-bold mb-2 px-2">Board Games</h1>
         <div className="search-wrapper mb-3 d-flex align-items-center" style={{ gap: '1rem' }}>
           <SearchBar 
             value={search} 
             onChange={(value) => setSearch(value)} 
-            placeholder={t('search.placeholder')} 
+            placeholder={t('search.boardGamesPlaceholder')} 
           />
           <div className="d-md-none">
             <Button
@@ -162,7 +170,7 @@ const AllBoardGames = () => {
           <div className="games-content" style={{ flexGrow: 1 }}>
             {games.length === 0 ? (
               <div className="text-center" style={{ fontSize: '1.25rem' }}>
-                {t('games.noResultsFound')}
+                {t('search.noResultsFound')}
               </div>
             ) : (
               <>
@@ -195,7 +203,6 @@ const AllBoardGames = () => {
           </Offcanvas.Body>
         </Offcanvas>
       </div>
-    </div>
   );
 };
 

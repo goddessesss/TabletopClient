@@ -19,7 +19,7 @@ const AppRouter = () => {
       <Route path="/events" element={<Events />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/events/addevent" element={<AddEvent />} />
-      <Route path="/all" element={<AllBoardGames />} />
+      <Route path="/board-games" element={<AllBoardGames />} />
       <Route path="/events/:id" element={<EventDetail />} />
       <Route path="/calendar" element={<EventCalendar />} />
       <Route path="/adminpanel" element={<AdminPanel />} />
