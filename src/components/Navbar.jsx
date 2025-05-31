@@ -22,24 +22,17 @@ function Navbar() {
   }, []);
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-      <div className="navbar-container">
+    <nav className={`navbar ${scrolled ? 'scrolled' : ''} `}>
+      <div className="navbar-container wrapper">
         <div className="navbar-left">
           <Link to="/" className="navbar-brand">
             <img src={logo} alt="Logo" className="navbar-logo" />
-            <span className="navbar-title">Tabletop</span>
+            <span className="navbar-title">Tabletop Connect</span>
           </Link>
         </div>
 
         <div className="navbar-center">
-          <div className="dropdown">
-            <span className="dropdown-toggle">{t('navbar.games')}</span>
-            <div className="dropdown-menu">
-              <a href="/all" className="dropdown-item">{t('navbar.allBoardgames')}</a>
-              <a href="#" className="dropdown-item">{t('navbar.game2')}</a>
-              <a href="#" className="dropdown-item">{t('navbar.game3')}</a>
-            </div>
-          </div>
+          <Link to="/board-games" className="nav-item">{t('navbar.games')}</Link>
           <Link to="/events" className="nav-item">{t('navbar.events')}</Link>
           <Link to="/contact" className="nav-item">{t('navbar.contact')}</Link>
         </div>

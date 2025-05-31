@@ -23,7 +23,7 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 10px 30px !important;
+  padding: 7px 30px !important;
   background-color: $white-color;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   position: relative; 
@@ -35,6 +35,11 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
   transform: translateY(-10px);
   box-shadow: 0 6px 20px rgba(185, 184, 184, 0.4);
   z-index: 999;
+
+  .wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
 
   &-container {
     display: flex;
@@ -62,12 +67,16 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
   }
 
   &-logo {
-    height: 80px;
-    width: 80px;
+    height: 45px;
+    width: 70px;
   }
 
   &-title {
-    font-size: 32px;
+    font-size: 24px;
+    max-width: 120px;
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.1;
     font-weight: 700;
     background: linear-gradient(45deg, $primary-color, $secondary-color);
     background-clip: text;
@@ -98,13 +107,39 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
       transform: scale(1.05);
     }
   }
-    .dropdown-item.active,
-    .dropdown-item:active {
-      background-color: #f39c12 !important;
-      color: inherit !important;
-      box-shadow: none !important;
+  .dropdown-item.active,
+  .dropdown-item:active {
+    background-color: #f39c12 !important;
+    color: inherit !important;
+    box-shadow: none !important;
+  }
+
+  .dropdown {
+    &-menu {
+      background-color: $white-color;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      top: 100%;
+      left: 0;
+      padding: 10px 0;
+      border-radius: 10px;
+      z-index: 1000;
+      min-width: 150px;
     }
 
+    &-item {
+      padding: 10px 20px;
+      font-size: 18px;
+      text-decoration: none;
+      color: $text-color;
+      transition: background-color 0.3s, color 0.3s;
+
+      &:hover {
+        background-color: #f1f1f1;
+        color: $primary-color;
+        text-decoration: none;
+      }
+    }
+  }
 
   .auth-btn {
     padding: 14px 30px;
@@ -154,43 +189,6 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
     z-index: 1000; 
     overflow-y: auto;
   }
-
-
-  .dropdown {
-    position: relative;
-
-    &-menu {
-      display: none;
-      position: absolute;
-      background-color: $white-color;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      top: 100%;
-      left: 0;
-      padding: 10px 0;
-      border-radius: 10px;
-      z-index: 1000;
-      min-width: 150px;
-    }
-
-    &:hover .dropdown-menu {
-      display: block;
-    }
-
-    &-item {
-      display: block;
-      padding: 10px 20px;
-      font-size: 18px;
-      text-decoration: none;
-      color: $text-color;
-      transition: background-color 0.3s, color 0.3s;
-
-      &:hover {
-        background-color: #f1f1f1;
-        color: $primary-color;
-        text-decoration: underline;
-      }
-    }
-  }
 }
 
 @keyframes fadeInNavbar {
@@ -211,9 +209,10 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
   }
 }
 
-//Footer
+// Footer
 
 .footer-container {
+  margin-top: 25px;
   display: flex;
   flex-direction: column;
 
@@ -221,9 +220,9 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 10px;
     background-color: $white-color;
-    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 20px rgba(185, 184, 184, 0.4);
 
     .footer-buttons {
       display: flex;
@@ -253,12 +252,20 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
 //Info Component
 
 .info-component {
-    display: flex;
-    align-items: flex-end;
-    margin: 30px 15px 0 15px;
-    justify-content: space-around;
-    border-radius: 20px;
     background-color: #f5f4f4;
+
+    .wrapper {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .info-component-inner {
+      display: flex;
+      align-items: flex-end;
+      margin: 30px 15px 0 15px;
+      justify-content: space-around;
+      border-radius: 20px;
+    }
   
     .info-img {
       opacity: 0;
@@ -298,7 +305,7 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
     }
   
     .dice-image {
-      width: 700px;
+      width: 500px;
       opacity: 0;
       transform: translateY(20px);
       transition: opacity 1s ease-out, transform 1s ease-out;
@@ -429,6 +436,7 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
         background-color: $primary-bg-color;
         color: #333;
         font-size: 1.2rem;
+        font-weight: 600;
         padding: 10px 20px;
         border: none;
         border-radius: 30px;
@@ -654,16 +662,15 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
 
 .all-wrapper,
 .profile-wrapper,
-.add-event-wrapper, .events-wrapper{
-  background: $bg-gradient-light;
+.create-event-wrapper, .events-wrapper {
   min-height: 100vh;
 }
 
 .all-container,
 .profile-container, 
-.add-event-container,
+.create-event-container,
 .calendar-container, .details-container{
-  max-width: 1500px !important;
+  max-width: 1280px !important;
   width: 100%;
   background-color: $white-color;
   padding: 50px;
@@ -1368,7 +1375,7 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
       margin: 30px !important;
     }
 
-    .info-component {
+    .info-component-inner {
       padding: 20px;
     }
 

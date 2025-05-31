@@ -50,10 +50,10 @@ export const addEvent = async (eventData) => {
       return { success: true, data: response.data };
     }
 
-    return { success: false, message: 'Failed to add event' };
+    return { success: false, message: 'Failed to create an event' };
   } catch (error) {
     const serverMsg = error.response?.data?.message || '';
-    console.error("Error adding event:", serverMsg);
+    console.error("Error while creating event:", serverMsg);
     return {
       success: false,
       message: serverMsg || "Adding event failed"

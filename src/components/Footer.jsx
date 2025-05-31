@@ -21,7 +21,7 @@ function Footer() {
         </div>
 
         <div className="footer-text">
-          ©Copyright. All rights reserved.
+          © 2025 Tabletop Connect. All rights reserved.
         </div>
       </footer>
     </div>

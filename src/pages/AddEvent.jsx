@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { getCitiesBySearch, addEvent, getBoardGamesNames } from '../api/eventsApi.js';
 import { useAuth } from '../components/Context/AuthContext.jsx';
+import { BreadCrumbs } from '../components/BreadCrumbs/BreadCrumbs.jsx';
 
 function AddEvent() {
   const { userId } = useAuth();
@@ -204,8 +205,21 @@ function AddEvent() {
   };
 
   return (
-    <div className="add-event-wrapper">
-      <div className="add-event-container mt-4">
+    <div className="create-event-wrapper">
+      <div className="container my-2">
+        <div className="pt-4">
+            <BreadCrumbs
+              items={[
+                { label: 'Home', path: '/' },
+                { label: 'Events', path: '/events' },
+                { label: 'Create event'}
+              ]}
+            />
+        </div>
+        <h1 className="fw-bold mb-0">Create Event</h1>
+      </div>
+
+      <div className="create-event-container mt-4">
         {submitMessage && (
           <div className={`alert ${submitMessageType === 'success' ? 'alert-success' : 'alert-danger'}`}>
             {submitMessage}

@@ -43,32 +43,36 @@ function Info() {
 
   return (
     <div className="info-component">
-      <div className={`info-img ${isVisible ? 'visible' : ''}`}>
-        <h1 className={`info-title ${isVisible ? 'visible' : ''}`}>
-          {t('info.title')}
-        </h1>
-        <p
-          className={`info-description ${isVisible ? 'visible' : ''}`}
-          dangerouslySetInnerHTML={{ __html: t('info.description') }}
-        />
-        <img
-          src={Dice}
-          alt={t('info.diceAlt')}
-          className={`dice-image ${isVisible ? 'visible' : ''}`}
-        />
-      </div>
-
-      <div className="info-block">
-        {offersTexts.map((text, index) => (
-          <div className={`block ${visibleBlocks.includes(index) ? 'visible' : ''}`} key={index}>
-            <div className="block-img">
-              <img src={offersImages[index]} alt={`Offer ${index + 1}`} />
-            </div>
-            <div className="block-label">
-              {text}
-            </div>
+      <div className="wrapper">
+        <div className="info-component-inner">
+          <div className={`info-img ${isVisible ? 'visible' : ''}`}>
+            <h1 className={`info-title ${isVisible ? 'visible' : ''}`}>
+              {t('info.title')}
+            </h1>
+            <p
+              className={`info-description ${isVisible ? 'visible' : ''}`}
+              dangerouslySetInnerHTML={{ __html: t('info.description') }}
+            />
+            <img
+              src={Dice}
+              alt={t('info.diceAlt')}
+              className={`dice-image ${isVisible ? 'visible' : ''}`}
+            />
           </div>
-        ))}
+
+          <div className="info-block">
+            {offersTexts.map((text, index) => (
+              <div className={`block ${visibleBlocks.includes(index) ? 'visible' : ''}`} key={index}>
+                <div className="block-img">
+                  <img src={offersImages[index]} alt={`Offer ${index + 1}`} />
+                </div>
+                <div className="block-label">
+                  {text}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

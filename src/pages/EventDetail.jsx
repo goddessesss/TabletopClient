@@ -145,13 +145,7 @@ function EventDetail() {
         />
       </div>
 
-      <div
-        className="bg-white shadow d-flex align-items-center justify-content-between px-3 py-3 mb-4"
-        style={{ borderRadius: '10px' }}
-      >
-        <h1 className="fw-bold mb-0">Event Details</h1>
-        
-      </div>
+      <h1 className="fw-bold mb-2 px-2">Event Details</h1>
 
       <div className="details-container">
         <Card.Body className="event-card-body">

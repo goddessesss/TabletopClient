@@ -7,10 +7,9 @@ import Info from '../components/Info';
 function Home() {
   return (
     <div className="home-container">
-      <Banner />
+      <Banner/>
       <Info/>
-      <GameCarousel />
-      <Footer />
+      <GameCarousel/>
     </div>
   );
 }
