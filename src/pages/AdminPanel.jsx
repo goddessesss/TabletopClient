@@ -10,6 +10,7 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import BoardGamesTab from '../components/AdminPanelTabs/BoardGamesTab.jsx';
+import '../styles/AdminPanel.scss';
 
 function AdminPanel() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
