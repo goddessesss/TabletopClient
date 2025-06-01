@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import { useAuth } from '../components/Context/AuthContext.jsx';
 import { Dropdown } from 'react-bootstrap';
@@ -10,6 +10,8 @@ function Navbar() {
   const { isAuthenticated } = useAuth();
   const { t } = useTranslation();
   const { language, changeLanguage } = useLanguage();
+  const navigate = useNavigate();
+
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [gamesDropdownOpen, setGamesDropdownOpen] = useState(false);
@@ -22,7 +24,7 @@ function Navbar() {
   }, []);
 
   return (
-    <nav className={`navbar ${scrolled ? 'scrolled' : ''} `}>
+    <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container wrapper">
         <div className="navbar-left">
           <Link to="/" className="navbar-brand">
@@ -63,11 +65,13 @@ function Navbar() {
               </button>
             </Link>
           ) : (
-            <Link to="/auth" style={{ width: 'auto' }}>
-              <button className="auth-btn btn btn-outline-primary">
-                {t('navbar.login')}
-              </button>
-            </Link>
+            <button
+              className="auth-btn btn btn-outline-primary"
+              style={{ width: 'auto' }}
+              onClick={() => navigate('/login')}
+            >
+              {t('navbar.login')}
+            </button>
           )}
         </div>
 
@@ -172,15 +176,21 @@ function Navbar() {
             )}
           </div>
 
-          <div className="nav-item">
+          <div className="nav-item" style={{ marginTop: '1rem' }}>
             {isAuthenticated ? (
               <Link to="/profile" onClick={() => setMenuOpen(false)}>
                 <button className="auth-btn btn btn-primary w-100">{t('navbar.profile')}</button>
               </Link>
             ) : (
-              <Link to="/auth" onClick={() => setMenuOpen(false)}>
-                <button className="auth-btn btn btn-outline-primary w-100">{t('navbar.login')}</button>
-              </Link>
+              <button
+                className="auth-btn btn btn-outline-primary w-100"
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate('/login');
+                }}
+              >
+                {t('navbar.login')}
+              </button>
             )}
           </div>
         </div>

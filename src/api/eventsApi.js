@@ -241,3 +241,31 @@ export const getParticipants = async (eventId) => {
     };
   }
 };
+
+export async function deleteEventById(eventId) {
+  try {
+    const response = await axios.delete(`${BASE_URL}/Events/${eventId}`);
+    return response.status === 204 ? true : response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || error.message || "Failed to delete event";
+    throw new Error(message);
+  }
+}
+
+export async function cancelEvent(eventId) {
+  try {
+    const response = await axios.post(`${BASE_URL}/Events/${eventId}/cancel`);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
+export const updateEvents = async (id, eventData) => {
+  try {
+    const response = await axios.put(`${BASE_URL}/Events/${id}`, eventData);
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error('Update event error:', error.response?.data || error.message);
+    return { success: false, message: error.response?.data || error.message };
+  }
+};

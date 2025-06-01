@@ -15,7 +15,7 @@ const AppRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
-      <Route path="/auth" element={<Auth />} />
+      <Route path="/login" element={<Auth />} />
       <Route path="/events" element={<Events />} />
       <Route path="/profile" element={<Profile />} />
       <Route path="/events/addevent" element={<AddEvent />} />

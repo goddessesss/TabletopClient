@@ -3,7 +3,7 @@ import { authenticate, authenticateWithGoogle } from '../api/authApi.js';
 import authLogo from '../assets/auth-logo.png';
 import { useAuth } from "../components/Context/AuthContext.jsx";
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import AlertMessage from '../components/AlertMessages.jsx';
 import { useTranslation } from 'react-i18next';
@@ -21,15 +21,10 @@ function Auth() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
+    if (token && !isAuthenticated) {
       handleLogin(token);
-      navigate('/');
     }
-  }, [navigate, handleLogin]);
-
-  if (isAuthenticated) {
-    return null;
-  }
+  }, []); 
 
   const handleToggleMode = () => {
     setLoginMode(prevMode => !prevMode);

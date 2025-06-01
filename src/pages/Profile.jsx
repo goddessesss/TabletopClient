@@ -6,15 +6,14 @@ import {
   getUserProfile,
   updateUserProfile,
   sendEmailConfirmation,
-  sendPasswordResetEmail,  // добавляем импорт
+  sendPasswordResetEmail, 
 } from "../api/profileApi.js";
-import { getCreatedEvents } from "../api/eventsApi.js";
+import { getCreatedEvents, deleteEventById} from "../api/eventsApi.js";
 import { getSettings } from "../api/profileApi.js";
 import { linkGoogleAccount } from "../api/authApi.js";
-
 import AvatarUpload from "../components/AvatarUpload.jsx";
 import ProfileDetails from "../components/ProfileTabs/ProfileDetails.jsx";
-import CreatedEvents from "../components/ProfileTabs/CreatedEventsTab.jsx";
+import CreatedEventsTab from "../components/ProfileTabs/CreatedEventsTab.jsx";
 import { BreadCrumbs } from "../components/BreadCrumbs/BreadCrumbs.jsx";
 import { useNotifications } from "../components/NotificationsHandling/NotificationContext.jsx"
 
@@ -30,6 +29,7 @@ import { GoogleLogin } from "@react-oauth/google";
 function Profile() {
   const { handleLogout } = useAuth();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
   const { addNotification } = useNotifications();
   const [settings, setSettings] = useState(null);
   const [userProfile, setUserProfile] = useState({});
@@ -44,16 +44,17 @@ function Profile() {
   const [favoriteGames, setFavoriteGames] = useState([]);
   const [loadingFavorites, setLoadingFavorites] = useState(true);
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [events, setEvents] = useState([]);
 
   const [totalEventsParticipated, setTotalEventsParticipated] = useState(0);
   const [totalEventsSuccessfullyHosted, setTotalEventsSuccessfullyHosted] =
     useState(0);
 
-  const [createdEvents, setCreatedEvents] = useState([]);
-  const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
+const [createdEvents, setCreatedEvents] = useState([]);
+const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
 
   const [emailConfirming, setEmailConfirming] = useState(false);
-  const [passwordResetting, setPasswordResetting] = useState(false); // новый стейт для кнопки сброса пароля
+  const [passwordResetting, setPasswordResetting] = useState(false); 
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -114,6 +115,17 @@ function Profile() {
     fetchCreatedEvents();
   }, []);
 
+  async function handleDeleteEvent(eventId) {
+    try {
+      await deleteEventById(eventId);
+      setCreatedEvents((prevEvents) =>
+        prevEvents.filter((event) => event.id !== eventId)
+      );
+    } catch (error) {
+      addNotification({message:"An error occured while deleting event", variant: 'danger'});
+    }
+  }
+  
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
@@ -145,7 +157,6 @@ function Profile() {
     setEmailConfirming(false);
   };
 
-  // Новая функция для отправки письма сброса пароля
   const handleSendPasswordReset = async () => {
     setPasswordResetting(true);
     try {
@@ -177,7 +188,21 @@ function Profile() {
     navigate("/");
   };
 
-  if (loadingProfile) return <div>Завантаження профілю...</div>;
+  const handleUpdateEvent = (id, updatedData) => {
+    setCreatedEvents(prevEvents =>
+      prevEvents.map(ev => (ev.id === id ? { ...ev, ...updatedData } : ev))
+    );
+  };
+
+  const handleCancel = (eventId) => {
+    setEvents((prevEvents) =>
+      prevEvents.map((e) =>
+        e.id === eventId ? { ...e, statusName: "Canceled" } : e
+      )
+    );
+  };
+
+  if (loadingProfile) return <div>Profile loaing...</div>;
 
   return (
     <div className="profile-wrapper">
@@ -266,37 +291,52 @@ function Profile() {
                   handleSubmit={handleSubmit}
                 />
               </Tab.Pane>
-
               <Tab.Pane eventKey="settings">
-                <div style={{ padding: "20px" }}>
-                  <h5>Account Settings</h5>
+                <div className="settings-container p-4 border rounded shadow-sm bg-light">
+                  <h5 className="mb-4">Account Settings</h5>
 
-                  <GoogleLogin
-                    onSuccess={handleGoogleLoginSuccess}
-                    onError={handleGoogleLoginError}
-                  />
+                  <div className="google-login-wrapper mb-3 d-flex align-items-center gap-3">
+                    <GoogleLogin
+                      onSuccess={handleGoogleLoginSuccess}
+                      onError={handleGoogleLoginError}
+                    />
+                    <span className="text-muted small">Link your Google account for easy login</span>
+                  </div>
 
                   <Button
-                    variant="outline-secondary"
-                    style={{ marginTop: "10px" }}
+                    variant="outline-primary"
+                    className="w-100 mb-3"
                     onClick={handleSendPasswordReset}
                     disabled={passwordResetting}
                   >
-                    {passwordResetting ? "Sending..." : "Reset Password"}
+                    {passwordResetting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Sending...
+                      </>
+                    ) : (
+                      "Send Password Reset Email"
+                    )}
                   </Button>
 
                   <Button
                     variant="danger"
+                    className="w-100"
                     onClick={handleLogoutClick}
-                    style={{ marginTop: "10px" }}
                   >
                     Logout
                   </Button>
                 </div>
               </Tab.Pane>
-
+              
               <Tab.Pane eventKey="myevents">
-                <CreatedEvents loading={loadingCreatedEvents} events={createdEvents} />
+                <CreatedEventsTab
+                onCancel={handleCancel}
+                  loading={loadingCreatedEvents}
+                  events={createdEvents}
+                  onDelete={handleDeleteEvent}
+                  onUpdate={handleUpdateEvent}
+                />
               </Tab.Pane>
 
               <Tab.Pane eventKey="recommendations">
