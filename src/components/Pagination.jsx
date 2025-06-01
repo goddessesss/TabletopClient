@@ -6,19 +6,28 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     const items = [];
     const delta = 2;
 
-    if (currentPage - delta > 1) {
-      items.push(
-        <BootstrapPagination.Item
-          key={1}
-          onClick={() => onPageChange(1)}
-          style={{ color: 'black' }}
-        >
-          1
-        </BootstrapPagination.Item>
-      );
-      if (currentPage - delta > 2) {
-        items.push(<BootstrapPagination.Ellipsis key="start-ellipsis" />);
-      }
+    const activeStyle = {
+        backgroundColor: 'gold',
+        borderColor: 'gold',
+        color: 'black'
+    };
+    const normalStyle = { color: 'black' };
+
+    const isFirst = currentPage === 1;
+    items.push(
+      <BootstrapPagination.Item
+        key={1}
+        active={isFirst}
+        disabled={isFirst}
+        onClick={() => onPageChange(1)}
+        style={isFirst ? activeStyle : normalStyle}
+      >
+        1
+      </BootstrapPagination.Item>
+    );
+
+    if (currentPage - delta > 2) {
+      items.push(<BootstrapPagination.Ellipsis key="start-ellipsis" />);
     }
 
     for (
@@ -35,8 +44,8 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
           disabled={isActive}
           style={
             isActive
-              ? { backgroundColor: 'gold', borderColor: 'gold', color: 'black' }
-              : { color: 'black' }
+              ? activeStyle
+              : normalStyle
           }
         >
           {i}
@@ -45,14 +54,18 @@ function Pagination({ currentPage, totalPages, onPageChange }) {
     }
 
     if (currentPage + delta < totalPages - 1) {
-      if (currentPage + delta < totalPages - 2) {
-        items.push(<BootstrapPagination.Ellipsis key="end-ellipsis" />);
-      }
+      items.push(<BootstrapPagination.Ellipsis key="end-ellipsis" />);
+    }
+
+    if (totalPages > 1) {
+      const isLast = currentPage === totalPages;
       items.push(
         <BootstrapPagination.Item
           key={totalPages}
+          active={isLast}
+          disabled={isLast}
           onClick={() => onPageChange(totalPages)}
-          style={{ color: 'black' }}
+          style={isLast ? activeStyle : normalStyle}
         >
           {totalPages}
         </BootstrapPagination.Item>

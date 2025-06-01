@@ -12,10 +12,10 @@ import { getCreatedEvents, deleteEventById} from "../api/eventsApi.js";
 import { getSettings } from "../api/profileApi.js";
 import { linkGoogleAccount } from "../api/authApi.js";
 import AvatarUpload from "../components/AvatarUpload.jsx";
-import AlertMessage from "../components/AlertMessages.jsx";
 import ProfileDetails from "../components/ProfileTabs/ProfileDetails.jsx";
 import CreatedEventsTab from "../components/ProfileTabs/CreatedEventsTab.jsx";
 import { BreadCrumbs } from "../components/BreadCrumbs/BreadCrumbs.jsx";
+import { useNotifications } from "../components/NotificationsHandling/NotificationContext.jsx"
 
 import { Tab, Nav, Button } from "react-bootstrap";
 import {
@@ -30,7 +30,7 @@ function Profile() {
   const { handleLogout } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-
+  const { addNotification } = useNotifications();
   const [settings, setSettings] = useState(null);
   const [userProfile, setUserProfile] = useState({});
   const [formData, setFormData] = useState({
@@ -43,10 +43,8 @@ function Profile() {
 
   const [favoriteGames, setFavoriteGames] = useState([]);
   const [loadingFavorites, setLoadingFavorites] = useState(true);
-  const [error, setError] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const [successMessage, setSuccessMessage] = useState("");
-const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState([]);
 
   const [totalEventsParticipated, setTotalEventsParticipated] = useState(0);
   const [totalEventsSuccessfullyHosted, setTotalEventsSuccessfullyHosted] =
@@ -85,8 +83,6 @@ const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
         });
         setTotalEventsParticipated(data.totalEventsParticipated || 0);
         setTotalEventsSuccessfullyHosted(data.totalEventsSuccessfullyHosted || 0);
-      } else {
-        setError(result.message);
       }
       setLoadingProfile(false);
     };
@@ -98,8 +94,6 @@ const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
       const result = await getFavoriteBoardGames();
       if (result.success) {
         setFavoriteGames(result.favorites);
-      } else {
-        setError(result.message);
       }
       setLoadingFavorites(false);
     };
@@ -112,26 +106,23 @@ const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
         const result = await getCreatedEvents();
         if (result.success) {
           setCreatedEvents(result.data || []);
-        } else {
-          setError(result.message);
         }
       } catch (error) {
-        setError("Помилка при завантаженні подій");
+        addNotification({message:"Error while retrieving events", variant: 'danger'});
       }
       setLoadingCreatedEvents(false);
     };
     fetchCreatedEvents();
   }, []);
 
-    async function handleDeleteEvent(eventId) {
+  async function handleDeleteEvent(eventId) {
     try {
       await deleteEventById(eventId);
       setCreatedEvents((prevEvents) =>
         prevEvents.filter((event) => event.id !== eventId)
       );
     } catch (error) {
-      alert("Не вдалося видалити подію");
-      console.error(error);
+      addNotification({message:"An error occured while deleting event", variant: 'danger'});
     }
   }
   
@@ -143,48 +134,38 @@ const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await updateUserProfile({ ...formData });
+      const result = await updateUserProfile((( { email, ...rest } ) => rest)(formData));
       if (result.success) {
-        setSuccessMessage("Профіль оновлено успішно");
+        addNotification({message:"Profile successfully updated", variant: 'success'})
         setUserProfile((prev) => ({ ...prev, ...formData }));
-      } else {
-        setError("Помилка оновлення: " + result.message);
       }
     } catch (error) {
-      setError("Помилка при оновленні профілю: " + (error.message || "Невідома помилка"));
+      addNotification({message:"An error occured while updating profile", variant: 'danger'});
     }
   };
 
   const handleSendEmailConfirmation = async () => {
     setEmailConfirming(true);
-    setSuccessMessage("");
-    setError(null);
     try {
       const result = await sendEmailConfirmation();
       if (result.success) {
-        setSuccessMessage("Лист для підтвердження email надіслано.");
-      } else {
-        setError("Помилка: " + result.message);
+        addNotification({message:"The confirmation email has been sent successfully", variant: 'success'});
       }
     } catch (error) {
-      setError("Не вдалося надіслати лист для підтвердження email.");
+      addNotification({message:"An error occurred while sending the confirmation email", variant: 'danger'});
     }
     setEmailConfirming(false);
   };
 
   const handleSendPasswordReset = async () => {
     setPasswordResetting(true);
-    setSuccessMessage("");
-    setError(null);
     try {
       const result = await sendPasswordResetEmail(formData.email);
       if (result.success) {
-        setSuccessMessage("Лист для скидання пароля надіслано.");
-      } else {
-        setError("Помилка: " + result.message);
+        addNotification({message:"The password reset email has been sent successfully", variant: 'success'});
       }
     } catch (error) {
-      setError("Не вдалося надіслати лист для скидання пароля.");
+      addNotification({message:"An error occurred while sending the password reset email", variant: 'danger'});
     }
     setPasswordResetting(false);
   };
@@ -193,14 +174,12 @@ const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
     const token = credentialResponse.credential;
     const result = await linkGoogleAccount(token);
     if (result.success) {
-      setSuccessMessage("Google акаунт прив'язано успішно!");
-    } else {
-      setError("Не вдалося прив'язати акаунт: " + result.message);
+      addNotification({message:"Google account successfully linked", variant: 'success'});
     }
   };
 
   const handleGoogleLoginError = () => {
-    setError("Помилка при авторизації через Google");
+    addNotification({message:"An error occurred while auth attempt via Google", variant: 'danger'});
   };
 
   const handleLogoutClick = () => {
@@ -210,19 +189,20 @@ const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
   };
 
   const handleUpdateEvent = (id, updatedData) => {
-  setCreatedEvents(prevEvents =>
-    prevEvents.map(ev => (ev.id === id ? { ...ev, ...updatedData } : ev))
-  );
-};
+    setCreatedEvents(prevEvents =>
+      prevEvents.map(ev => (ev.id === id ? { ...ev, ...updatedData } : ev))
+    );
+  };
 
-const handleCancel = (eventId) => {
-  setEvents((prevEvents) =>
-    prevEvents.map((e) =>
-      e.id === eventId ? { ...e, statusName: "Canceled" } : e
-    )
-  );
-};
-  if (loadingProfile) return <div>Завантаження профілю...</div>;
+  const handleCancel = (eventId) => {
+    setEvents((prevEvents) =>
+      prevEvents.map((e) =>
+        e.id === eventId ? { ...e, statusName: "Canceled" } : e
+      )
+    );
+  };
+
+  if (loadingProfile) return <div>Profile loaing...</div>;
 
   return (
     <div className="profile-wrapper">
@@ -237,16 +217,6 @@ const handleCancel = (eventId) => {
         </div>
         <h1 className="fw-bold mb-2 px-2">Profile</h1>
       </div>
-
-      {successMessage && (
-        <AlertMessage
-          variant="success"
-          message={successMessage}
-          onClose={() => setSuccessMessage("")}
-        />
-      )}
-      {error && <AlertMessage variant="danger" message={error} onClose={() => setError("")} />}
-
       <div className="profile-container">
         <div className="profile-content">
           <div className="profile-card">
@@ -255,9 +225,8 @@ const handleCancel = (eventId) => {
                 avatarPath={userProfile.avatarPath}
                 setAvatarPath={(path) => {
                   setUserProfile((prev) => ({ ...prev, avatarPath: path }));
-                  setSuccessMessage("Avatar updated successfully");
+                  addNotification({message:"Avatar sucessfully updated", variant: 'sucess'});
                 }}
-                setError={setError}
               />
             </div>
             <div className="profile-info-right">
@@ -322,54 +291,53 @@ const handleCancel = (eventId) => {
                   handleSubmit={handleSubmit}
                 />
               </Tab.Pane>
-<Tab.Pane eventKey="settings">
-  <div className="settings-container p-4 border rounded shadow-sm bg-light">
-    <h5 className="mb-4">Account Settings</h5>
+              <Tab.Pane eventKey="settings">
+                <div className="settings-container p-4 border rounded shadow-sm bg-light">
+                  <h5 className="mb-4">Account Settings</h5>
 
-    <div className="google-login-wrapper mb-3 d-flex align-items-center gap-3">
-      <GoogleLogin
-        onSuccess={handleGoogleLoginSuccess}
-        onError={handleGoogleLoginError}
-      />
-      <span className="text-muted small">Link your Google account for easy login</span>
-    </div>
+                  <div className="google-login-wrapper mb-3 d-flex align-items-center gap-3">
+                    <GoogleLogin
+                      onSuccess={handleGoogleLoginSuccess}
+                      onError={handleGoogleLoginError}
+                    />
+                    <span className="text-muted small">Link your Google account for easy login</span>
+                  </div>
 
-    <Button
-      variant="outline-primary"
-      className="w-100 mb-3"
-      onClick={handleSendPasswordReset}
-      disabled={passwordResetting}
-    >
-      {passwordResetting ? (
-        <>
-          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-          Sending...
-        </>
-      ) : (
-        "Send Password Reset Email"
-      )}
-    </Button>
+                  <Button
+                    variant="outline-primary"
+                    className="w-100 mb-3"
+                    onClick={handleSendPasswordReset}
+                    disabled={passwordResetting}
+                  >
+                    {passwordResetting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Sending...
+                      </>
+                    ) : (
+                      "Send Password Reset Email"
+                    )}
+                  </Button>
 
-    <Button
-      variant="danger"
-      className="w-100"
-      onClick={handleLogoutClick}
-    >
-      Logout
-    </Button>
-  </div>
-</Tab.Pane>
-
-
-          <Tab.Pane eventKey="myevents">
-  <CreatedEventsTab
-  onCancel={handleCancel}
-    loading={loadingCreatedEvents}
-    events={createdEvents}
-    onDelete={handleDeleteEvent}
-    onUpdate={handleUpdateEvent}
-  />
-</Tab.Pane>
+                  <Button
+                    variant="danger"
+                    className="w-100"
+                    onClick={handleLogoutClick}
+                  >
+                    Logout
+                  </Button>
+                </div>
+              </Tab.Pane>
+              
+              <Tab.Pane eventKey="myevents">
+                <CreatedEventsTab
+                onCancel={handleCancel}
+                  loading={loadingCreatedEvents}
+                  events={createdEvents}
+                  onDelete={handleDeleteEvent}
+                  onUpdate={handleUpdateEvent}
+                />
+              </Tab.Pane>
 
               <Tab.Pane eventKey="recommendations">
                 <div>Recommendations...</div>

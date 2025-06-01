@@ -7,18 +7,17 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import AlertMessage from '../components/AlertMessages.jsx';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '../components/NotificationsHandling/NotificationContext.jsx';
 
 function Auth() {
   const { t } = useTranslation();
   const { handleLogin, isAuthenticated } = useAuth();
+  const { addNotification } = useNotifications();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoginMode, setLoginMode] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [alerts, setAlerts] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -29,8 +28,6 @@ function Auth() {
 
   const handleToggleMode = () => {
     setLoginMode(prevMode => !prevMode);
-    setError('');
-    setSuccessMessage('');
   };
 
   const handleTogglePasswordVisibility = () => {
@@ -41,18 +38,15 @@ function Auth() {
     e.preventDefault();
 
     if (!email || !password) {
-      setError(t('auth.errors.fillAllFields'));
+      addNotification({message: t('auth.errors.fillAllFields'), variant: 'warning'});
       return;
     }
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     if (!isLoginMode && !passwordRegex.test(password)) {
-      setError(t('auth.errors.passwordComplexity'));
+      addNotification({message: t('auth.errors.passwordComplexity'), variant: 'warning'});
       return;
     }
-
-    setError('');
-    setSuccessMessage('');
 
     try {
       const response = await authenticate(isLoginMode, email, password);
@@ -62,12 +56,12 @@ function Auth() {
           const token = response.token;
           localStorage.setItem('token', token);
           handleLogin(token);
-          setSuccessMessage(t('auth.messages.loginSuccess'));
+          addNotification({message: t('auth.messages.loginSuccess'), variant: 'success'});
           setEmail('');
           setPassword('');
           navigate('/');
         } else {
-          setSuccessMessage(t('auth.messages.registrationSuccess'));
+          addNotification({message: t('auth.messages.registrationSuccess'), variant: 'success'});
           setEmail('');
           setPassword('');
           setLoginMode(true);
@@ -75,16 +69,16 @@ function Auth() {
       } else {
         const msg = response.message?.toLowerCase() || '';
         if (!isLoginMode && (msg.includes('already exists') || msg.includes('user exists') || msg.includes('email'))) {
-          setError(t('auth.errors.emailExists'));
+          addNotification({message: t('auth.errors.emailExists'), variant: 'danger'});
         } else if (isLoginMode && msg.includes('invalid credentials')) {
-          setError(t('auth.errors.invalidCredentials'));
+          addNotification({message: t('auth.errors.invalidCredentials'), variant: 'danger'});
         } else {
-          setError(response.message || t('auth.errors.general'));
+          addNotification({message: response.message || t('auth.errors.general'), variant: 'danger'});
         }
       }
     } catch (error) {
       console.error(error);
-      setError(t('auth.errors.unexpected'));
+      addNotification({message: t('auth.errors.unexpected'), variant: 'danger'});
     }
   };
 
@@ -93,7 +87,7 @@ function Auth() {
       const googleToken = response.credential;
 
       if (!googleToken) {
-        setError(t('auth.errors.googleFailed'));
+        addNotification({message: t('auth.errors.googleFailed'), variant: 'danger'});
         return;
       }
 
@@ -102,53 +96,19 @@ function Auth() {
       if (authResponse.token) {
         localStorage.setItem('token', authResponse.token);
         handleLogin(authResponse.token);
-        setSuccessMessage(t('auth.messages.googleSuccess'));
+        addNotification({message: t('auth.messages.googleSuccess'), variant: 'success'});
         navigate('/');
       } else {
-        setError(authResponse.message || t('auth.errors.googleFailed'));
+        addNotification({message: authResponse.message || t('auth.errors.googleFailed'), variant: 'danger'});
       }
     } catch (error) {
       console.error(error);
-      setError(t('auth.errors.googleError'));
+      addNotification({message: t('auth.errors.googleError'), variant: 'danger'});
     }
   };
-
-  const addAlert = (message, variant) => {
-    setAlerts((prevAlerts) => [
-      ...prevAlerts,
-      { message, variant, id: Date.now() },
-    ]);
-  };
-
-  const removeAlert = (id) => {
-    setAlerts((prevAlerts) => prevAlerts.filter((alert) => alert.id !== id));
-  };
-
-  useEffect(() => {
-    if (error) {
-      addAlert(error, 'danger');
-      setError('');
-    }
-    if (successMessage) {
-      addAlert(successMessage, 'success');
-      setSuccessMessage('');
-    }
-  }, [error, successMessage]);
 
   return (
     <div className="auth-container">
-      <div className="alerts-container">
-        {alerts.map((alert) => (
-          <AlertMessage
-            key={alert.id}
-            id={alert.id}
-            message={alert.message}
-            variant={alert.variant}
-            onClose={removeAlert}
-          />
-        ))}
-      </div>
-
       <div className="auth-content">
         <h2 className="auth-title">
           {isLoginMode ? t('auth.titles.welcomeBack') : t('auth.titles.createAccount')}
@@ -210,7 +170,7 @@ function Auth() {
                 locale='en'
                 shape='pill'
                 onSuccess={handleGoogleLogin}
-                onError={() => setError(t('auth.errors.googleFailed'))}
+                onError={() => addNotification({message: (t('auth.errors.googleFailed')), variant: 'danger'})}
               />
             </div>
           </>

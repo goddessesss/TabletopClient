@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Button, Alert } from "react-bootstrap";
 import { uploadProfilePicture } from "../api/profileApi.js";
+import { useNotifications } from "./NotificationsHandling/NotificationContext.jsx";
 import avatarDefault from "../assets/avatar.png";
 
-const AvatarUpload = ({ avatarPath, setAvatarPath, setError }) => {
+const AvatarUpload = ({ avatarPath, setAvatarPath }) => {
+  const { addNotification } = useNotifications()
   const [newAvatar, setNewAvatar] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
@@ -29,7 +31,7 @@ const AvatarUpload = ({ avatarPath, setAvatarPath, setError }) => {
   const handleAvatarSubmit = async (e) => {
     e.preventDefault();
     if (!newAvatar) {
-      setError("Please select a file to upload");
+      addNotification({message:"Please select a file to upload", variant: 'warning'});
       return;
     }
 
@@ -44,11 +46,10 @@ const AvatarUpload = ({ avatarPath, setAvatarPath, setError }) => {
       setAvatarPath(result.data.avatarPath);
       setNewAvatar(null);
       setPreviewUrl(null);
-      setError(null);
       setTimeout(() => setSuccessMessage(null), 3000);
       window.location.reload();
     } else {
-      setError(result.message || "Failed to upload avatar");
+      addNotification({message:"Failed to upload avatar", variant: 'danger'});
     }
   };
 

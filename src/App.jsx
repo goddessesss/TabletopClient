@@ -14,7 +14,7 @@ function App() {
     <div className="App">
       {!isAdminRoute && <Navbar />}
       <AppRouter />
-      <Footer/>
+      {!isAdminRoute && <Footer/>}
     </div>
   );
 }
