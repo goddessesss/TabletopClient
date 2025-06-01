@@ -48,6 +48,7 @@ function ProfileDetails({ formData, handleInputChange, handleSubmit }) {
               value={formData.email}
               onChange={handleInputChange}
               placeholder={formData.email ? "" : "Nothing to display"}
+              disabled
             />
           </Form.Group>
         </Col>

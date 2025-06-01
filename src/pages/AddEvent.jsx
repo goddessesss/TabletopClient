@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
-import { getCitiesBySearch, addEvent, getBoardGamesNames } from '../api/eventsApi.js';
+import { getCitiesBySearch, addEvent } from '../api/eventsApi.js';
+import { getBoardGamesNames } from '../api/boardgameApi.js';
 import { useAuth } from '../components/Context/AuthContext.jsx';
 import { BreadCrumbs } from '../components/BreadCrumbs/BreadCrumbs.jsx';
 

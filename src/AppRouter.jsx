@@ -24,8 +24,7 @@ const AppRouter = () => {
       <Route path="/calendar" element={<EventCalendar />} />
       <Route path="/adminpanel" element={<AdminPanel />} />
       <Route path="/confirm-email/confirm" element={<EmailConfirmationPage />} />
-        <Route path="/reset-password/confirm" element={<ResetPasswordConfirm />} />
-
+      <Route path="/reset-password/confirm" element={<ResetPasswordConfirm />} />
 
     </Routes>
   );

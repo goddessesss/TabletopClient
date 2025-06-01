@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Badge } from 'react-bootstrap';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
-import { getBoardGameById, toggleFavoriteGame } from '../api/boardgameApi.js';
+import { getBoardGameById, addFavoriteGame } from '../api/boardgameApi.js';
 
 const BoardGameModal = ({ show, onHide, gameId }) => {
   const [data, setData] = useState(null);
@@ -31,7 +31,7 @@ const BoardGameModal = ({ show, onHide, gameId }) => {
 
   const handleFavoriteToggle = async () => {
     if (!data) return;
-    const result = await toggleFavoriteGame(data.boardGame.id);
+    const result = await addFavoriteGame(data.boardGame.id); // TODO: Remove from favourite on DIFFERENT endpoint
     if (result.success) {
       setIsFavorite(!isFavorite);
     }

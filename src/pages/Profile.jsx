@@ -13,10 +13,10 @@ import { getSettings } from "../api/profileApi.js";
 import { linkGoogleAccount } from "../api/authApi.js";
 
 import AvatarUpload from "../components/AvatarUpload.jsx";
-import AlertMessage from "../components/AlertMessages.jsx";
 import ProfileDetails from "../components/ProfileTabs/ProfileDetails.jsx";
 import CreatedEvents from "../components/ProfileTabs/CreatedEventsTab.jsx";
 import { BreadCrumbs } from "../components/BreadCrumbs/BreadCrumbs.jsx";
+import { useNotifications } from "../components/NotificationsHandling/NotificationContext.jsx"
 
 import { Tab, Nav, Button } from "react-bootstrap";
 import {
@@ -30,7 +30,7 @@ import { GoogleLogin } from "@react-oauth/google";
 function Profile() {
   const { handleLogout } = useAuth();
   const navigate = useNavigate();
-
+  const { addNotification } = useNotifications();
   const [settings, setSettings] = useState(null);
   const [userProfile, setUserProfile] = useState({});
   const [formData, setFormData] = useState({
@@ -43,9 +43,7 @@ function Profile() {
 
   const [favoriteGames, setFavoriteGames] = useState([]);
   const [loadingFavorites, setLoadingFavorites] = useState(true);
-  const [error, setError] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
-  const [successMessage, setSuccessMessage] = useState("");
 
   const [totalEventsParticipated, setTotalEventsParticipated] = useState(0);
   const [totalEventsSuccessfullyHosted, setTotalEventsSuccessfullyHosted] =
@@ -84,8 +82,6 @@ function Profile() {
         });
         setTotalEventsParticipated(data.totalEventsParticipated || 0);
         setTotalEventsSuccessfullyHosted(data.totalEventsSuccessfullyHosted || 0);
-      } else {
-        setError(result.message);
       }
       setLoadingProfile(false);
     };
@@ -97,8 +93,6 @@ function Profile() {
       const result = await getFavoriteBoardGames();
       if (result.success) {
         setFavoriteGames(result.favorites);
-      } else {
-        setError(result.message);
       }
       setLoadingFavorites(false);
     };
@@ -111,11 +105,9 @@ function Profile() {
         const result = await getCreatedEvents();
         if (result.success) {
           setCreatedEvents(result.data || []);
-        } else {
-          setError(result.message);
         }
       } catch (error) {
-        setError("Помилка при завантаженні подій");
+        addNotification({message:"Error while retrieving events", variant: 'danger'});
       }
       setLoadingCreatedEvents(false);
     };
@@ -130,31 +122,25 @@ function Profile() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const result = await updateUserProfile({ ...formData });
+      const result = await updateUserProfile((( { email, ...rest } ) => rest)(formData));
       if (result.success) {
-        setSuccessMessage("Профіль оновлено успішно");
+        addNotification({message:"Profile successfully updated", variant: 'success'})
         setUserProfile((prev) => ({ ...prev, ...formData }));
-      } else {
-        setError("Помилка оновлення: " + result.message);
       }
     } catch (error) {
-      setError("Помилка при оновленні профілю: " + (error.message || "Невідома помилка"));
+      addNotification({message:"An error occured while updating profile", variant: 'danger'});
     }
   };
 
   const handleSendEmailConfirmation = async () => {
     setEmailConfirming(true);
-    setSuccessMessage("");
-    setError(null);
     try {
       const result = await sendEmailConfirmation();
       if (result.success) {
-        setSuccessMessage("Лист для підтвердження email надіслано.");
-      } else {
-        setError("Помилка: " + result.message);
+        addNotification({message:"The confirmation email has been sent successfully", variant: 'success'});
       }
     } catch (error) {
-      setError("Не вдалося надіслати лист для підтвердження email.");
+      addNotification({message:"An error occurred while sending the confirmation email", variant: 'danger'});
     }
     setEmailConfirming(false);
   };
@@ -162,17 +148,13 @@ function Profile() {
   // Новая функция для отправки письма сброса пароля
   const handleSendPasswordReset = async () => {
     setPasswordResetting(true);
-    setSuccessMessage("");
-    setError(null);
     try {
       const result = await sendPasswordResetEmail(formData.email);
       if (result.success) {
-        setSuccessMessage("Лист для скидання пароля надіслано.");
-      } else {
-        setError("Помилка: " + result.message);
+        addNotification({message:"The password reset email has been sent successfully", variant: 'success'});
       }
     } catch (error) {
-      setError("Не вдалося надіслати лист для скидання пароля.");
+      addNotification({message:"An error occurred while sending the password reset email", variant: 'danger'});
     }
     setPasswordResetting(false);
   };
@@ -181,14 +163,12 @@ function Profile() {
     const token = credentialResponse.credential;
     const result = await linkGoogleAccount(token);
     if (result.success) {
-      setSuccessMessage("Google акаунт прив'язано успішно!");
-    } else {
-      setError("Не вдалося прив'язати акаунт: " + result.message);
+      addNotification({message:"Google account successfully linked", variant: 'success'});
     }
   };
 
   const handleGoogleLoginError = () => {
-    setError("Помилка при авторизації через Google");
+    addNotification({message:"An error occurred while auth attempt via Google", variant: 'danger'});
   };
 
   const handleLogoutClick = () => {
@@ -212,16 +192,6 @@ function Profile() {
         </div>
         <h1 className="fw-bold mb-2 px-2">Profile</h1>
       </div>
-
-      {successMessage && (
-        <AlertMessage
-          variant="success"
-          message={successMessage}
-          onClose={() => setSuccessMessage("")}
-        />
-      )}
-      {error && <AlertMessage variant="danger" message={error} onClose={() => setError("")} />}
-
       <div className="profile-container">
         <div className="profile-content">
           <div className="profile-card">
@@ -230,9 +200,8 @@ function Profile() {
                 avatarPath={userProfile.avatarPath}
                 setAvatarPath={(path) => {
                   setUserProfile((prev) => ({ ...prev, avatarPath: path }));
-                  setSuccessMessage("Avatar updated successfully");
+                  addNotification({message:"Avatar sucessfully updated", variant: 'sucess'});
                 }}
-                setError={setError}
               />
             </div>
             <div className="profile-info-right">
