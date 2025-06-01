@@ -7,8 +7,8 @@ import {
   ListGroup,
   Spinner
 } from 'react-bootstrap';
-import { useNotifications } from '../NotificationsHandling/NotificationContext';
-import { createOrUpdateBoardGame, getBoardGameFromBggSearch, getBoardGameUpdateDetails } from '../../api/boardgameApi';
+import { useNotifications } from '../../NotificationsHandling/NotificationContext';
+import { createOrUpdateBoardGame, getBoardGameFromBggSearch, getBoardGameUpdateDetails } from '../../../api/boardgameApi';
 import { BOARDGAME_FIELDS } from './fieldsConfig';
 
 const CreateUpdateBoardGameModal = ({ show, onHide }) => {
