@@ -18,7 +18,7 @@ export default function ClassifierSubTab({ type, label, singleLabel }) {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 8;
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
 
@@ -48,7 +48,7 @@ export default function ClassifierSubTab({ type, label, singleLabel }) {
         const updated = await getClassifiers(type);
         if (updated.success) setItems(updated.data)
         else addNotification({message: "An error occured while retrieving classifiers", variant: 'danger' });
-      }
+      }пропро
     } else {
       res = await createClassifier(type, { name });
       if (res.success) {

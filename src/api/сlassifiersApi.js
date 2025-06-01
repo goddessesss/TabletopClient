@@ -3,7 +3,6 @@ import { BASE_URL } from '../utils/apiConfig';
 
 export async function getClassifiers(type) {
   try {
-    console.log(`trying to get ${type}`)
     const resp = await axios.get(
       `${BASE_URL}/Classifiers/${type}`,
     );

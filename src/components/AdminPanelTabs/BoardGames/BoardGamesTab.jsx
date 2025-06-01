@@ -15,7 +15,7 @@ function BoardGamesTab() {
   const [pageNumber, setPageNumber] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const pageSize = 10;
+  const pageSize = 8;
 
   useEffect(() => {
     getAllBoardGames(pageNumber, pageSize, searchTerm, null)
