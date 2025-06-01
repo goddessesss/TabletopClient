@@ -3,7 +3,7 @@ import { Card, Button, Badge } from 'react-bootstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaWifi } from 'react-icons/fa';
 import { EventTypeEnum } from '../../enums/eventTypes.js';
 
-const EventCard = ({ event, cityName, onClick }) => {
+const EventCard = ({ event, onClick }) => {
   return (
     <Card
       className="card-event shadow-sm h-100 border-0"
@@ -17,12 +17,10 @@ const EventCard = ({ event, cityName, onClick }) => {
             <FaCalendarAlt className="me-2" />
             {new Date(event.startDate).toLocaleString()}
           </div>
-          {cityName && (
-            <div className="text-muted small d-flex align-items-center mt-1">
-              <FaMapMarkerAlt className="me-2" />
-              {cityName}
-            </div>
-          )}
+          <div className="text-muted small d-flex align-items-center mt-1">
+            <FaMapMarkerAlt className="me-2" />
+            {event.location?.shortName ?? event.location?.fullName ?? "No location"}
+          </div>
         </div>
 
         <div className="mb-3 d-flex flex-wrap gap-2">
