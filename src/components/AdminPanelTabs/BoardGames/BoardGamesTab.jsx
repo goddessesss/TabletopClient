@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { deleteBoardGame, getAllBoardGames } from '../../api/boardgameApi.js';
-import Pagination from '../Pagination.jsx';
-import SearchBar from '../SearchBar.jsx';
+import { deleteBoardGame, getAllBoardGames } from '../../../api/boardgameApi.js';
+import Pagination from '../../Pagination.jsx';
+import SearchBar from '../../SearchBar.jsx';
 import { useTranslation } from 'react-i18next';
 import CreateUpdateBoardGameModal from './CreateUpdateBoardGameModal.jsx';
 import { Button } from 'react-bootstrap';
-import { useNotifications } from '../NotificationsHandling/NotificationContext.jsx';
+import { useNotifications } from '../../NotificationsHandling/NotificationContext.jsx';
 
 function BoardGamesTab() {
   const { t } = useTranslation();
@@ -54,14 +54,14 @@ function BoardGamesTab() {
       <div className="boardgames-container">
           <Button variant="primary" style={{ minWidth: '200px', marginBottom: '10px' }} onClick={() => setShowModal(true)}>Modify Board Games</Button>
           <SearchBar value={searchTerm} onChange={setSearchTerm} placeholder={t('search.boardGamesPlaceholder')} />
-          <div className="boardgames-list">
+          <div className="item-list">
             {boardGames.length === 0 ? (
               <p>No board games found.</p>
             ) : (
               boardGames.map((game) => (
-                <div className="boardgame-card" key={game.id}>
-                  <div className="boardgame-name">{game.name}</div>
-                  <div className="boardgame-actions">
+                <div className="item-card" key={game.id}>
+                  <div className="item-name">{game.name}</div>
+                  <div className="item-actions">
                     <button onClick={() => handleDelete(game.id)} className="btn delete-btn">
                       Delete
                     </button>

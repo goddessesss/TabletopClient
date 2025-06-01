@@ -5,9 +5,10 @@ import { useAuth } from '../components/Context/AuthContext.jsx';
 import { Dropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../components/Context/LanguageContext';
+import { roles } from '../enums/roles.js'
 
 function Navbar() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userRole } = useAuth();
   const { t } = useTranslation();
   const { language, changeLanguage } = useLanguage();
   const navigate = useNavigate();
@@ -36,7 +37,9 @@ function Navbar() {
         <div className="navbar-center">
           <Link to="/board-games" className="nav-item">{t('navbar.games')}</Link>
           <Link to="/events" className="nav-item">{t('navbar.events')}</Link>
+          <Link to="#" className="nav-item">{t('navbar.gameClubs')}</Link>
           <Link to="/contact" className="nav-item">{t('navbar.contact')}</Link>
+          { userRole === roles.find(role => role.name === 'Admin')?.id && <Link to="/adminpanel" className="nav-item">{t('navbar.admin')}</Link>} 
         </div>
 
         <div

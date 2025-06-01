@@ -14,9 +14,10 @@ $danger-hover: #b72b21;
 
 .admin-panel {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   font-family: $font-stack;
   color: #333;
+  overflow: hidden;
 
   .mobile-header {
     display: none;
@@ -184,6 +185,7 @@ $danger-hover: #b72b21;
     background-color: #fff;
     display: flex;
     flex-direction: column;
+    overflow: auto;
 
     .main-header {
       display: flex;
@@ -246,13 +248,13 @@ $danger-hover: #b72b21;
       }
     }
 
-    .boardgames-list {
+    .item-list {
       display: flex;
       flex-direction: column;
       gap: 1rem;
       margin-bottom: 1rem;
 
-      .boardgame-card {
+      .item-card {
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -266,13 +268,13 @@ $danger-hover: #b72b21;
           background-color: $highlight-light;
         }
 
-        .boardgame-name {
+        .item-name {
           font-weight: 600;
           font-size: 1.1rem;
           color: $primary-color;
         }
 
-        .boardgame-actions {
+        .item-actions {
           button {
             margin-left: 0.5rem;
             padding: 0.4rem 1rem;
@@ -290,9 +292,23 @@ $danger-hover: #b72b21;
                 background-color: $danger-hover;
               }
             }
+
+            &.edit-btn {
+              background-color: #e49c00;
+              color: white;
+
+              &:hover {
+                background-color: rgb(201, 114, 0);
+              }
+            }
           }
         }
       }
+    }
+
+    .add-classifier-button {
+      min-width: 150px;
+      height: 45px;
     }
   }
 

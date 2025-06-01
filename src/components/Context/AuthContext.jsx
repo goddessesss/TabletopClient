@@ -5,29 +5,28 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState(() => localStorage.getItem('authToken'));
+  const [userRole, setUserRole] = useState(null);
   const [userId, setUserId] = useState(null);
   const [userProfile, setUserProfile] = useState(() => {
     const savedProfile = localStorage.getItem('userProfile');
     return savedProfile ? JSON.parse(savedProfile) : null;
   });
 
-  const extractUserIdFromToken = (jwtToken) => {
-    try {
-      const decoded = jwt_decode(jwtToken);
-      return decoded?.PlayerProfileId ?? null;
-    } catch (error) {
-      console.error('Error decoding token:', error);
-      return null;
-    }
-  };
-
   useEffect(() => {
     if (authToken) {
-      const id = extractUserIdFromToken(authToken);
-      setUserId(id);
+      try {
+        const decoded = jwt_decode(authToken);
+        setUserId(decoded?.PlayerProfileId ?? null);
+        setUserRole(+decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ?? null);
+        console.log(decoded)
+      } catch (error) {
+        console.error('Error decoding token:', error);
+        setUserId(null);
+        setUserRole(null);
+      }
     } else {
       setUserId(null);
-      console.log('No authToken found, userId set to null');
+      setUserRole(null);
     }
   }, [authToken]);
 
@@ -52,7 +51,7 @@ export const AuthProvider = ({ children }) => {
   const isAuthenticated = !!authToken;
 
   return (
-    <AuthContext.Provider value={{ authToken, userId, userProfile, isAuthenticated, handleLogin, handleLogout, updateUserProfile }}>
+    <AuthContext.Provider value={{ authToken, userId, userProfile, userRole, isAuthenticated, handleLogin, handleLogout, updateUserProfile }}>
       {children}
     </AuthContext.Provider>
   );
