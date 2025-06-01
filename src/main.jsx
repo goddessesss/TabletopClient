@@ -11,6 +11,7 @@ import i18n from './i18n/i18n.js';
 import { LanguageProvider } from './components/Context/LanguageContext.jsx';  
 
 import App from "./App";
+import { NotificationProvider } from "./components/NotificationsHandling/NotificationContext.jsx";
 
 const root = document.getElementById("root");
 
@@ -22,8 +23,10 @@ if (root) {
           <AuthProvider>
             <FilterProvider>
               <LanguageProvider> 
-                <BrowserRouter> 
-                  <App />
+                <BrowserRouter>
+                  <NotificationProvider>
+                    <App />
+                  </NotificationProvider> 
                 </BrowserRouter>
               </LanguageProvider>
             </FilterProvider>

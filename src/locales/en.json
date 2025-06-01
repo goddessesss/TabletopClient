@@ -128,5 +128,11 @@
   },
   "events":{
     "events.home":"Home"
+  },
+  "admin": {
+    "boardGames" : "Board Games",
+    "dashboard" : "Dashboard",
+    "classifiers" : "Classifiers",
+    "users" : "Users"
   }
 }

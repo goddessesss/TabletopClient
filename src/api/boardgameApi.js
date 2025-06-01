@@ -62,7 +62,7 @@ export const fetchClassifiers = async () => {
   }
 };
 
-export const toggleFavoriteGame = async (boardGameId) => {
+export const addFavoriteGame = async (boardGameId) => {
   try {
     const authToken = localStorage.getItem('authToken');
     const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
@@ -106,22 +106,133 @@ export const getFavoriteBoardGames = async () => {
   }
 };
 
-export const getCreatedEvents = async () => {
+export const getBoardGamesNames = async (search = "") => {
   try {
     const authToken = localStorage.getItem('authToken');
-    const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
-    
-    const response = await axios.get(`${BASE_URL}/PlayerProfiles/created-events`, { headers });
+    const response = await axios.post(
+      `${BASE_URL}/BoardGames/names`,
+      { search },
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        }
+      }
+    );
 
-    return {
-      success: true,
-      favorites: response.data.favorites || [],
-    };
+    if (response.status === 200 && response.data && Array.isArray(response.data.boardGames)) {
+      return { success: true, data: response.data.boardGames, total: response.data.total };
+    } else {
+      return { success: false, message: 'Invalid response data format' };
+    }
   } catch (error) {
-    console.error("Error fetching favorite games:", error);
+    const serverMsg = error.response?.data?.message || '';
+    console.error("Error fetching board games:", serverMsg);
     return {
       success: false,
-      message: error.response?.data?.message || 'Failed to get favorite games.',
+      message: serverMsg || "Fetching board games failed"
     };
   }
 };
+
+export const getBoardGameFromBggSearch = async (search = "") => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${BASE_URL}/Bgg/search`,
+      {
+        params: { search },
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        }
+      }
+    );
+
+    if (response.status === 200 && response.data && Array.isArray(response.data)) {
+      return { success: true, data: response.data };
+    } else {
+      return { success: false, message: 'Invalid response data format' };
+    }
+  } catch (error) {
+    const serverMsg = error.response?.data?.message || '';
+    console.error("Error fetching board games from BGG:", serverMsg);
+    return {
+      success: false,
+      message: serverMsg || "Fetching board games from BGG failed"
+    };
+  }
+};
+
+export const getBoardGameUpdateDetails = async (bggId) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${BASE_URL}/BoardGames/${bggId}/update-details`,
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        }
+      }
+    );
+
+    if (response.status === 200 && response.data) {
+      return { success: true, data: response.data };
+    } else {
+      return { success: false, message: 'Invalid response data format' };
+    }
+  } catch (error) {
+    console.error("Error fetching board games update details:", error);
+    return {
+      success: false,
+      message: "Error fetching board games update details"
+    };
+  }
+};
+
+export const deleteBoardGame = async (id) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.delete(
+      `${BASE_URL}/BoardGames/${id}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        }
+      });
+    if (response.status === 200)
+      return true;
+    
+    return false;
+  }
+  catch {
+    console.log(`Error while deleting board game with id ${id}`)
+    return false;
+  }
+}
+
+export const createOrUpdateBoardGame = async (bggId) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.post(
+      `${BASE_URL}/BoardGames/${bggId}/create-or-update`,
+      null,
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        }
+      });
+    if (response.status === 200)
+      return true;
+
+    return false;
+  }
+  catch {
+    console.log(`Error while creating/updating board game with bgg id ${bggId}`)
+    return false;
+  }
+}
