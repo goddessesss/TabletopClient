@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { getBoardGamesNames, getCitiesBySearch } from "../../api/eventsApi.js";
+import { getCitiesBySearch } from "../../api/eventsApi.js";
 import AsyncSelect from "react-select/async";
+import { getBoardGamesNames } from "../../api/boardgameApi.js";
 
 const eventTypes = [
   { id: 0, name: "GameSession" },
