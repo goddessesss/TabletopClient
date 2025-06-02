@@ -14,6 +14,8 @@ import { linkGoogleAccount } from "../api/authApi.js";
 import AvatarUpload from "../components/AvatarUpload.jsx";
 import ProfileDetails from "../components/ProfileTabs/ProfileDetails.jsx";
 import CreatedEventsTab from "../components/ProfileTabs/CreatedEventsTab.jsx";
+import RecommendationsTab from "../components/ProfileTabs/RecommendationsTab.jsx";
+
 import { BreadCrumbs } from "../components/BreadCrumbs/BreadCrumbs.jsx";
 import { useNotifications } from "../components/NotificationsHandling/NotificationContext.jsx"
 
@@ -340,8 +342,9 @@ const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
               </Tab.Pane>
 
               <Tab.Pane eventKey="recommendations">
-                <div>Recommendations...</div>
-              </Tab.Pane>
+  <RecommendationsTab />
+</Tab.Pane>
+
 
               <Tab.Pane eventKey="favouritegames">
                 <div>

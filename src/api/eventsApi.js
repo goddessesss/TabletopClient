@@ -269,3 +269,23 @@ export const updateEvents = async (id, eventData) => {
     return { success: false, message: error.response?.data || error.message };
   }
 };
+
+export async function unjoinEvents(eventId, participantsId) {
+  const authToken = localStorage.getItem('authToken');
+
+  try {
+    const response = await axios.delete(
+      `${BASE_URL}/Events/${eventId}/participations/${participantsId}`, 
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+    const message = error.response?.data || error.message || 'Unknown error';
+    return { success: false, message };
+  }
+}

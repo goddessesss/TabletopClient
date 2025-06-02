@@ -135,33 +135,28 @@ export const getBoardGamesNames = async (search = "") => {
     };
   }
 };
-
-export const getBoardGameFromBggSearch = async (search = "") => {
+export const getRecommendations = async () => {
   try {
-    const authToken = localStorage.getItem('authToken');
-    const response = await axios.get(
-      `${BASE_URL}/Bgg/search`,
-      {
-        params: { search },
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-          'accept': '*/*',
-        }
-      }
-    );
+    const authToken = localStorage.getItem("authToken");
 
-    if (response.status === 200 && response.data && Array.isArray(response.data)) {
+    const response = await axios.get(`${BASE_URL}/BoardGames/recommendations`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        Accept: "*/*",
+      },
+    });
+
+    if (response.status === 200 && Array.isArray(response.data)) {
       return { success: true, data: response.data };
     } else {
-      return { success: false, message: 'Invalid response data format' };
+      return { success: false, message: "Failed to fetch recommendations." };
     }
   } catch (error) {
-    const serverMsg = error.response?.data?.message || '';
-    console.error("Error fetching board games from BGG:", serverMsg);
+    const serverMsg = error.response?.data?.message || "";
+    console.error("Error fetching recommendations:", serverMsg);
     return {
       success: false,
-      message: serverMsg || "Fetching board games from BGG failed"
+      message: serverMsg || "Server request failed.",
     };
   }
 };
@@ -203,17 +198,14 @@ export const deleteBoardGame = async (id) => {
         headers: {
           'Authorization': `Bearer ${authToken}`,
         }
-      });
-    if (response.status === 200)
-      return true;
-    
+      }
+    );
+    return response.status === 200;
+  } catch {
+    console.log(`Error while deleting board game with id ${id}`);
     return false;
   }
-  catch {
-    console.log(`Error while deleting board game with id ${id}`)
-    return false;
-  }
-}
+};
 
 export const createOrUpdateBoardGame = async (bggId) => {
   try {
@@ -225,14 +217,37 @@ export const createOrUpdateBoardGame = async (bggId) => {
         headers: {
           'Authorization': `Bearer ${authToken}`,
         }
-      });
-    if (response.status === 200)
-      return true;
-
+      }
+    );
+    return response.status === 200;
+  } catch {
+    console.log(`Error while creating/updating board game with bgg id ${bggId}`);
     return false;
   }
+};
+
+export const getBoardGameFromBggSearch = async (search = "") => {
+  try{
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${BASE_URL}/Bgg/search`,
+      {
+        params: { search },
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        }
+      }
+    );
+
+    if (response.status === 200 && response.data && Array.isArray(response.data))
+      return { success: true, data: response.data };
+    else
+      return { success: false, message: 'Invalid response data format' };
+  }
   catch {
-    console.log(`Error while creating/updating board game with bgg id ${bggId}`)
-    return false;
+    const serverMsg = error.response?.data?.message || '';
+    console.error("Error fetching board games from BGG:", serverMsg);
   }
 }
