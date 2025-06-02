@@ -124,35 +124,6 @@ export const getCreatedEvents = async () => {
     };
   }
 };
-export const getBoardGamesNames = async (search = "") => {
-  try {
-    const authToken = localStorage.getItem('authToken');
-    const response = await axios.post(
-      `${BASE_URL}/BoardGames/names`,
-      { search },
-      {
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-          'accept': '*/*',
-        }
-      }
-    );
-
-    if (response.status === 200 && response.data && Array.isArray(response.data.boardGames)) {
-      return { success: true, data: response.data.boardGames, total: response.data.total };
-    } else {
-      return { success: false, message: 'Invalid response data format' };
-    }
-  } catch (error) {
-    const serverMsg = error.response?.data?.message || '';
-    console.error("Error fetching board games:", serverMsg);
-    return {
-      success: false,
-      message: serverMsg || "Fetching board games failed"
-    };
-  }
-};
 
 export async function fetchCityName(latitude, longitude) {
   if (!latitude || !longitude) return null;
@@ -214,7 +185,6 @@ export const getEventById = async (eventId) => {
   }
 };
 
-
 export const joinEvents = async (eventId, playerId) => {
   try {
     const authToken = localStorage.getItem('authToken');
@@ -243,7 +213,6 @@ export const joinEvents = async (eventId, playerId) => {
     };
   }
 };
-
 
 export const getParticipants = async (eventId) => {
   try {

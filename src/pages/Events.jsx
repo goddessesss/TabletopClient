@@ -37,7 +37,6 @@ const Events = () => {
   const [search, setSearch] = useState('');
   const [sorting, setSorting] = useState({ participantsCount: null, price: null, startDate: null });
   const [showFilterSidebar, setShowFilterSidebar] = useState(false);
-  const [cityNamesByEventId, setCityNamesByEventId] = useState({});
 
   const fetchCityNameAsync = async (latitude, longitude) => {
     try {
@@ -74,19 +73,8 @@ const Events = () => {
       const data = await getAllEvents(currentPage, pageSize, search, filtersToSend, sorting);
 
       if (data && data.events) {
-        const cityNames = {};
-        await Promise.all(
-          data.events.map(async (event) => {
-            if (event.location?.latitude && event.location?.longitude) {
-              cityNames[event.id] = await fetchCityNameAsync(event.location.latitude, event.location.longitude);
-            } else {
-              cityNames[event.id] = 'No location';
-            }
-          })
-        );
         setEvents(data.events);
         setTotalPages(Math.ceil(data.totalCount / pageSize));
-        setCityNamesByEventId(cityNames);
       } else {
         setEvents([]);
         setTotalPages(1);
@@ -96,7 +84,6 @@ const Events = () => {
       console.error('Error fetching events:', error);
       setEvents([]);
       setTotalPages(1);
-      setCityNamesByEventId({});
     } finally {
       setLoading(false);
     }
@@ -220,7 +207,6 @@ const Events = () => {
           ) : (
             <EventList
               events={events}
-              cityNamesByEventId={cityNamesByEventId}
               onEventClick={handleEventClick}
             />
           )}

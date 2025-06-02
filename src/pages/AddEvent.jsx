@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Select from 'react-select';
-import { getCitiesBySearch, addEvent, getBoardGamesNames } from '../api/eventsApi.js';
+import { getCitiesBySearch, addEvent } from '../api/eventsApi.js';
+import { getBoardGamesNames } from '../api/boardgameApi.js';
 import { useAuth } from '../components/Context/AuthContext.jsx';
 import { BreadCrumbs } from '../components/BreadCrumbs/BreadCrumbs.jsx';
 
 function AddEvent() {
+  const debounceTimeout = useRef(null);
   const { userId } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
@@ -73,7 +75,7 @@ function AddEvent() {
       if (result.success && Array.isArray(result.data)) {
         const options = result.data.map((item) => ({
           value: item.osmType.charAt(0) + item.osmId,
-          label: item.shortName || 'Unknown city',
+          label: item.fullName || item.shortName || 'Unknown city',
         }));
         setCityOptions(options);
       } else {
@@ -100,7 +102,12 @@ function AddEvent() {
   const handleInputChange = (e) => {
     const value = e.target.value;
     setInputValue(value);
-    handleCitySearch(value);
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+    debounceTimeout.current = setTimeout(() => {
+      handleCitySearch(value);
+    }, 500);
   };
 
   const handleFormChange = (e) => {
@@ -142,12 +149,10 @@ function AddEvent() {
       displayMessage('Event type is required.', 'error');
       return;
     }
-
     if (!formData.isOnline && !isValidOsmId(formData.fullLocationOsmId)) {
       displayMessage('Invalid location format.', 'error');
       return;
     }
-
     if (isDateInPast(formData.startDate)) {
       displayMessage('Start date cannot be in the past.', 'error');
       return;
@@ -179,7 +184,7 @@ function AddEvent() {
 
       const result = await addEvent(eventPayload);
       if (result.success) {
-        displayMessage('Event successfully created!', 'success');
+        displayMessage('Event successfully created', 'success');
         setFormData({
           name: '',
           description: '',
@@ -351,12 +356,12 @@ function AddEvent() {
 
           {!formData.isOnline && (
             <div className="mb-3">
-              <label className="form-label">City</label>
+              <label className="form-label">Location</label>
               <input
                 type="text"
                 value={inputValue}
                 onChange={handleInputChange}
-                placeholder="Start typing city"
+                placeholder="Start typing location name"
                 className="form-control"
               />
               {isLoading && <p>Loading...</p>}
@@ -371,46 +376,46 @@ function AddEvent() {
                       style={{ cursor: 'pointer' }}
                       >
                       {city.label}
-                      </li>
-                      ))}
-                      </ul>
-                      )}
-                      </div>
-                      )}
-                      <div className="mb-3">
-                        <label className="form-label">Board Game</label>
-                        <Select
-                          options={boardGames}
-                          onChange={handleBoardGameChange}
-                          isClearable
-                          placeholder="Select board game"
-                          value={boardGames.find((g) => g.value === formData.boardGameId) || null}
-                        />
-                      </div>
+                    </li>
+                    ))}
+                  </ul>
+                  )}
+              </div>
+            )}
+            <div className="mb-3">
+              <label className="form-label">Board Game</label>
+              <Select
+                options={boardGames}
+                onChange={handleBoardGameChange}
+                isClearable
+                placeholder="Select board game"
+                value={boardGames.find((g) => g.value === formData.boardGameId) || null}
+              />
+            </div>
 
-                      <div className="mb-3">
-                        <label className="form-label">Price</label>
-                        <input
-                          type="number"
-                          name="price"
-                          value={formData.price}
-                          onChange={handleFormChange}
-                          className="form-control"
-                          min="0"
-                        />
-                      </div>
+            <div className="mb-3">
+              <label className="form-label">Price</label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleFormChange}
+                className="form-control"
+                min="0"
+              />
+            </div>
 
-                      <button
-                        type="submit"
-                        className="btn"
-                        style={{ backgroundColor: '#fbc02d', color: 'black' }}
-                      >
-                        Create Event
-                      </button>
-                    </form>
-                  </div>
-                </div>
-              );
-            }
+            <button
+              type="submit"
+              className="btn"
+              style={{ backgroundColor: '#fbc02d', color: 'black' }}
+            >
+              Create Event
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
 export default AddEvent;

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { getBoardGamesNames, getCitiesBySearch } from "../../api/eventsApi.js";
+import { getCitiesBySearch } from "../../api/eventsApi.js";
 import AsyncSelect from "react-select/async";
+import { getBoardGamesNames } from "../../api/boardgameApi.js";
 
 const eventTypes = [
   { id: 0, name: "GameSession" },
@@ -93,20 +94,32 @@ function UpdateEventModal({ show, event, onSave, onClose, saving }) {
     }
   }, [isOnline]);
 
-  const loadCityOptions = async (inputValue) => {
-    if (!inputValue) return [];
-    try {
-      const result = await getCitiesBySearch(inputValue);
-      if (result.success && Array.isArray(result.data)) {
-        return result.data.map((city) => ({
-          label: city.shortName || city.fullName || "Unknown",
-          value: city,
-        }));
-      }
-      return [];
-    } catch {
-      return [];
+  let timeoutId;
+
+  const loadCityOptions = (inputValue, callback) => {
+    if (!inputValue) {
+      callback([]);
+      return;
     }
+
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(async () => {
+      try {
+        const result = await getCitiesBySearch(inputValue);
+        if (result.success && Array.isArray(result.data)) {
+          callback(
+            result.data.map((city) => ({
+              label: city.fullName || city.shortName || "Unknown",
+              value: city,
+            }))
+          );
+        } else {
+          callback([]);
+        }
+      } catch {
+        callback([]);
+      }
+    }, 500);
   };
 
   const handleCityChange = (selectedOption) => {
@@ -262,7 +275,7 @@ function UpdateEventModal({ show, event, onSave, onClose, saving }) {
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formLocation">
-              <Form.Label>City</Form.Label>
+              <Form.Label>Location</Form.Label>
               <AsyncSelect
                 isClearable
                 isDisabled={isOnline}
@@ -273,15 +286,15 @@ function UpdateEventModal({ show, event, onSave, onClose, saving }) {
                 value={
                   location
                     ? {
-                        label: location.shortName || location.fullName || "Unknown",
+                        label: location.fullName || location.shortName || "Unknown",
                         value: location,
                       }
                     : null
                 }
                 getOptionValue={(option) => option.value.osmId}
                 getOptionLabel={(option) => option.label}
-                placeholder={isOnline ? "Disabled for online events" : "Start typing city"}
-                noOptionsMessage={() => "No cities found"}
+                placeholder={isOnline ? "Disabled for online events" : "Start typing location"}
+                noOptionsMessage={() => "No locations found"}
               />
               {isOnline && (
                 <Form.Text className="text-muted">
