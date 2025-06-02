@@ -225,3 +225,29 @@ export const createOrUpdateBoardGame = async (bggId) => {
     return false;
   }
 };
+
+export const getBoardGameFromBggSearch = async (search = "") => {
+  try{
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${BASE_URL}/Bgg/search`,
+      {
+        params: { search },
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        }
+      }
+    );
+
+    if (response.status === 200 && response.data && Array.isArray(response.data))
+      return { success: true, data: response.data };
+    else
+      return { success: false, message: 'Invalid response data format' };
+  }
+  catch {
+    const serverMsg = error.response?.data?.message || '';
+    console.error("Error fetching board games from BGG:", serverMsg);
+  }
+}
