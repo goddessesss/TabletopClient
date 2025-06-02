@@ -125,3 +125,30 @@ export const getCreatedEvents = async () => {
     };
   }
 };
+
+
+export const getRecommendations = async () => {
+  try {
+    const authToken = localStorage.getItem("authToken");
+
+    const response = await axios.get(`${BASE_URL}/BoardGames/recommendations`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        Accept: "*/*",
+      },
+    });
+
+    if (response.status === 200 && response.data) {
+      return { success: true, data: response.data };
+    } else {
+      return { success: false, message: "Failed to fetch recommendations." };
+    }
+  } catch (error) {
+    const serverMsg = error.response?.data?.message || "";
+    console.error("Error fetching recommendations:", serverMsg);
+    return {
+      success: false,
+      message: serverMsg || "Server request failed.",
+    };
+  }
+};
