@@ -19,7 +19,17 @@ export async function getAllBoardGames(pageNumber, pageSize, search, filters) {
 
 export const getBoardGameById = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/BoardGames/${id}`);
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${BASE_URL}/BoardGames/${id}`,
+      { 
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        }
+      }
+    );
     if (response.status === 200) {
       return { success: true, data: response.data };
     }
@@ -86,6 +96,30 @@ export const addFavoriteGame = async (boardGameId) => {
   }
 };
 
+export const removeFromFavoriteGame = async (boardGameId) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+
+    const response = await axios.delete(
+      `${BASE_URL}/PlayerProfiles/favourite-games/${boardGameId}`,
+      { headers }
+    );
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    console.error("Error changing favorite game status:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to change game status.',
+    };
+  }
+};
+
+
 export const getFavoriteBoardGames = async () => {
   try {
     const authToken = localStorage.getItem('authToken');
@@ -95,7 +129,7 @@ export const getFavoriteBoardGames = async () => {
 
     return {
       success: true,
-      favorites: response.data.favorites || [],
+      data: response.data || [],
     };
   } catch (error) {
     console.error("Error fetching favorite games:", error);
@@ -135,6 +169,7 @@ export const getBoardGamesNames = async (search = "") => {
     };
   }
 };
+
 export const getRecommendations = async () => {
   try {
     const authToken = localStorage.getItem("authToken");
