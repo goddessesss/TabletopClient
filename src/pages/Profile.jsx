@@ -27,6 +27,7 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import { GoogleLogin } from "@react-oauth/google";
+import FavoriteGamesTab from "../components/ProfileTabs/FavoriteGamesTab.jsx";
 
 function Profile() {
   const { handleLogout } = useAuth();
@@ -43,8 +44,6 @@ function Profile() {
     email: "",
   });
 
-  const [favoriteGames, setFavoriteGames] = useState([]);
-  const [loadingFavorites, setLoadingFavorites] = useState(true);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [events, setEvents] = useState([]);
 
@@ -89,17 +88,6 @@ const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
       setLoadingProfile(false);
     };
     fetchUserProfile();
-  }, []);
-
-  useEffect(() => {
-    const fetchFavoriteGames = async () => {
-      const result = await getFavoriteBoardGames();
-      if (result.success) {
-        setFavoriteGames(result.favorites);
-      }
-      setLoadingFavorites(false);
-    };
-    fetchFavoriteGames();
   }, []);
 
   useEffect(() => {
@@ -342,24 +330,11 @@ const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
               </Tab.Pane>
 
               <Tab.Pane eventKey="recommendations">
-  <RecommendationsTab />
-</Tab.Pane>
-
+                <RecommendationsTab/>
+              </Tab.Pane>
 
               <Tab.Pane eventKey="favouritegames">
-                <div>
-                  {loadingFavorites ? (
-                    <p>Loading...</p>
-                  ) : favoriteGames.length > 0 ? (
-                    <ul>
-                      {favoriteGames.map((game) => (
-                        <li key={game.id}>{game.name}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No favorite games found.</p>
-                  )}
-                </div>
+                <FavoriteGamesTab/>
               </Tab.Pane>
             </Tab.Content>
           </Tab.Container>

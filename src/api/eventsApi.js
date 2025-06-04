@@ -289,3 +289,23 @@ export async function unjoinEvents(eventId, participantsId) {
     return { success: false, message };
   }
 }
+
+export const getCalendarEvents = async () => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+    
+    const response = await axios.get(`${BASE_URL}/PlayerProfiles/calendar-events`, { headers });
+
+    return {
+      success: true,
+      data: response.data || [],
+    };
+  } catch (error) {
+    console.error("Error fetching calendar events:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to get calendar events',
+    };
+  }
+};

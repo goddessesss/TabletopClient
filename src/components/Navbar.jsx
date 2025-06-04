@@ -38,7 +38,7 @@ function Navbar() {
           <Link to="/board-games" className="nav-item">{t('navbar.games')}</Link>
           <Link to="/events" className="nav-item">{t('navbar.events')}</Link>
           <Link to="#" className="nav-item">{t('navbar.gameClubs')}</Link>
-          <Link to="/contact" className="nav-item">{t('navbar.contact')}</Link>
+          { isAuthenticated && <Link to="/calendar" className="nav-item">{t('navbar.calendar')}</Link> }
           { userRole === roles.find(role => role.name === 'Admin')?.id && <Link to="/adminpanel" className="nav-item">{t('navbar.admin')}</Link>} 
         </div>
 
