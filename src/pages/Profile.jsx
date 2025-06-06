@@ -51,8 +51,7 @@ function Profile() {
   });
 
   const [totalEventsParticipated, setTotalEventsParticipated] = useState(0);
-  const [totalEventsSuccessfullyHosted, setTotalEventsSuccessfullyHosted] =
-    useState(0);
+  const [totalEventsSuccessfullyHosted, setTotalEventsSuccessfullyHosted] = useState(0);
 
   const [createdEvents, setCreatedEvents] = useState([]);
   const [loadingCreatedEvents, setLoadingCreatedEvents] = useState(true);
@@ -190,24 +189,24 @@ function Profile() {
     setEmailConfirming(false);
   };
 
-const handleSendPasswordReset = async (email) => {
-  setPasswordResetting(true);
-  try {
-    const result = await sendPasswordResetEmail(email);
-    if (result.success) {
+  const handleSendPasswordReset = async (email) => {
+    setPasswordResetting(true);
+    try {
+      const result = await sendPasswordResetEmail(email);
+      if (result.success) {
+        addNotification({
+          message: "The password reset email has been sent successfully",
+          variant: "success",
+        });
+      }
+    } catch {
       addNotification({
-        message: "The password reset email has been sent successfully",
-        variant: "success",
+        message: "An error occurred while sending the password reset email",
+        variant: "danger",
       });
     }
-  } catch {
-    addNotification({
-      message: "An error occurred while sending the password reset email",
-      variant: "danger",
-    });
-  }
-  setPasswordResetting(false);
-};
+    setPasswordResetting(false);
+  };
 
   const handleLogoutClick = () => {
     handleLogout();

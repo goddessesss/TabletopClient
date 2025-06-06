@@ -12,6 +12,7 @@ import {
   FaCalendarAlt,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useNotifications } from "../NotificationsHandling/NotificationContext.jsx";
 
 function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }) {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -28,6 +29,7 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
   });
 
   const navigate = useNavigate();
+  const { addNotification } = useNotifications();
 
   useEffect(() => {
     setLocalEvents(events);
@@ -68,11 +70,11 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
         setEventToEdit(response.data);
         setShowEditModal(true);
       } else {
-        alert("Failed to load event data.");
+        addNotification({message: "Failed to load event data.", type: 'danger'});
       }
     } catch (error) {
       console.error("Error fetching event by id:", error);
-      alert("Error loading event.");
+      addNotification({message: "Failed to load event data.", type: 'danger'});
     } finally {
       setLoadingEvent(false);
     }
@@ -93,7 +95,7 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
       }
       handleCloseEditModal();
     } catch (error) {
-      alert("Error saving event data.");
+      addNotification({message: "Failed to save event data.", type: 'danger'});
       console.error("Save error:", error);
     } finally {
       setSaving(false);
@@ -121,6 +123,7 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
         if (onCancel) {
           await onCancel(event.id);
         }
+        addNotification({message: "Event successfully cancelled", variant: 'success'});
         setLocalEvents((prevEvents) =>
           prevEvents.map((e) =>
             e.id === event.id ? { ...e, statusName: "canceled" } : e
@@ -133,9 +136,10 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
         setLocalEvents((prevEvents) =>
           prevEvents.filter((e) => e.id !== event.id)
         );
+        addNotification({message: "Event successfully deleted", variant: 'success'});
       }
     } catch (error) {
-      alert(error?.message || "An error occurred.");
+      addNotification({message: error?.message || "An error occurred.", type: 'danger'});
       console.error("Action error:", error);
     } finally {
       setDeleting(false);
@@ -273,7 +277,7 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
                     <div className="d-flex align-items-center gap-2">
                       <FaUsers />
                       <span>
-                        <strong>Participants:</strong> {participants.length}
+                        <strong>Participants (via platform):</strong> {participants.length}
                       </span>
                     </div>
                   )}

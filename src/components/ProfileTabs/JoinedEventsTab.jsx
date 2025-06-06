@@ -55,7 +55,7 @@ function JoinedEventsTab({ events, loading, error }) {
 
   return (
     <div className="mb-4">
-      <h2 className="fw-bold text-dark">Joined Games</h2>
+      <h2 className="fw-bold text-dark">Joined Events</h2>
       <hr className="mb-4" />
       <ListGroup variant="flush">
         {events.map((event) => (
@@ -135,23 +135,20 @@ function JoinedEventsTab({ events, loading, error }) {
                 )}
               </div>
 
-              <div
-                className="mt-2 d-flex flex-wrap gap-4 text-muted"
-                style={{ fontSize: "0.9rem" }}
-              >
-                {event.date && (
+              <div className="mt-2 d-flex flex-wrap gap-4 text-muted">
+                {event.startDate && (
                   <div className="d-flex align-items-center gap-2">
                     <FaCalendarAlt />
                     <span>
-                      <strong>Date:</strong> {formatDate(event.date)}
+                      <strong>Start:</strong> {formatDate(event.startDate)}
                     </span>
                   </div>
                 )}
-                {event.participantsCount !== undefined && (
+                {event.endDate && (
                   <div className="d-flex align-items-center gap-2">
-                    <FaUsers />
+                    <FaCalendarAlt />
                     <span>
-                      <strong>Participants:</strong> {event.participantsCount}
+                      <strong>End:</strong> {formatDate(event.endDate)}
                     </span>
                   </div>
                 )}
