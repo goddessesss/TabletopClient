@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
     if (authToken) {
       try {
         const decoded = jwt_decode(authToken);
-        setUserId(decoded?.PlayerProfileId ?? null);
+        setUserId(Number(decoded?.PlayerProfileId) ?? null);
         setUserRole(+decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ?? null);
         console.log(decoded)
       } catch (error) {
