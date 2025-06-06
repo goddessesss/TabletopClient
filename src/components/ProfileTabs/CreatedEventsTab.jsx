@@ -1,14 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Button, ListGroup, Badge } from "react-bootstrap";
 import UpdateEventModal from "../Modals/UpdateEventModal.jsx";
-import {
-  getEventById,
-  updateEvents,
-  getParticipants,
-  cancelEvent,
-  deleteEventById,
-} from "../../api/eventsApi.js";
-
+import ConfirmModal from "../Modals/ConfirmationModal.jsx";
+import { getEventById, updateEvents, getParticipants } from "../../api/eventsApi.js";
 import {
   FaEdit,
   FaTrashAlt,
@@ -17,7 +11,6 @@ import {
   FaDice,
   FaCalendarAlt,
 } from "react-icons/fa";
-
 import { useNavigate } from "react-router-dom";
 
 function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }) {
@@ -27,6 +20,12 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
   const [loadingEvent, setLoadingEvent] = useState(false);
   const [participantsMap, setParticipantsMap] = useState({});
   const [localEvents, setLocalEvents] = useState(events);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmModal, setConfirmModal] = useState({
+    show: false,
+    event: null,
+    action: null,
+  });
 
   const navigate = useNavigate();
 
@@ -40,9 +39,9 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
     const fetchParticipantsForEvents = async () => {
       try {
         const promises = localEvents.map((event) =>
-          getParticipants(event.id)
-            .then((result) => (result.success ? result.data : []))
-            .catch(() => [])
+          getParticipants(event.id).then((result) =>
+            result.success ? result.data : []
+          )
         );
         const results = await Promise.all(promises);
 
@@ -61,6 +60,7 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
   }, [localEvents]);
 
   const handleOpenEditModal = async (event) => {
+    if (loadingEvent) return;
     setLoadingEvent(true);
     try {
       const response = await getEventById(event.id);
@@ -100,6 +100,49 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
     }
   };
 
+  const confirmCancel = (event) => {
+    if (deleting) return;
+    setConfirmModal({ show: true, event, action: "cancel" });
+  };
+
+  const confirmDelete = (event) => {
+    if (deleting) return;
+    setConfirmModal({ show: true, event, action: "delete" });
+  };
+
+  const handleConfirmAction = async () => {
+    const { event, action } = confirmModal;
+    if (!event || !action || deleting) return;
+
+    setDeleting(true);
+
+    try {
+      if (action === "cancel") {
+        if (onCancel) {
+          await onCancel(event.id);
+        }
+        setLocalEvents((prevEvents) =>
+          prevEvents.map((e) =>
+            e.id === event.id ? { ...e, statusName: "canceled" } : e
+          )
+        );
+      } else if (action === "delete") {
+        if (onDelete) {
+          await onDelete(event.id);
+        }
+        setLocalEvents((prevEvents) =>
+          prevEvents.filter((e) => e.id !== event.id)
+        );
+      }
+    } catch (error) {
+      alert(error?.message || "An error occurred.");
+      console.error("Action error:", error);
+    } finally {
+      setDeleting(false);
+      setConfirmModal({ show: false, event: null, action: null });
+    }
+  };
+
   const getStatusVariant = (status) => {
     switch (status?.toLowerCase()) {
       case "canceled":
@@ -113,85 +156,54 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
     }
   };
 
-  const handleCancelClick = async (event) => {
-    if (window.confirm("Are you sure you want to cancel this event?")) {
-      try {
-        await cancelEvent(event.id);
-        setLocalEvents((prevEvents) =>
-          prevEvents.map((e) =>
-            e.id === event.id ? { ...e, statusName: "Canceled" } : e
-          )
-        );
-        if (onCancel) onCancel(event.id);
-      } catch (error) {
-        alert("Failed to cancel event.");
-        console.error("Cancel error:", error);
-      }
-    }
-  };
-
-  const handleDeleteClick = async (event) => {
-    if (window.confirm("Are you sure you want to delete this event? This action cannot be undone.")) {
-      try {
-        await deleteEventById(event.id);
-        setLocalEvents((prevEvents) => prevEvents.filter((e) => e.id !== event.id));
-        if (onDelete) onDelete(event.id);
-      } catch (error) {
-        alert("Failed to delete event.");
-        console.error("Delete error:", error);
-      }
-    }
-  };
+  const formatDate = (dateStr) =>
+    dateStr
+      ? new Date(dateStr).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        })
+      : "";
 
   if (loading) {
     return (
       <div className="d-flex justify-content-center my-5">
-        <div className="spinner-border text-primary" role="status" aria-hidden="true"></div>
+        <div className="spinner-border text-primary" role="status" />
         <span className="ms-2">Loading events...</span>
       </div>
     );
   }
 
   if (!localEvents.length) {
-    return <p className="text-center text-muted mt-4 fs-5">No created events.</p>;
+    return (
+      <p className="text-center text-muted mt-4 fs-5">No created events.</p>
+    );
   }
 
   return (
     <>
-      <ListGroup variant="flush" className="mb-4">
+      <div className="mb-4">
+        <h2 className="fw-bold text-dark">Created Events</h2>
+        <hr className="mb-4" />
+      </div>
+      <ListGroup variant="flush">
         {localEvents.map((event) => {
           const participants = participantsMap[event.id] || [];
           const hasParticipants = participants.length > 0;
           const statusLower = event.statusName?.toLowerCase();
-
-          const eventDate = event.date ? new Date(event.date) : null;
-          const formattedDate =
-            eventDate && !isNaN(eventDate)
-              ? eventDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
-              : "";
-
-          const startDate = event.startDate ? new Date(event.startDate) : null;
-          const formattedStartDate =
-            startDate && !isNaN(startDate)
-              ? startDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
-              : "";
-
-          const endDate = event.endDate ? new Date(event.endDate) : null;
-          const formattedEndDate =
-            endDate && !isNaN(endDate)
-              ? endDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })
-              : "";
 
           return (
             <ListGroup.Item
               key={event.id}
               className="mb-3 p-4 rounded shadow-sm d-flex justify-content-between align-items-center"
               style={{
-                backgroundColor: "#fff",
-                border: "1px solid #e3e6f0",
-                transition: "box-shadow 0.3s ease, transform 0.2s ease",
-                cursor: "default",
+                background:
+                  "linear-gradient(135deg, #ffffff 0%, rgb(255, 245, 237) 100%)",
+                transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                cursor: "pointer",
               }}
+              onClick={() => navigate(`/events/${event.id}`)}
               onMouseEnter={(e) => {
                 e.currentTarget.style.boxShadow = "0 12px 24px rgba(0,0,0,0.15)";
                 e.currentTarget.style.transform = "translateY(-3px)";
@@ -201,17 +213,20 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
                 e.currentTarget.style.transform = "none";
               }}
             >
-              <div className="flex-grow-1 me-4">
-                <h5
-                  className="mb-2 fw-bold text-dark d-flex align-items-center gap-2"
-                  style={{ fontSize: "1.35rem" }}
-                >
+              <div style={{ flex: 1, marginRight: "20px" }}>
+                <h5 className="mb-2 fw-bold text-dark d-flex align-items-center gap-2">
                   {event.title || event.name}
-                 
+                  {event.statusName && (
+                    <Badge
+                      bg={getStatusVariant(event.statusName)}
+                      className="text-capitalize shadow-sm"
+                    >
+                      {event.statusName}
+                    </Badge>
+                  )}
                 </h5>
                 <p
                   className="mb-3 text-truncate text-secondary"
-                  style={{ maxWidth: "600px", fontSize: "1rem", lineHeight: 1.5 }}
                   title={event.description}
                 >
                   {event.description || "No description available"}
@@ -220,59 +235,37 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
                 <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
                   {event.boardGameName && (
                     <Badge
-                      bg="info"
+                      bg="warning"
                       className="d-flex align-items-center gap-1 shadow-sm"
-                      style={{
-                        fontSize: "0.9rem",
-                        padding: "0.35em 0.75em",
-                        borderRadius: "12px",
-                      }}
                     >
                       <FaDice />
                       {event.boardGameName}
                     </Badge>
                   )}
-
-                  {event.statusName && (
-                    <Badge
-                      bg={getStatusVariant(event.statusName)}
-                      className="text-capitalize shadow-sm"
-                      style={{
-                        fontSize: "0.9rem",
-                        padding: "0.35em 0.75em",
-                        borderRadius: "12px",
-                      }}
-                    >
-                      {event.statusName}
-                    </Badge>
-                  )}
                 </div>
 
-                <div
-                  className="mt-2 d-flex flex-wrap gap-4 text-muted"
-                  style={{ fontSize: "0.9rem" }}
-                >
-                  {formattedDate && (
+                <div className="mt-2 d-flex flex-wrap gap-4 text-muted">
+                  {event.date && (
                     <div className="d-flex align-items-center gap-2">
                       <FaCalendarAlt />
                       <span>
-                        <strong>Date:</strong> {formattedDate}
+                        <strong>Date:</strong> {formatDate(event.date)}
                       </span>
                     </div>
                   )}
-                  {formattedStartDate && (
+                  {event.startDate && (
                     <div className="d-flex align-items-center gap-2">
                       <FaCalendarAlt />
                       <span>
-                        <strong>Start:</strong> {formattedStartDate}
+                        <strong>Start:</strong> {formatDate(event.startDate)}
                       </span>
                     </div>
                   )}
-                  {formattedEndDate && (
+                  {event.endDate && (
                     <div className="d-flex align-items-center gap-2">
                       <FaCalendarAlt />
                       <span>
-                        <strong>End:</strong> {formattedEndDate}
+                        <strong>End:</strong> {formatDate(event.endDate)}
                       </span>
                     </div>
                   )}
@@ -287,61 +280,61 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
                 </div>
               </div>
 
-              <div className="d-flex flex-column flex-sm-row gap-3 align-items-center">
-                {statusLower !== "canceled" && (
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.5rem",
+                  minWidth: "120px",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => navigate(`/events/${event.id}`)}
+                  disabled={deleting || loadingEvent || saving}
+                >
+                  <FaCalendarAlt className="me-2" />
+                  Details
+                </Button>
+
+                {statusLower !== "ended" && statusLower !== "canceled" && (
                   <>
                     <Button
                       variant="outline-secondary"
                       size="sm"
-                      onClick={() => navigate(`/events/${event.id}`)}
-                      style={{ minWidth: "110px", fontWeight: "600", borderRadius: "8px" }}
-                      title="Details"
-                      className="d-flex align-items-center justify-content-center gap-2"
-                    >
-                      <FaCalendarAlt />
-                      Details
-                    </Button>
-                    <Button
-                      variant="outline-primary"
-                      size="sm"
                       onClick={() => handleOpenEditModal(event)}
-                      style={{ minWidth: "110px", fontWeight: "600", borderRadius: "8px" }}
-                      title="Edit Event"
-                      disabled={loadingEvent}
-                      className="d-flex align-items-center justify-content-center gap-2"
+                      disabled={loadingEvent || deleting || saving}
                     >
-                      <FaEdit />
+                      <FaEdit className="me-2" />
                       Edit
                     </Button>
+
+                    {hasParticipants && (
+                      <Button
+                        variant="outline-warning"
+                        size="sm"
+                        onClick={() => confirmCancel(event)}
+                        disabled={deleting || loadingEvent || saving}
+                      >
+                        <FaTimesCircle className="me-2" />
+                        Cancel
+                      </Button>
+                    )}
+
+                    {!hasParticipants && (
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => confirmDelete(event)}
+                        disabled={deleting || loadingEvent || saving}
+                      >
+                        <FaTrashAlt className="me-2" />
+                        Delete
+                      </Button>
+                    )}
                   </>
-                )}
-
-                {hasParticipants && statusLower !== "canceled" ? (
-                  <Button
-                    variant="outline-warning"
-                    size="sm"
-                    onClick={() => handleCancelClick(event)}
-                    style={{ minWidth: "110px", fontWeight: "600", borderRadius: "8px" }}
-                    title="Cancel Event"
-                    className="d-flex align-items-center justify-content-center gap-2"
-                  >
-                    <FaTimesCircle />
-                    Cancel
-                  </Button>
-                ) : null}
-
-                {!hasParticipants && (
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => handleDeleteClick(event)}
-                    style={{ minWidth: "110px", fontWeight: "600", borderRadius: "8px" }}
-                    title="Delete Event"
-                    className="d-flex align-items-center justify-content-center gap-2"
-                  >
-                    <FaTrashAlt />
-                    Delete
-                  </Button>
                 )}
               </div>
             </ListGroup.Item>
@@ -349,12 +342,34 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
         })}
       </ListGroup>
 
-      <UpdateEventModal
-        show={showEditModal}
-        onClose={handleCloseEditModal}
-        event={eventToEdit}
-        onSave={handleSave}
-        saving={saving}
+      {showEditModal && eventToEdit && (
+        <UpdateEventModal
+          show={showEditModal}
+          onClose={handleCloseEditModal}
+          event={eventToEdit}
+          onSave={handleSave}
+          saving={saving}
+        />
+      )}
+
+      <ConfirmModal
+        show={confirmModal.show}
+        onHide={() => setConfirmModal({ show: false, event: null, action: null })}
+        title={
+          confirmModal.action === "cancel"
+            ? "Cancel Event Confirmation"
+            : "Delete Event Confirmation"
+        }
+        body={
+          confirmModal.action === "cancel"
+            ? "Are you sure you want to cancel this event? This action cannot be undone."
+            : "Are you sure you want to delete this event? This action cannot be undone."
+        }
+        onConfirm={handleConfirmAction}
+        confirmButtonText={
+          confirmModal.action === "cancel" ? "Cancel Event" : "Delete Event"
+        }
+        isProcessing={deleting}
       />
     </>
   );

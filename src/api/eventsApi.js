@@ -85,7 +85,7 @@ export async function getAllEvents(pageNumber, pageSize, search, filters, sortin
       pageNumber,
       pageSize,
       search,
-      Filter: filters || {},  // якщо filters null, то пустий об’єкт
+      Filter: filters || {}, 
       Sorting: sorting
     });
 
@@ -245,12 +245,25 @@ export const getParticipants = async (eventId) => {
 export async function deleteEventById(eventId) {
   try {
     const response = await axios.delete(`${BASE_URL}/Events/${eventId}`);
-    return response.status === 204 ? true : response.data;
+    console.log('Delete response:', response);
+
+    if (response.status === 200 || response.status === 204) {
+      return true;
+    }
+
+    return response.data;
   } catch (error) {
-    const message = error.response?.data?.message || error.message || "Failed to delete event";
-    throw new Error(message);
+    console.error('Delete error:', error);
+
+    if (error.response && error.response.data && error.response.data.message) {
+      throw new Error(error.response.data.message);
+    }
+
+    throw error;
   }
 }
+
+
 
 export async function cancelEvent(eventId) {
   try {
@@ -270,22 +283,21 @@ export const updateEvents = async (id, eventData) => {
   }
 };
 
-export async function unjoinEvents(eventId, participantsId) {
-  const authToken = localStorage.getItem('authToken');
+
+export async function getJoinedEvents() {
+  const authToken = localStorage.getItem("authToken");
 
   try {
-    const response = await axios.delete(
-      `${BASE_URL}/Events/${eventId}/participations/${participantsId}`, 
-      {
-        headers: {
-          'Authorization': `Bearer ${authToken}`,
-          'Content-Type': 'application/json',
-        }
-      }
-    );
+    const response = await axios.get(`${BASE_URL}/PlayerProfiles/participated-events`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
+    });
     return { success: true, data: response.data };
   } catch (error) {
-    const message = error.response?.data || error.message || 'Unknown error';
+    const message =
+      error.response?.data?.message || error.message || "Unknown error";
     return { success: false, message };
   }
 }

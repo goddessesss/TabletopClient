@@ -837,7 +837,6 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
 }
 
 .profile-content {
-  display: flex;
   justify-content: space-between;
   gap: 30px;
 
@@ -966,6 +965,7 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
     color: $text-color-light;
   }
 }
+
 
 //Alerts
 
@@ -1775,4 +1775,5 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
     transform: translateY(0);
   }
 }
+
 

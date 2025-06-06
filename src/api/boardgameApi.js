@@ -86,16 +86,17 @@ export const addFavoriteGame = async (boardGameId) => {
   }
 };
 
-export const getFavoriteBoardGames = async () => {
+export const getFavouriteGames = async () => {
   try {
     const authToken = localStorage.getItem('authToken');
     const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
     
     const response = await axios.get(`${BASE_URL}/PlayerProfiles/favourite-games`, { headers });
+    console.log('API raw data:', response.data);
 
     return {
       success: true,
-      favorites: response.data.favorites || [],
+      favorites: Array.isArray(response.data) ? response.data : (response.data.favorites || []),
     };
   } catch (error) {
     console.error("Error fetching favorite games:", error);
@@ -105,6 +106,7 @@ export const getFavoriteBoardGames = async () => {
     };
   }
 };
+
 
 export const getBoardGamesNames = async (search = "") => {
   try {
@@ -225,3 +227,50 @@ export const createOrUpdateBoardGame = async (bggId) => {
     return false;
   }
 };
+
+export const getBoardGameFromBggSearch = async (search = "") => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${BASE_URL}/Bgg/search`,
+      {
+        params: { search },
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        }
+      }
+    );
+
+    if (response.status === 200 && response.data && Array.isArray(response.data)) {
+      return { success: true, data: response.data };
+    } else {
+      return { success: false, message: 'Invalid response data format' };
+    }
+  } catch (error) {
+    const serverMsg = error.response?.data?.message || '';
+    console.error("Error fetching board games from BGG:", serverMsg);
+    return {
+      success: false,
+      message: serverMsg || "Fetching board games from BGG failed"
+    };
+  }
+};
+export async function removeFavouriteGame(gameId) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/PlayerProfiles/favourite-games/${gameId}`,
+      {
+        method: "DELETE",
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to remove game");
+
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: error.message };
+  }
+}

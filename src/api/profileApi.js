@@ -216,3 +216,30 @@ export async function resetPasswordConfirm({ userId, token, newPassword }) {
     };
   }
 }
+export async function removeFavouriteGame(boardGameId) {
+  try {
+    const authToken = localStorage.getItem("authToken");
+
+    const response = await axios.delete(
+      `${BASE_URL}/PlayerProfiles/favourite-games/${boardGameId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return { success: true, data: response.data };
+  } catch (error) {
+    console.error("Server error:", error);
+
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.response?.statusText ||
+        error.message,
+    };
+  }
+}
