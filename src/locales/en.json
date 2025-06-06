@@ -3,13 +3,15 @@
     "games": "GAMES",
     "allBoardgames": "All board games",
     "events": "EVENTS",
-    "contact": "CONTACT",
+    "calendar": "CALENDAR",
+    "admin": "ADMIN PANEL",
+    "gameClubs" : "GAME CLUBS",
     "profile": "Profile",
     "login": "Login"
   },
   "banner": {
     "welcomeTo": "Welcome to",
-    "tabletop": "TABLETOP GAMES!",
+    "tabletop": "TABLETOP CONNECT!",
     "findPerfect": "FIND THE PERFECT BOARD GAME AND",
     "description": "Gather the best players and create an unforgettable game!",
     "getStarted": "GET STARTED",

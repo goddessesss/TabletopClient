@@ -19,7 +19,17 @@ export async function getAllBoardGames(pageNumber, pageSize, search, filters) {
 
 export const getBoardGameById = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/BoardGames/${id}`);
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${BASE_URL}/BoardGames/${id}`,
+      { 
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        }
+      }
+    );
     if (response.status === 200) {
       return { success: true, data: response.data };
     }
@@ -107,7 +117,6 @@ export const getFavouriteGames = async () => {
   }
 };
 
-
 export const getBoardGamesNames = async (search = "") => {
   try {
     const authToken = localStorage.getItem('authToken');
@@ -137,6 +146,7 @@ export const getBoardGamesNames = async (search = "") => {
     };
   }
 };
+
 export const getRecommendations = async () => {
   try {
     const authToken = localStorage.getItem("authToken");
@@ -253,20 +263,25 @@ export const getBoardGameFromBggSearch = async (search = "") => {
   }
 }
 
-export async function removeFavouriteGame(gameId) {
+export const removeFromFavoriteGame = async (boardGameId) => {
   try {
-    const response = await fetch(
-      `${BASE_URL}/PlayerProfiles/favourite-games/${gameId}`,
-      {
-        method: "DELETE",
-        credentials: "include",
-      }
+    const authToken = localStorage.getItem('authToken');
+    const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+
+    const response = await axios.delete(
+      `${BASE_URL}/PlayerProfiles/favourite-games/${boardGameId}`,
+      { headers }
     );
 
-    if (!response.ok) throw new Error("Failed to remove game");
-
-    return { success: true };
+    return {
+      success: true,
+      data: response.data,
+    };
   } catch (error) {
-    return { success: false, message: error.message };
+    console.error("Error changing favorite game status:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to change game status.',
+    };
   }
-}
+};

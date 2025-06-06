@@ -19,7 +19,7 @@ const EventFilter = ({
   setIsOnlineFilter,
   selectedCity,
   setSelectedCity,
-  minAvaliableSlots,
+  minAvailableSlots,
   setMinAvailableSlots,
   maxPrice,
   setMaxPrice,
@@ -238,7 +238,7 @@ const EventFilter = ({
           type="number"
           min={0}
           placeholder="Minimum available slots"
-          value={minAvaliableSlots ?? ''}
+          value={minAvailableSlots ?? ''}
           onChange={(e) => {
             const val = e.target.value;
             setMinAvailableSlots(val === '' ? null : Number(val));
@@ -259,6 +259,7 @@ const EventFilter = ({
           value={maxPrice ?? ''}
           onChange={(e) => {
             const val = e.target.value;
+            console.log(val === '')
             setMaxPrice(val === '' ? null : Number(val));
           }}
         />

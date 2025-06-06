@@ -359,45 +359,43 @@ function Profile() {
                   <FavoriteGames />
                 </Tab.Pane>
 
-                 <Tab.Pane eventKey="settings">
-                <div className="settings-container">
-                  <h2 className="fw-bold text-dark">Account Settings</h2>
-                 <hr className="mb-4" />
-                  <div className="google-login-wrapper mb-3 d-flex align-items-center gap-3">
-                    <GoogleLogin
-                      onSuccess={handleGoogleLoginSuccess}
-                      onError={handleGoogleLoginError}
-                    />
-                    <span className="text-muted small">Link your Google account for easy login</span>
+                <Tab.Pane eventKey="settings">
+                  <div className="settings-container">
+                    <h2 className="fw-bold text-dark">Account Settings</h2>
+                  <hr className="mb-4" />
+                    <div className="google-login-wrapper mb-3 d-flex align-items-center gap-3">
+                      <GoogleLogin
+                        onSuccess={handleGoogleLoginSuccess}
+                        onError={handleGoogleLoginError}
+                      />
+                      <span className="text-muted small">Link your Google account for easy login</span>
+                    </div>
+
+                    <Button
+                      variant="outline-primary"
+                      className="w-100 mb-3"
+                      onClick={handleSendPasswordReset}
+                      disabled={passwordResetting}
+                    >
+                      {passwordResetting ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Sending...
+                        </>
+                      ) : (
+                        "Send Password Reset Email"
+                      )}
+                    </Button>
+
+                    <Button
+                      variant="danger"
+                      className="w-100"
+                      onClick={handleLogoutClick}
+                    >
+                      Logout
+                    </Button>
                   </div>
-
-                  <Button
-                    variant="outline-primary"
-                    className="w-100 mb-3"
-                    onClick={handleSendPasswordReset}
-                    disabled={passwordResetting}
-                  >
-                    {passwordResetting ? (
-                      <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Sending...
-                      </>
-                    ) : (
-                      "Send Password Reset Email"
-                    )}
-                  </Button>
-
-                  <Button
-                    variant="danger"
-                    className="w-100"
-                    onClick={handleLogoutClick}
-                  >
-                    Logout
-                  </Button>
-                </div>
-              </Tab.Pane>
-              
-             
+                </Tab.Pane>
               </Tab.Content>
             </Tab.Container>
           </div>

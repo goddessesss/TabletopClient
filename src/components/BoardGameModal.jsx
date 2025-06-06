@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Badge } from 'react-bootstrap';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
-import { getBoardGameById, addFavoriteGame } from '../api/boardgameApi.js';
+import { getBoardGameById, addFavoriteGame, removeFromFavoriteGame } from '../api/boardgameApi.js';
 
 const BoardGameModal = ({ show, onHide, gameId }) => {
   const [data, setData] = useState(null);
@@ -14,7 +14,7 @@ const BoardGameModal = ({ show, onHide, gameId }) => {
       const result = await getBoardGameById(gameId);
       if (result.success) {
         setData(result.data);
-        setIsFavorite(result.data.boardGame.isFavorite || false);
+        setIsFavorite(result.data.isFavourite || false);
       } else {
         console.error("Failed to fetch board game details:", result.message);
         setData(null);
@@ -31,7 +31,7 @@ const BoardGameModal = ({ show, onHide, gameId }) => {
 
   const handleFavoriteToggle = async () => {
     if (!data) return;
-    const result = await addFavoriteGame(data.boardGame.id); // TODO: Remove from favourite on DIFFERENT endpoint
+    const result = isFavorite ? await removeFromFavoriteGame(data.boardGame.id) : await addFavoriteGame(data.boardGame.id);
     if (result.success) {
       setIsFavorite(!isFavorite);
     }
@@ -74,7 +74,7 @@ const BoardGameModal = ({ show, onHide, gameId }) => {
           src={boardGame.imagePath}
           alt={boardGame.name}
           className="img-fluid mb-3 rounded"
-          style={{ maxHeight: '300px', objectFit: 'cover', width: '100%' }}
+          style={{ maxHeight: '500px', objectFit: 'cover', width: '100%' }}
         />
         <div style={{ marginBottom: '20px' }}>
           <strong>Description: </strong>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
-import { FaCalendarAlt, FaMapMarkerAlt, FaWifi } from 'react-icons/fa';
+import { FaCalendarAlt, FaMapMarkerAlt, FaMoneyBillWave, FaWifi } from 'react-icons/fa';
 import { EventTypeEnum } from '../../enums/eventTypes.js';
 
 const EventCard = ({ event, onClick }) => {
@@ -15,11 +15,15 @@ const EventCard = ({ event, onClick }) => {
           <Card.Title className="mb-2 fs-5 text-truncate">{event.name}</Card.Title>
           <div className="text-muted small d-flex align-items-center">
             <FaCalendarAlt className="me-2" />
-            {new Date(event.startDate).toLocaleString()}
+            {`${new Date(event.startDate).toLocaleString()} - ${new Date(event.startDate).toLocaleString()}`}
           </div>
           <div className="text-muted small d-flex align-items-center mt-1">
             <FaMapMarkerAlt className="me-2" />
             {event.location?.shortName ?? event.location?.fullName ?? "No location"}
+          </div>
+          <div className="text-muted small d-flex align-items-center mt-1">
+            <FaMoneyBillWave className="me-2" />
+            {event.price === null || event.price === 0 ? 'Free' : `${event.price} ₴`}
           </div>
         </div>
 
