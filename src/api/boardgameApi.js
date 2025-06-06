@@ -229,7 +229,11 @@ export const createOrUpdateBoardGame = async (bggId) => {
 };
 
 export const getBoardGameFromBggSearch = async (search = "") => {
+<<<<<<< HEAD
   try {
+=======
+  try{
+>>>>>>> 3aff48d1eb0285db9cb3babcb2ce7a6240891812
     const authToken = localStorage.getItem('authToken');
     const response = await axios.get(
       `${BASE_URL}/Bgg/search`,
@@ -243,6 +247,7 @@ export const getBoardGameFromBggSearch = async (search = "") => {
       }
     );
 
+<<<<<<< HEAD
     if (response.status === 200 && response.data && Array.isArray(response.data)) {
       return { success: true, data: response.data };
     } else {
@@ -274,3 +279,15 @@ export async function removeFavouriteGame(gameId) {
     return { success: false, message: error.message };
   }
 }
+=======
+    if (response.status === 200 && response.data && Array.isArray(response.data))
+      return { success: true, data: response.data };
+    else
+      return { success: false, message: 'Invalid response data format' };
+  }
+  catch {
+    const serverMsg = error.response?.data?.message || '';
+    console.error("Error fetching board games from BGG:", serverMsg);
+  }
+}
+>>>>>>> 3aff48d1eb0285db9cb3babcb2ce7a6240891812
