@@ -9,29 +9,51 @@ import {
   FaMoneyBillWave,
   FaGlobe,
 } from 'react-icons/fa';
-import { getEventById, joinEvents, getParticipants } from '../api/eventsApi.js';
+import { getEventById, joinEvents, getParticipants, unjoinEvents, updateEvents } from '../api/eventsApi.js';
 import { useAuth } from "../components/Context/AuthContext";
 import { BreadCrumbs } from '../components/BreadCrumbs/BreadCrumbs.jsx';
 import { useTranslation } from 'react-i18next';
+import { useNotifications } from '../components/NotificationsHandling/NotificationContext.jsx';
+import EventPlayerCard from '../components/PlayerCard/EventPlayerCard.jsx';
+import { downloadEventParticipantsReport } from '../api/reportsApi.js';
+import UpdateEventModal from '../components/Modals/UpdateEventModal.jsx';
 
 function EventDetail() {
   const { t } = useTranslation();
   const { id } = useParams();
   const { userId } = useAuth();
 
+  const { addNotification } = useNotifications()
+
   const [event, setEvent] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [error, setError] = useState(null);
-  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isJoined, setJoined] = useState(false);
+  const [isOrganizer, setOrganizer] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const fetchEvent = async () => {
     const result = await getEventById(id);
     if (result.success) {
+      console.log(result.data)
       setEvent(result.data);
+      if (result.data.organizerPlayer.playerProfileId === userId){
+        setOrganizer(true);
+      }
+
       const participantResult = await getParticipants(id);
       if (participantResult.success) {
         setParticipants(participantResult.data);
+        console.log(userId)
+        console.log(participantResult.data)
+        if (participantResult.data.some(p => p.playerProfileId === userId)) {
+          setJoined(true)
+        }
+        else {
+          setJoined(false)
+        }
       } else {
         setParticipants([]);
       }
@@ -41,25 +63,22 @@ function EventDetail() {
   };
 
   useEffect(() => {
-    if (id) fetchEvent();
-  }, [id]);
+    if (id && userId) fetchEvent();
+  }, [id, userId]);
 
   const addMessage = (type, text) => {
-    const messageId = Date.now();
-    setMessages((prev) => [...prev, { id: messageId, type, text }]);
-    setTimeout(() => {
-      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
-    }, 5000);
+    addNotification({message: text, variant: type});
   };
 
   const handleJoin = async () => {
+    console.log(userId)
     if (!userId) {
       addMessage('danger', t('eventDetail.userNotAuthorized'));
       return;
     }
 
     setLoading(true);
-    const result = await joinEvents(id, userId);
+    const result = isJoined ? await unjoinEvents(id, userId) : await joinEvents(id, userId);
     if (result.success) {
       addMessage('success', t('eventDetail.successfullyRegistered'));
       await fetchEvent();
@@ -69,19 +88,36 @@ function EventDetail() {
     setLoading(false);
   };
 
-  if (error) return <p className="text-danger">{t('eventDetail.error')}: {error}</p>;
+    const handleGetParticipantsReport = async() => {
+    await downloadEventParticipantsReport(event.id)
+  }
+  
+  const handleOpenEditModal = () => {
+    setShowEditModal(true);
+  };
 
-  if (!event)
-    return (
-      <>
-        <p className="text-center my-5" style={{ fontSize: '1.2rem', color: '#666' }}>
-          {t('eventDetail.loadingEventDetails')}
-        </p>
-        <p className="text-center" style={{ color: '#999' }}>
-          <strong>{t('eventDetail.urlId')}:</strong> {id || t('eventDetail.notProvided')}
-        </p>
-      </>
-    );
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    fetchEvent();
+  };
+
+  const handleSave = async (updatedData) => {
+    if (!event) return;
+    setSaving(true);
+    try {
+      var result = await updateEvents(event.id, updatedData);
+      if (result.success)
+      {
+        addMessage('success', 'Event successfully updated');
+        handleCloseEditModal();
+      }
+    } catch (error) {
+      addMessage('danger', 'An error occured during event updating');
+      console.error("Save error:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const {
     name,
@@ -108,35 +144,29 @@ function EventDetail() {
     };
     return new Date(dateStr).toLocaleDateString(undefined, options);
   };
+/*
 
+
+  if (error) return <p className="text-danger">{t('eventDetail.error')}: {error}</p>;
+  if (!event)
+    return (
+      <>
+        <p className="text-center my-5" style={{ fontSize: '1.2rem', color: '#666' }}>
+          {t('eventDetail.loadingEventDetails')}
+        </p>
+<<<<<<< HEAD
+        <p className="text-center" style={{ color: '#999' }}>
+          <strong>{t('eventDetail.urlId')}:</strong> {id || t('eventDetail.notProvided')}
+        </p>
+=======
+>>>>>>> main
+      </>
+    );
+
+*/
   return (
     <div className="container my-2" style={{ position: 'relative', minHeight:'87vh' }}>
-      <div
-        style={{
-          position: 'fixed',
-          top: '200px',
-          right: '20px',
-          zIndex: 1050,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '10px',
-          minWidth: '400px',
-        }}
-      >
-        {messages.map(({ id, type, text }) => (
-          <Alert
-            key={id}
-            variant={type}
-            onClose={() =>
-              setMessages((prev) => prev.filter((msg) => msg.id !== id))
-            }
-            dismissible
-          >
-            {text}
-          </Alert>
-        ))}
-      </div>
-
+    
       <div className="pt-4">
         <BreadCrumbs
           items={[
@@ -252,22 +282,37 @@ function EventDetail() {
                       {t('eventDetail.price')}
                     </span>
                     <span className="value" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#222' }}>
-                      {price ? `${price} ₴` : t('eventDetail.free')}
+                      {(price !== null && price !== 0) ? `${price} ₴` : 'Free'}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="d-flex justify-content-center">
-               <Button
-              disabled={loading}
-              onClick={handleJoin}
-              size="lg"
-              variant="outline-warning"
-              className="w-100">
-              {t('eventDetail.joinEvent')}
-            </Button>
-
+              <div className="d-flex justify-content-center gap-3">
+                <Button
+                  disabled={loading}
+                  onClick={handleJoin}
+                  size="lg"
+                  variant={`${ !isJoined ? "" : "outline-"}warning`}
+                  className="flex-grow-1">
+                  { !isJoined ? "Join Event" : "Leave Event" }
+                </Button>
+                { isOrganizer && ( <><Button
+                  disabled={loading}
+                  onClick={handleOpenEditModal}
+                  size="lg"
+                  variant="primary"
+                  className="flex-grow-1">
+                  Edit details
+                </Button>
+                <Button
+                  disabled={loading}
+                  onClick={handleGetParticipantsReport}
+                  size="lg"
+                  variant="secondary"
+                  className="flex-grow-1">
+                  Participants report
+                </Button> </> ) }
               </div>
             </section>
 
@@ -281,60 +326,34 @@ function EventDetail() {
               }}
             >
               <h3 style={{ marginBottom: '1.5rem', fontWeight: '600', color: '#212529' }}>
-                {t('eventDetail.participants')} ({participants.length})
+                Organizer
               </h3>
 
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {participants.map((p, i) => {
-                  const initials = `${p.firstName?.[0] ?? ''}${p.lastName?.[0] ?? ''}`.toUpperCase();
-                  return (
-                    <li
-                      key={p.id ?? i}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        marginBottom: '1rem',
-                        padding: '0.5rem 0.75rem',
-                        borderRadius: '12px',
-                        backgroundColor: '#fff',
-                        boxShadow: '0 1px 4px rgba(0, 0, 0, 0.08)',
-                        cursor: 'default',
-                        userSelect: 'none',
-                        transition: 'background-color 0.25s ease',
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f0f4f8')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#fff')}
-                    >
-                      <div
-                        style={{
-                          width: '44px',
-                          height: '44px',
-                          borderRadius: '50%',
-                          backgroundColor: '#495057',
-                          color: '#fff',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: '700',
-                          fontSize: '1.25rem',
-                          marginRight: '1rem',
-                          flexShrink: 0,
-                          userSelect: 'none',
-                        }}
-                      >
-                        {initials}
-                      </div>
-                      <span style={{ fontSize: '1.1rem', color: '#212529' }}>
-                        {(p.firstName || '') + ' ' + (p.lastName || '')}
-                      </span>
-                    </li>
-                  );
-                })}
+                <EventPlayerCard key={event.organizerPlayer.id} player={event.organizerPlayer} />
               </ul>
+
+
+              <h3 style={{ marginBottom: '1.5rem', fontWeight: '600', color: '#212529' }}>
+                Participants ({event.registeredPlayer})
+              </h3>
+
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                {participants.map((p, i) => (
+                  <EventPlayerCard key={p.id ?? i} player={p} />
+                ))}
+              </ul>
+              {event.externalParticipantsCount != null && event.externalParticipantsCount !== 0 && (<p>+ {event.externalParticipantsCount} external participant(s)</p>)}
             </section>
           </div>
         </Card.Body>
       </div>
+        <UpdateEventModal
+          show={showEditModal}
+          onClose={handleCloseEditModal}
+          event={event}
+          onSave={handleSave}
+          saving={saving}/>
     </div>
   );
 }

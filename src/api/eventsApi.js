@@ -79,14 +79,15 @@ export const getEventTypes = async () => {
   }
 };
 
-export async function getAllEvents(pageNumber, pageSize, search, filters, sorting) {
+export async function getAllEvents(pageNumber, pageSize, search, filters, sorting, searchLocation) {
   try {
     const response = await axios.post(`${BASE_URL}/Events/filtered`, {
       pageNumber,
       pageSize,
       search,
       Filter: filters || {}, 
-      Sorting: sorting
+      Sorting: sorting,
+      SearchLocation: searchLocation
     });
 
     return response.data;
@@ -263,8 +264,6 @@ export async function deleteEventById(eventId) {
   }
 }
 
-
-
 export async function cancelEvent(eventId) {
   try {
     const response = await axios.post(`${BASE_URL}/Events/${eventId}/cancel`);
@@ -298,6 +297,46 @@ export async function getJoinedEvents() {
   } catch (error) {
     const message =
       error.response?.data?.message || error.message || "Unknown error";
+    return { success: false, message };
+  }
+}
+
+export const getCalendarEvents = async () => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+    
+    const response = await axios.get(`${BASE_URL}/PlayerProfiles/calendar-events`, { headers });
+
+    return {
+      success: true,
+      data: response.data || [],
+    };
+  } catch (error) {
+    console.error("Error fetching calendar events:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to get calendar events',
+    };
+  }
+};
+
+export async function unjoinEvents(eventId, participantsId) {
+  const authToken = localStorage.getItem('authToken');
+
+  try {
+    const response = await axios.delete(
+      `${BASE_URL}/Events/${eventId}/participations/${participantsId}`, 
+      {
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+        }
+      }
+    );
+    return { success: true, data: response.data };
+  } catch (error) {
+    const message = error.response?.data || error.message || 'Unknown error';
     return { success: false, message };
   }
 }

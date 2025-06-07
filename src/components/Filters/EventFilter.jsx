@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Form, Button, ListGroup, Spinner, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { BsStars } from "react-icons/bs";
 import {
   FaGlobe,
   FaMapMarkerAlt,
@@ -20,7 +21,7 @@ const EventFilter = ({
   setIsOnlineFilter,
   selectedCity,
   setSelectedCity,
-  minAvaliableSlots,
+  minAvailableSlots,
   setMinAvailableSlots,
   maxPrice,
   setMaxPrice,
@@ -126,6 +127,16 @@ const EventFilter = ({
     setMaxDate(null);
   };
 
+  const applyRelevantSorting = () => {
+    console.log('applying relevants');
+    setIsOnlineFilter(null);
+    setMinAvailableSlots(null);
+    setMaxPrice(null);
+    setSorting({ startDate: null, price: null, participantsCount: null });
+    setMinDate(null);
+    setMaxDate(null);
+  }
+
   const renderTooltip = (props, text) => (
     <Tooltip id="tooltip" {...props}>
       {text}
@@ -158,37 +169,6 @@ const EventFilter = ({
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
       }}
     >
-      <Form.Group>
-        <LabelWithTooltip
-          icon={<FaFilter />}
-          text={t('eventFilter.eventFormat')}
-          tooltipText={t('eventFilter.eventFormatTooltip')}
-        />
-        <div className="d-flex gap-2 flex-wrap">
-          <Button
-            variant={isOnlineFilter === null ? 'secondary' : 'outline-secondary'}
-            className="rounded-pill px-3 py-1"
-            onClick={() => setIsOnlineFilter(null)}
-          >
-            {t('eventFilter.all')}
-          </Button>
-          <Button
-            variant={isOnlineFilter === true ? 'success' : 'outline-success'}
-            className="rounded-pill px-3 py-1"
-            onClick={() => setIsOnlineFilter(true)}
-          >
-            <FaGlobe className="me-1" /> {t('eventFilter.online')}
-          </Button>
-          <Button
-            variant={isOnlineFilter === false ? 'primary' : 'outline-primary'}
-            className="rounded-pill px-3 py-1"
-            onClick={() => setIsOnlineFilter(false)}
-          >
-            <FaMapMarkerAlt className="me-1" /> {t('eventFilter.offline')}
-          </Button>
-        </div>
-      </Form.Group>
-
       <Form.Group style={{ position: 'relative' }}>
         <LabelWithTooltip
           icon={<FaMapMarkerAlt />}
@@ -231,6 +211,44 @@ const EventFilter = ({
         )}
       </Form.Group>
 
+      <Button
+        variant="warning"
+        onClick={applyRelevantSorting}
+      >
+        <BsStars size={20} /> Apply Relevant Sorting
+      </Button>
+
+      <Form.Group>
+        <LabelWithTooltip
+          icon={<FaFilter />}
+          text={t('eventFilter.eventFormat')}
+          tooltipText={t('eventFilter.eventFormatTooltip')}
+        />
+        <div className="d-flex gap-2 flex-wrap">
+          <Button
+            variant={isOnlineFilter === null ? 'secondary' : 'outline-secondary'}
+            className="rounded-pill px-3 py-1"
+            onClick={() => setIsOnlineFilter(null)}
+          >
+            {t('eventFilter.all')}
+          </Button>
+          <Button
+            variant={isOnlineFilter === true ? 'success' : 'outline-success'}
+            className="rounded-pill px-3 py-1"
+            onClick={() => setIsOnlineFilter(true)}
+          >
+            <FaGlobe className="me-1" /> {t('eventFilter.online')}
+          </Button>
+          <Button
+            variant={isOnlineFilter === false ? 'primary' : 'outline-primary'}
+            className="rounded-pill px-3 py-1"
+            onClick={() => setIsOnlineFilter(false)}
+          >
+            <FaMapMarkerAlt className="me-1" /> {t('eventFilter.offline')}
+          </Button>
+        </div>
+      </Form.Group>
+
       <Form.Group>
         <LabelWithTooltip
           icon={<FaUsers />}
@@ -241,7 +259,7 @@ const EventFilter = ({
           type="number"
           min={0}
           placeholder={t('eventFilter.minAvailableSlotsPlaceholder')}
-          value={minAvaliableSlots ?? ''}
+          value={minAvailableSlots ?? ''}
           onChange={(e) => {
             const val = e.target.value;
             setMinAvailableSlots(val === '' ? null : Number(val));
@@ -262,6 +280,7 @@ const EventFilter = ({
           value={maxPrice ?? ''}
           onChange={(e) => {
             const val = e.target.value;
+            console.log(val === '')
             setMaxPrice(val === '' ? null : Number(val));
           }}
         />

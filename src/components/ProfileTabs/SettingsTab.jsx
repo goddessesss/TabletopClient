@@ -38,18 +38,6 @@ function SettingsTab({
         >
           {passwordResetting ? "Sending..." : "Send Password Reset Email"}
         </Button>
-
-        {!isEmailConfirmed && (
-          <Button
-            variant="outline-primary"
-            size="lg"
-            onClick={onSendEmailConfirmation}
-            disabled={emailConfirming}
-            className="fw-semibold"
-          >
-            {emailConfirming ? "Sending confirmation..." : "Send Email Confirmation"}
-          </Button>
-        )}
       </div>
 
       <Button

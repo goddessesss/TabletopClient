@@ -32,8 +32,8 @@ const Events = () => {
   const [maxDate, setMaxDate] = useState(null);
   const [isOnlineFilter, setIsOnlineFilter] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
-  const [minAvailableSlots, setMinAvailableSlots] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(0);
+  const [minAvailableSlots, setMinAvailableSlots] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(null);
   const [search, setSearch] = useState('');
   const [sorting, setSorting] = useState({ participantsCount: null, price: null, startDate: null });
   const [showFilterSidebar, setShowFilterSidebar] = useState(false);
@@ -44,16 +44,20 @@ const Events = () => {
       const minDateISO = minDate instanceof Date ? minDate.toISOString() : null;
       const maxDateISO = maxDate instanceof Date ? maxDate.toISOString() : null;
 
+      console.log(selectedCity);
       const queryFilters = {
         isOnline: isOnlineFilter === null ? [] : [isOnlineFilter],
-        latitude: selectedCity?.latitude ?? null,
-        longitude: selectedCity?.longitude ?? null,
-        minAvailableSlots: minAvailableSlots ?? 0,
-        maxPrice: maxPrice ?? 0,
+        minAvailableSlots: minAvailableSlots,
+        maxPrice: maxPrice,
         minDate: minDateISO,
         maxDate: maxDateISO,
         eventTypes: selectedEventTypes.length > 0 ? selectedEventTypes : [],
       };
+
+      const searchLocation = selectedCity == null ? null : {
+        latitude: selectedCity.latitude ?? null,
+        longitude: selectedCity.longitude ?? null,
+      }
 
       const filtersToSend =
         Object.values(queryFilters).every(
@@ -62,7 +66,7 @@ const Events = () => {
           ? {}
           : queryFilters;
 
-      const data = await getAllEvents(currentPage, pageSize, search, filtersToSend, sorting);
+      const data = await getAllEvents(currentPage, pageSize, search, filtersToSend, sorting, searchLocation);
 
       if (data && data.events) {
         setEvents(data.events);

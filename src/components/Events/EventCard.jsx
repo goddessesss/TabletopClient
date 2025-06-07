@@ -1,12 +1,21 @@
 import React from 'react';
+import { useAuth } from '../Context/AuthContext.jsx';
 import { Card, Button, Badge } from 'react-bootstrap';
-import { FaCalendarAlt, FaMapMarkerAlt, FaWifi } from 'react-icons/fa';
+import { FaCalendarAlt, FaMapMarkerAlt, FaMoneyBillWave, FaWifi } from 'react-icons/fa';
 import { EventTypeEnum } from '../../enums/eventTypes.js';
 import { useTranslation } from 'react-i18next';
 
 const EventCard = ({ event, onClick }) => {
   const { t } = useTranslation();
+  const { userId } = useAuth()
 
+  const formatPlayers = (registeredPlayers, maxPlayers) => {
+    if (maxPlayers == null) {
+      return `${registeredPlayers} ${t('eventCard.slots')}`;
+    }
+    return `${registeredPlayers}/${maxPlayers} ${t('eventCard.slots')}`;
+  }
+  
   return (
     <Card
       className="card-event shadow-sm h-100 border-0"
@@ -18,11 +27,15 @@ const EventCard = ({ event, onClick }) => {
           <Card.Title className="mb-2 fs-5 text-truncate">{event.name}</Card.Title>
           <div className="text-muted small d-flex align-items-center">
             <FaCalendarAlt className="me-2" />
-            {new Date(event.startDate).toLocaleString()}
+            {`${new Date(event.startDate).toLocaleString()} - ${new Date(event.startDate).toLocaleString()}`}
           </div>
           <div className="text-muted small d-flex align-items-center mt-1">
             <FaMapMarkerAlt className="me-2" />
             {event.location?.shortName ?? event.location?.fullName ?? t('eventCard.noLocation')}
+          </div>
+          <div className="text-muted small d-flex align-items-center mt-1">
+            <FaMoneyBillWave className="me-2" />
+            {event.price === null || event.price === 0 ? 'Free' : `${event.price} ₴`}
           </div>
         </div>
 
@@ -41,8 +54,15 @@ const EventCard = ({ event, onClick }) => {
             {EventTypeEnum[event.eventType] ? t(`eventTypes.${EventTypeEnum[event.eventType]}`) : event.eventType}
           </Badge>
           <Badge bg="warning" text="dark">
-            {event.registeredPlayer} / {event.maxPlayers} {t('eventCard.slots')}
+            {formatPlayers(event.registeredPlayer, event.maxPlayers)}
           </Badge>
+          {
+            event.gameClubId != null && (
+              <Badge text="white">
+                {t('eventCard.clubEvent')}
+              </Badge>
+            )
+          }
         </div>
 
         <Button

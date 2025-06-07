@@ -4,10 +4,16 @@ import { getCitiesBySearch, addEvent } from '../api/eventsApi.js';
 import { getBoardGamesNames } from '../api/boardgameApi.js';
 import { useAuth } from '../components/Context/AuthContext.jsx';
 import { BreadCrumbs } from '../components/BreadCrumbs/BreadCrumbs.jsx';
+import { useNotifications } from '../components/NotificationsHandling/NotificationContext.jsx';
+import { useNavigate } from 'react-router-dom';
+import { getClubOwnerGameClubs } from '../api/gameClubsApi.js';
+import { roles } from '../enums/roles.js';
 
 function AddEvent() {
   const debounceTimeout = useRef(null);
-  const { userId } = useAuth();
+  const { userId, userRole } = useAuth();
+  const navigate = useNavigate();
+  const { addNotification } = useNotifications();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -26,14 +32,14 @@ function AddEvent() {
   const [cityOptions, setCityOptions] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [inputValue, setInputValue] = useState('');
-  const [submitMessage, setSubmitMessage] = useState('');
-  const [submitMessageType, setSubmitMessageType] = useState('');
   const [boardGames, setBoardGames] = useState([]);
+  const [gameClubs, setGameClubs] = useState([]);
+  const [isClubEvent, setIsClubEvent] = useState(false);
+  const [selectedGameClub, setSelectedGameClub] = useState(null);
 
   const eventTypes = [
-    { id: 0, name: 'GameSession' },
+    { id: 0, name: 'Game Session' },
     { id: 1, name: 'Tournament' },
     { id: 2, name: 'Meetup' },
     { id: 3, name: 'Convention' },
@@ -60,7 +66,14 @@ function AddEvent() {
         setBoardGames(options);
       }
     }
+    async function fetchGameClubs() {
+      const result = await getClubOwnerGameClubs();
+      if (result.success) {
+        setGameClubs(result.data);
+      }
+    }
     fetchBoardGames();
+    fetchGameClubs();
   }, []);
 
   const handleCitySearch = async (inputValue) => {
@@ -69,20 +82,18 @@ function AddEvent() {
       return;
     }
     setIsLoading(true);
-    setError(null);
     try {
       const result = await getCitiesBySearch(inputValue);
       if (result.success && Array.isArray(result.data)) {
         const options = result.data.map((item) => ({
           value: item.osmType.charAt(0) + item.osmId,
-          label: item.fullName || item.shortName || 'Unknown city',
+          label: item.fullName || item.shortName || 'Unknown location',
         }));
         setCityOptions(options);
       } else {
         throw new Error('Unexpected response format');
       }
     } catch (error) {
-      setError(error.message);
       setCityOptions([]);
     } finally {
       setIsLoading(false);
@@ -125,14 +136,30 @@ function AddEvent() {
     }));
   };
 
+  const handleGameClubSelect = (selectedOption) => {
+    setSelectedGameClub(selectedOption);
+    setLocationFromGameClub(selectedOption);
+  }
+
+  const setLocationFromGameClub = (selectedOption) => {
+    if (selectedOption == null)
+      return;
+
+    var selectedLocation = {
+      value: selectedOption.location.osmType.charAt(0) + selectedOption.location.osmId,
+      label: selectedOption.location.fullName || selectedOption.location.shortName || 'Unknown location',
+    }
+
+    setSelectedCity(selectedLocation)
+    setInputValue(selectedLocation.label)
+  }
+
   const isValidOsmId = (osmId) => {
     return osmId && osmId.length > 1 && /^[a-zA-Z]/.test(osmId.charAt(0));
   };
 
   const displayMessage = (msg, type) => {
-    setSubmitMessage(msg);
-    setSubmitMessageType(type);
-    setTimeout(() => setSubmitMessage(''), 3000);
+    addNotification({message: msg, variant: type});
   };
 
   const isDateInPast = (dateString) => {
@@ -146,36 +173,37 @@ function AddEvent() {
     e.preventDefault();
 
     if (formData.eventType === '') {
-      displayMessage('Event type is required.', 'error');
+      displayMessage('Event type is required.', 'danger');
       return;
     }
     if (!formData.isOnline && !isValidOsmId(formData.fullLocationOsmId)) {
-      displayMessage('Invalid location format.', 'error');
+      displayMessage('Invalid location format.', 'danger');
       return;
     }
     if (isDateInPast(formData.startDate)) {
-      displayMessage('Start date cannot be in the past.', 'error');
+      displayMessage('Start date cannot be in the past.', 'danger');
       return;
     }
     if (isDateInPast(formData.endDate)) {
-      displayMessage('End date cannot be in the past.', 'error');
+      displayMessage('End date cannot be in the past.', 'danger');
       return;
     }
     if (formData.endDate && formData.startDate && new Date(formData.endDate) < new Date(formData.startDate)) {
-      displayMessage('End date cannot be earlier than start date.', 'error');
+      displayMessage('End date cannot be earlier than start date.', 'danger');
       return;
     }
 
     try {
       const eventPayload = {
         ...formData,
-        maxPlayers: Number(formData.maxPlayers),
-        minPlayers: Number(formData.minPlayers),
+        maxPlayers: formData.maxPlayers == '' ? null : Number(formData.maxPlayers),
+        minPlayers: formData.minPlayers == '' ? null : Number(formData.minPlayers),
         price: Number(formData.price),
         organizerPlayerId: Number(formData.organizerPlayerId),
         startDate: new Date(formData.startDate).toISOString(),
         endDate: new Date(formData.endDate).toISOString(),
         eventType: Number(formData.eventType),
+        gameClubId: selectedGameClub?.id
       };
 
       if (formData.isOnline) {
@@ -185,27 +213,10 @@ function AddEvent() {
       const result = await addEvent(eventPayload);
       if (result.success) {
         displayMessage('Event successfully created', 'success');
-        setFormData({
-          name: '',
-          description: '',
-          maxPlayers: 0,
-          minPlayers: 0,
-          startDate: '',
-          endDate: '',
-          isOnline: true,
-          fullLocationOsmId: '',
-          eventType: '',
-          price: 0,
-          organizerPlayerId: userId,
-          boardGameId: '',
-        });
-        setSelectedCity(null);
-        setInputValue('');
-      } else {
-        displayMessage('Error: ' + result.message, 'error');
+        navigate('/events');
       }
     } catch {
-      displayMessage('Error creating event.', 'error');
+      displayMessage('Error creating event.', 'danger');
     }
   };
 
@@ -225,11 +236,6 @@ function AddEvent() {
       </div>
 
       <div className="create-event-container mt-4">
-        {submitMessage && (
-          <div className={`alert ${submitMessageType === 'success' ? 'alert-success' : 'alert-danger'}`}>
-            {submitMessage}
-          </div>
-        )}
 
         <form onSubmit={handleSubmit}>
           <div className="row">
@@ -337,6 +343,17 @@ function AddEvent() {
           </div>
 
           <div className="mb-3">
+            <label className="form-label">Board Game</label>
+            <Select
+              options={boardGames}
+              onChange={handleBoardGameChange}
+              isClearable
+              placeholder="Select board game"
+              value={boardGames.find((g) => g.value === formData.boardGameId) || null}
+            />
+          </div>
+
+          <div className="mb-3">
             <label className="form-label">
               Online Event? <span style={{ color: 'red' }}>*</span>
             </label>
@@ -365,7 +382,6 @@ function AddEvent() {
                 className="form-control"
               />
               {isLoading && <p>Loading...</p>}
-              {error && <p className="text-danger">Error: {error}</p>}
               {cityOptions.length > 0 && (
                 <ul className="list-group mt-2">
                   {cityOptions.map((city) => (
@@ -382,28 +398,36 @@ function AddEvent() {
                   )}
               </div>
             )}
-            <div className="mb-3">
-              <label className="form-label">Board Game</label>
-              <Select
-                options={boardGames}
-                onChange={handleBoardGameChange}
-                isClearable
-                placeholder="Select board game"
-                value={boardGames.find((g) => g.value === formData.boardGameId) || null}
-              />
-            </div>
 
-            <div className="mb-3">
-              <label className="form-label">Price</label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleFormChange}
-                className="form-control"
-                min="0"
-              />
-            </div>
+            { userRole === roles.find(role => role.name === 'Club Owner')?.id && ( <>
+              <div className="form-check mb-3">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="isClubEvent"
+                  checked={isClubEvent}
+                  onChange={(e) => setIsClubEvent(e.target.checked)}
+                />
+                <label className="form-check-label" htmlFor="isClubEvent">
+                  This is a Club Event
+                </label>
+              </div>
+
+              { isClubEvent && (
+                <div className="mb-3">
+                  <label className="form-label">Game Club</label>
+                  <Select
+                    options={gameClubs}
+                    getOptionLabel={(option) => option.name}
+                    getOptionValue={(option) => option.id}
+                    onChange={handleGameClubSelect}
+                    isClearable
+                    placeholder={'Select game club'}
+                    value={selectedGameClub || null}
+                  />
+                </div>
+              )}
+            </>)}
 
             <button
               type="submit"

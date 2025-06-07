@@ -30,7 +30,7 @@ function JoinedEventsTab({ events, loading, error }) {
 
   return (
     <div className="mb-4">
-      <h2 className="fw-bold text-dark">Joined Games</h2>
+      <h2 className="fw-bold text-dark">Joined Events</h2>
       <hr className="mb-4" />
 
       {loading ? (

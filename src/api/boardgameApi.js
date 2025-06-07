@@ -19,7 +19,17 @@ export async function getAllBoardGames(pageNumber, pageSize, search, filters) {
 
 export const getBoardGameById = async (id) => {
   try {
-    const response = await axios.get(`${BASE_URL}/BoardGames/${id}`);
+    const authToken = localStorage.getItem('authToken');
+    const response = await axios.get(
+      `${BASE_URL}/BoardGames/${id}`,
+      { 
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json',
+          'accept': '*/*',
+        }
+      }
+    );
     if (response.status === 200) {
       return { success: true, data: response.data };
     }
@@ -106,7 +116,6 @@ export const getFavouriteGames = async () => {
     };
   }
 };
-
 
 export const getBoardGamesNames = async (search = "") => {
   try {
@@ -230,8 +239,7 @@ export const createOrUpdateBoardGame = async (bggId) => {
 };
 
 export const getBoardGameFromBggSearch = async (search = "") => {
-
-  try{
+  try {
     const authToken = localStorage.getItem('authToken');
     const response = await axios.get(
       `${BASE_URL}/Bgg/search`,
@@ -255,3 +263,26 @@ export const getBoardGameFromBggSearch = async (search = "") => {
     console.error("Error fetching board games from BGG:", serverMsg);
   }
 }
+
+export const removeFromFavoriteGame = async (boardGameId) => {
+  try {
+    const authToken = localStorage.getItem('authToken');
+    const headers = authToken ? { Authorization: `Bearer ${authToken}` } : {};
+
+    const response = await axios.delete(
+      `${BASE_URL}/PlayerProfiles/favourite-games/${boardGameId}`,
+      { headers }
+    );
+
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    console.error("Error changing favorite game status:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to change game status.',
+    };
+  }
+};

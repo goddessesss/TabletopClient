@@ -87,14 +87,16 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
   }
 
   &-center {
+    flex-grow: 1;
     display: flex;
-    gap: 200px;
+    justify-content: center;
+    gap: 60px;
     align-items: center;
   }
 
   .nav-item,
   .dropdown-toggle {
-    font-size: 25px;
+    font-size: 22px;
     text-decoration: none;
     position: relative;
     transition: color 0.3s ease, transform 0.2s ease;

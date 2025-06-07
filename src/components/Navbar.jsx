@@ -5,9 +5,10 @@ import { useAuth } from '../components/Context/AuthContext.jsx';
 import { Dropdown } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../components/Context/LanguageContext';
+import { roles } from '../enums/roles.js'
 
 function Navbar() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userRole } = useAuth();
   const { t } = useTranslation();
   const { language, changeLanguage } = useLanguage();
   const navigate = useNavigate();
@@ -36,7 +37,9 @@ function Navbar() {
         <div className="navbar-center">
           <Link to="/board-games" className="nav-item">{t('navbar.games')}</Link>
           <Link to="/events" className="nav-item">{t('navbar.events')}</Link>
-          <Link to="/contact" className="nav-item">{t('navbar.contact')}</Link>
+          <Link to="/game-clubs" className="nav-item">{t('navbar.gameClubs')}</Link>
+          { isAuthenticated && <Link to="/calendar" className="nav-item">{t('navbar.calendar')}</Link> }
+          { userRole === roles.find(role => role.name === 'Admin')?.id && <Link to="/adminpanel" className="nav-item">{t('navbar.admin')}</Link>} 
         </div>
 
         <div
@@ -88,26 +91,10 @@ function Navbar() {
             <button className="close-menu" onClick={() => setMenuOpen(false)}>✖</button>
           </div>
 
-          <div className="mobile-dropdown">
-            <div className="nav-item" onClick={() => setGamesDropdownOpen(!gamesDropdownOpen)}>
-              {t('navbar.games')}
-              <span className={`dropdown-arrow ${gamesDropdownOpen ? 'open' : ''}`}>▼</span>
-            </div>
-            {gamesDropdownOpen && (
-              <div className="dropdown-submenu">
-                <a href="/all" className="dropdown-item">{t('navbar.allBoardgames')}</a>
-                <a href="#" className="dropdown-item">{t('navbar.game2')}</a>
-                <a href="#" className="dropdown-item">{t('navbar.game3')}</a>
-              </div>
-            )}
-          </div>
-
-          <Link to="/events" className="nav-item" onClick={() => setMenuOpen(false)}>
-            {t('navbar.events')}
-          </Link>
-          <Link to="/contact" className="nav-item" onClick={() => setMenuOpen(false)}>
-            {t('navbar.contact')}
-          </Link>
+          <Link to="/board-games" className="nav-item" onClick={() => setMenuOpen(false)}>{t('navbar.games')}</Link>
+          <Link to="/events" className="nav-item" onClick={() => setMenuOpen(false)}>{t('navbar.events')}</Link>
+          <Link to="/game-clubs" className="nav-item" onClick={() => setMenuOpen(false)}>{t('navbar.gameClubs')}</Link>
+          <Link to="/calendar" className="nav-item" onClick={() => setMenuOpen(false)}>{t('navbar.calendar')}</Link>
 
           <div style={{ marginTop: '1rem', position: 'relative', width: '100%' }}>
             <div

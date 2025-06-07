@@ -6,6 +6,7 @@ import { Card, Spinner, Badge, Button } from "react-bootstrap";
 import { FaStar, FaUsers, FaCalendarAlt, FaTags, FaTrash } from "react-icons/fa";
 import BoardGameModal from "../BoardGameModal.jsx";
 import ConfirmModal from "../../components/Modals/ConfirmationModal.jsx";
+import { useNotifications } from "../NotificationsHandling/NotificationContext.jsx";
 
 function FavouriteGames() {
   const [favourites, setFavourites] = useState([]);
@@ -18,6 +19,8 @@ function FavouriteGames() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [gameToRemove, setGameToRemove] = useState(null);
 
+  const { addNotification } = useNotifications();
+
   useEffect(() => {
     const fetchFavourites = async () => {
       try {
@@ -29,10 +32,10 @@ function FavouriteGames() {
           }));
           setFavourites(safeData);
         } else {
-          setError("Failed to fetch favourite games: " + result.message);
+          addNotification({message:"Failed to retrieve favourite games: ", variant:'danger'});
         }
       } catch (err) {
-        setError("Failed to fetch favourite games: " + err.message);
+        addNotification({message:"Failed to retrieve favourite games: ", variant:'danger'});
       }
       setLoading(false);
     };
@@ -58,11 +61,12 @@ function FavouriteGames() {
       const result = await removeFavouriteGame(gameToRemove.id);
       if (result.success) {
         setFavourites((prev) => prev.filter((g) => g.id !== gameToRemove.id));
+        addNotification({message:"Board game successfully removed from favourites", variant:'success'});
       } else {
-        setError("Failed to remove game: " + result.message);
+        addNotification({message:"Failed to remove game from favourites", variant:'danger'});
       }
     } catch (err) {
-      setError("Failed to remove game: " + err.message);
+      addNotification({message:"Failed to remove game from favourites", variant:'danger'});
     } finally {
       setShowConfirm(false);
       setGameToRemove(null);
@@ -78,10 +82,6 @@ function FavouriteGames() {
     <div className="mb-4">
       <h2 className="fw-bold text-dark">My Favorite Games</h2>
       <hr className="mb-4" />
-
-      {error && (
-        <AlertMessage variant="danger" message={error} onClose={() => setError(null)} />
-      )}
 
       {loading ? (
         <div className="d-flex justify-content-center my-5">

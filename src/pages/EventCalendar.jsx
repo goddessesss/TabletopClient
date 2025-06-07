@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Modal, Spinner } from 'react-bootstrap';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
@@ -9,6 +10,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { FaPlus, FaQuestionCircle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { BreadCrumbs } from '../components/BreadCrumbs/BreadCrumbs';
+import '../styles/CalendarStyles.scss'
+import EventShortDetailsModal from '../components/Events/EventShortDetailsModal';
+import { getCalendarEvents } from '../api/eventsApi';
 
 const locales = {
   'uk-UA': uk,
@@ -19,6 +24,10 @@ const EventCalendar = () => {
   const { t, i18n } = useTranslation();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [currentView, setCurrentView] = useState('month');
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   const localizer = dateFnsLocalizer({
@@ -29,29 +38,8 @@ const EventCalendar = () => {
     locales,
   });
 
-  const mockEvents = [
-    {
-      id: 1,
-      title: 'Board Game: Settlers of Catan',
-      start: new Date('2025-05-25T17:00:00'),
-      end: new Date('2025-05-25T20:00:00'),
-    },
-    {
-      id: 2,
-      title: 'Mafia (Offline)',
-      start: new Date('2025-05-27T19:00:00'),
-      end: new Date('2025-05-27T22:00:00'),
-    },
-    {
-      id: 3,
-      title: 'D&D Session',
-      start: new Date('2025-05-25T12:00:00'),
-      end: new Date('2025-05-25T16:00:00'),
-    },
-  ];
-
-  const handleAddEvent = () => {
-    navigate('/addevent');
+  const handleSelectEvent = (event) => {
+    setSelectedEvent(event);
   };
 
   const handleNavigate = (newDate) => {
@@ -64,58 +52,58 @@ const EventCalendar = () => {
     </Tooltip>
   );
 
+  useEffect(() => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      const result = await getCalendarEvents();
+      if (result.success) {
+        const transformed = result.data.map((e) => ({
+          id: e.id,
+          title: e.name,
+          start: new Date(e.startDate),
+          end: new Date(e.endDate),
+          ...e,
+        }));
+        setEvents(transformed);
+      }
+      setLoading(false);
+    };
+
+    fetchEvents();
+  }, []);
+
+
   return (
-    <div className="p-3">
-      <div
-        style={{
-          backgroundColor: 'white',
-          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-          padding: '15px 30px',
-          borderRadius: '12px',
-          width: '100%',
-          boxSizing: 'border-box',
-          marginTop: '50px',
-          maxWidth: 1500,
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '10px',
-        }}
-      >
-        <div style={{ flexGrow: 1, minWidth: 250 }}>
-          <h3
-            className="calendar-label"
-            style={{
-              margin: 0,
-              textAlign: 'left',
-              fontWeight: '600',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-            }}
-          >
-            {t('calendar.title')}
-            <OverlayTrigger placement="right" overlay={renderTooltip}>
-              <FaQuestionCircle
-                style={{ color: '#ffc107', cursor: 'pointer', fontSize: '16px' }}
-              />
-            </OverlayTrigger>
-          </h3>
-          <p style={{ marginTop: 5, color: '#666', fontSize: '0.9rem' }}>
-            {t('calendar.description')}
-          </p>
+    <div className="container my-2">
+      <div className="pt-4">
+        <BreadCrumbs
+          items={[
+            { label: 'Home', path: '/' },
+            { label: 'Calendar' },
+          ]}
+        />
+      </div>
+      <div className="d-flex align-items-center justify-content-between mb-2 px-2">
+        <div class="d-flex align-items-center gap-2">
+          <h1 className="fw-bold mb-0">{ t('calendar.title') }</h1>
+          <OverlayTrigger placement="right" overlay={renderTooltip}>
+            <FaQuestionCircle
+              style={{ color: '#ffc107', cursor: 'pointer', fontSize: '16px' }}
+            />
+          </OverlayTrigger>
         </div>
-        <Button variant="warning" onClick={handleAddEvent} style={{ whiteSpace: 'nowrap' }}>
-          <FaPlus style={{ marginRight: 8 }} />
-          {t('calendar.buttonAddEvent')}
+        
+        <Button
+          variant="warning"
+          onClick={() => navigate('/events/addevent')}
+          className="d-none d-md-flex align-items-center"
+        >
+          <FaPlus className="me-2" />
+          Create Event
         </Button>
       </div>
-
       <div
-        className="calendar-container p-3 bg-light rounded shadow-sm"
+        className="calendar-container p-4 mb-5 bg-light rounded shadow-sm"
         style={{
           marginTop: '20px',
           maxWidth: 900,
@@ -124,13 +112,18 @@ const EventCalendar = () => {
           marginRight: 'auto',
         }}
       >
+        {loading ? (
+          <div className="text-center my-5">
+            <Spinner animation="border" variant="warning" />
+          </div>
+        ) : (
         <Calendar
           localizer={localizer}
-          events={mockEvents}
+          events={events}
           startAccessor="start"
           endAccessor="end"
           style={{
-            height: 600,
+            height: 700,
             width: '100%',
           }}
           culture={i18n.language}
@@ -138,6 +131,7 @@ const EventCalendar = () => {
           onNavigate={handleNavigate}
           view={currentView}
           onView={(view) => setCurrentView(view)}
+          onSelectEvent={handleSelectEvent}
           views={{
             month: true,
             week: true,
@@ -158,8 +152,9 @@ const EventCalendar = () => {
             event: t('calendar.messages.event'),
             noEventsInRange: t('calendar.messages.noEventsInRange'),
           }}
-        />
+        />)}
       </div>
+      <EventShortDetailsModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />
     </div>
   );
 };

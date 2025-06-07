@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import {
   FaTachometerAlt,
@@ -10,15 +11,16 @@ import {
   FaTimes,
 } from 'react-icons/fa';
 import { MdClass } from "react-icons/md";
-import BoardGamesTab from '../components/AdminPanelTabs/BoardGamesTab.jsx';
-import DashboardTab from '../components/AdminPanelTabs/DashboardTab.jsx';
-import UsersTab from '../components/AdminPanelTabs/UsersTab.jsx';
-import ClassifiersTab from '../components/AdminPanelTabs/ClassifiersTab.jsx';
+import BoardGamesTab from '../components/AdminPanelTabs/BoardGames/BoardGamesTab.jsx';
+import DashboardTab from '../components/AdminPanelTabs/Dashboard/DashboardTab.jsx';
+import UsersTab from '../components/AdminPanelTabs/Users/UsersTab.jsx';
+import ClassifiersTab from '../components/AdminPanelTabs/Classifiers/ClassifiersTab.jsx';
 import { AdminPanelTabs } from '../enums/adminPanelTabs.js';
 import { useTranslation } from 'react-i18next';
 import '../styles/AdminPanel.scss';
 
 function AdminPanel() {
+  const navigate = useNavigate();
   const { t } = useTranslation()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -92,28 +94,28 @@ function AdminPanel() {
             <li className={activeTab === AdminPanelTabs.Classifiers ? 'active' : ''} onClick={() => handleTabChange(AdminPanelTabs.Classifiers)}>
               <MdClass /> <span>Classifiers</span>
             </li>
-            <li className="logout">
-              <FaSignOutAlt /> <span>Logout</span>
+            <li className="logout" onClick={() => navigate('/')}>
+              <FaSignOutAlt /> <span>Exit Admin Panel</span>
             </li>
           </ul>
         </nav>
       </aside>
 
-      <main className="main-content">
-        <div
-          className="main-header"
-          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-        >
-          <h2 style={{ margin: 0 }}>{ t(tabTitles[activeTab]) }</h2>
-          <div className="admin-profile" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span>Admin</span>
-            <FaUserCircle size={40} />
+        <main className="main-content">
+          <div
+            className="main-header"
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+          >
+            <h2 style={{ margin: 0 }}>{ t(tabTitles[activeTab]) }</h2>
+            <div className="admin-profile" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span>Admin</span>
+              <FaUserCircle size={40} />
+            </div>
           </div>
-        </div>
-        <div className='main-innerContent'>
-          { renderActiveTabContent() }
-        </div>
-      </main>
+          <div className='main-innerContent'>
+            { renderActiveTabContent() }
+          </div>
+        </main>
     </div>
   );
 }

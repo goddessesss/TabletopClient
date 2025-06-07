@@ -3,7 +3,9 @@
     "games": "ІГРИ",
     "allBoardgames": "Всі настільні ігри",
     "events": "ПОДІЇ",
-    "contact": "КОНТАКТИ",
+    "calendar": "КАЛЕНДАР",
+    "admin": "АДМІН ПАНЕЛЬ",
+    "gameClubs" : "ІГРОВІ КЛУБИ",
     "profile": "Профіль",
     "login": "Вхід"
   },
@@ -197,13 +199,15 @@
     "online": "Онлайн",
     "offline": "Офлайн",
     "noLocation": "Немає локації",
-    "slots": "місць",
-    "viewDetails": "Детальніше"
+    "slots": "гравців",
+    "viewDetails": "Детальніше",
+    "clubEvent": "Клубна подія"
   },
   "eventTypes": {
     "Tournament": "Турнір",
     "Casual": "Дружня гра",
-    "Workshop": "Майстер-клас"
+    "Workshop": "Майстер-клас",
+    "Meetup": "Зустіч"
   },
   "eventDetail": {
     "userNotAuthorized": "Користувач не авторизований.",

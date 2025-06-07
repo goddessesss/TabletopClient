@@ -27,7 +27,7 @@ import ProfileStatistics from "../components/ProfileTabs/ProfileStatistics.jsx";
 import { BreadCrumbs } from "../components/BreadCrumbs/BreadCrumbs.jsx";
 import { useNotifications } from "../components/NotificationsHandling/NotificationContext.jsx";
 import SettingsTab from "../components/ProfileTabs/SettingsTab.jsx";
-import { Tab, Nav, Button } from "react-bootstrap";
+import { Tab, Nav, Button, Badge } from "react-bootstrap";
 import {
   FaRegCalendarCheck,
   FaUsers,
@@ -192,15 +192,15 @@ const handleSubmit = async (e) => {
         if (!locationResult || locationResult.success !== true) {
           countryUpdated = false;
           addNotification({
-            message: "Не вдалося оновити місцезнаходження",
-            variant: "warning",
+            message: "En error occured while updating location",
+            variant: "danger",
           });
         }
       } catch (error) {
         countryUpdated = false;
-        console.error("Помилка при оновленні місцезнаходження:", error);
+        console.error("En error occured while updating location");
         addNotification({
-          message: "Помилка при оновленні країни та міста",
+          message: "En error occured while updating location",
           variant: "danger",
         });
       }
@@ -208,16 +208,16 @@ const handleSubmit = async (e) => {
 
     if (countryUpdated) {
       addNotification({
-        message: "Профіль успішно оновлено",
+        message: "Profile successfully updated",
         variant: "success",
       });
     }
 
     setUserProfile((prev) => ({ ...prev, ...formData }));
   } catch (error) {
-    console.error("Помилка під час оновлення профілю:", error);
+    console.error("En error occured while profile updating");
     addNotification({
-      message: "Сталася помилка при оновленні профілю",
+      message: "En error occured while profile updating",
       variant: "danger",
     });
   }
@@ -318,44 +318,49 @@ const handleCitySearch = async (countryCode, query) => {
                 }}
               />
             </div>
+            <div className="profile-info-right">
+              <h3 className="profile-nickName d-flex" style={{ marginBottom: "20px" }}>
+                <span>
+                  {userProfile.nickname?.trim() ? userProfile.nickname : "User"}
+                </span>
+                {userProfile.role && (
+                  <Badge bg="light" text="dark" style={{ border: '1px solid #ccc', marginLeft:'10px' }}>
+                    {userProfile.role}
+                  </Badge>
+                )}
+              </h3>
+              <p>
+                Email: {userProfile.email}{" "}
+                {isEmailConfirmed ? (
+                  <FaCheckCircle style={{ color: "green", marginLeft: "8px" }} title="Email confirmed" />
+                ) : (
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="ms-3"
+                    onClick={handleSendEmailConfirmation}
+                    disabled={emailConfirming}
+                  >
+                    {emailConfirming ? "Sending..." : "Confirm email"}
+                  </Button>
+                )}
+              </p>
+            <p>
+              Name: {(userProfile.firstName || userProfile.lastName)
+                ? `${userProfile.firstName || ""} ${userProfile.lastName || ""}`.trim()
+                : "Unknown User"}
+            </p>
 
-      <div className="profile-info-right">
-  <h3 className="profile-nickName">
-    {userProfile.nickname?.trim() ? userProfile.nickname : "User"}
-  </h3>
-  <p>
-    Email: {userProfile.email}{" "}
-    {isEmailConfirmed ? (
-      <FaCheckCircle style={{ color: "green", marginLeft: "8px" }} title="Email підтверджено" />
-    ) : (
-      <Button
-        variant="outline-primary"
-        size="sm"
-        className="ms-3"
-        onClick={handleSendEmailConfirmation}
-        disabled={emailConfirming}
-      >
-        {emailConfirming ? "Відправляю..." : "Підтвердити"}
-      </Button>
-    )}
-  </p>
-<p>
-  Name: {(userProfile.firstName || userProfile.lastName)
-    ? `${userProfile.firstName || ""} ${userProfile.lastName || ""}`.trim()
-    : "Unknown User"}
-</p>
-
-  <p>Bio: {userProfile.bio || "—"}</p>
-  <p>
-    Location: {
-      (userProfile.location?.countryName || formData.country) +
-      ((userProfile.location?.cityName || formData.cityName)
-        ? ", " + (userProfile.location?.cityName || formData.cityName)
-        : "") || "—"
-    }
-  </p>
-</div>
-
+              <p>Bio: {userProfile.bio || "—"}</p>
+              <p>
+                Location: {
+                  (userProfile.location?.countryName || formData.country) +
+                  ((userProfile.location?.cityName || formData.cityName)
+                    ? ", " + (userProfile.location?.cityName || formData.cityName)
+                    : "") || "—"
+                }
+              </p>
+            </div>
 
             <ProfileStatistics
               totalParticipated={totalEventsParticipated}
@@ -372,58 +377,57 @@ const handleCitySearch = async (countryCode, query) => {
               <Nav.Item><Nav.Link eventKey="favorites"><FaHeart /> Favorites</Nav.Link></Nav.Item>
               <Nav.Item><Nav.Link eventKey="settings"><FaCog /> Settings</Nav.Link></Nav.Item>
             </Nav>
-
             <Tab.Content className="profile-tab-content">
-              <Tab.Pane eventKey="profileDetails">
-                 <ProfileDetails
-            formData={formData}
-            setFormData={setFormData}
-            countries={countries}
-            loadingCountries={loadingCountries}
-            onInputChange={handleInputChange}
-            onSubmit={handleSubmit}
-            onCitySearch={handleCitySearch}
-          />
-              </Tab.Pane>
+                <Tab.Pane eventKey="profileDetails">
+                    <ProfileDetails
+                      formData={formData}
+                      setFormData={setFormData}
+                      countries={countries}
+                      loadingCountries={loadingCountries}
+                      onInputChange={handleInputChange}
+                      onSubmit={handleSubmit}
+                      onCitySearch={handleCitySearch}
+                    />
+                </Tab.Pane>
 
-              <Tab.Pane eventKey="createdEvents">
-                <CreatedEventsTab
-                  events={createdEvents}
-                  onDelete={handleDeleteEvent}
-                  loading={loadingCreatedEvents}
-                  onUpdate={handleUpdateEvent}
+                  <Tab.Pane eventKey="createdEvents">
+                    <CreatedEventsTab
+                      events={createdEvents}
+                      onDelete={handleDeleteEvent}
+                      loading={loadingCreatedEvents}
+                      onUpdate={handleUpdateEvent}
+                    />
+                  </Tab.Pane>
+
+                  <Tab.Pane eventKey="joinedEvents">
+                    <JoinedEventsTab events={joinedEvents} loading={loadingJoinedEvents} />
+                  </Tab.Pane>
+
+                  <Tab.Pane eventKey="recommendations">
+                    <RecommendationsTab />
+                  </Tab.Pane>
+
+                  <Tab.Pane eventKey="favorites">
+                    <FavoriteGames />
+                  </Tab.Pane>
+
+              <Tab.Pane eventKey="settings">
+                <SettingsTab
+                  emailConfirming={emailConfirming}
+                  passwordResetting={passwordResetting}
+                  isEmailConfirmed={isEmailConfirmed}
+                  onSendEmailConfirmation={handleSendEmailConfirmation}
+                  onSendPasswordReset={handleSendPasswordReset}
+                  onLogout={handleLogoutClick}
+                  onGoogleLoginSuccess={handleGoogleLoginSuccess}  
+                  onGoogleLoginError={handleGoogleLoginError} 
                 />
               </Tab.Pane>
-
-              <Tab.Pane eventKey="joinedEvents">
-                <JoinedEventsTab events={joinedEvents} loading={loadingJoinedEvents} />
-              </Tab.Pane>
-
-              <Tab.Pane eventKey="recommendations">
-                <RecommendationsTab />
-              </Tab.Pane>
-
-              <Tab.Pane eventKey="favorites">
-                <FavoriteGames />
-              </Tab.Pane>
-
-          <Tab.Pane eventKey="settings">
-  <SettingsTab
-    emailConfirming={emailConfirming}
-    passwordResetting={passwordResetting}
-    isEmailConfirmed={isEmailConfirmed}
-    onSendEmailConfirmation={handleSendEmailConfirmation}
-    onSendPasswordReset={handleSendPasswordReset}
-    onLogout={handleLogoutClick}
-    onGoogleLoginSuccess={handleGoogleLoginSuccess}  
-    onGoogleLoginError={handleGoogleLoginError} 
-  />
-</Tab.Pane>
             </Tab.Content>
           </Tab.Container>
+          </div>
         </div>
       </div>
-    </div>
   );
 }
 

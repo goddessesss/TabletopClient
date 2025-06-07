@@ -4,6 +4,7 @@ import AlertMessage from "../AlertMessages.jsx";
 import { Card, Spinner, Badge } from "react-bootstrap";
 import { FaStar, FaUsers, FaCalendarAlt, FaTags, FaDice, FaLayerGroup, FaPuzzlePiece } from "react-icons/fa";
 import BoardGameModal from "../BoardGameModal.jsx";
+import BoardGameProfileCard from "../BoardGame/BoardGameProfileCard.jsx";
 
 function RecommendationsTab() {
   const [recommendations, setRecommendations] = useState([]);
@@ -281,7 +282,7 @@ function RecommendationsTab() {
           })}
         </div>
       ) : (
-        <p className="text-center text-muted mt-4 fs-5">No recommendations found.</p>
+        <p className="text-center text-muted mt-4 fs-5">No recommendations found. Try to add favourite board games to get recommendations.</p>
       )}
 
       <BoardGameModal
