@@ -119,6 +119,18 @@ function EventDetail() {
     }
   };
 
+  if (!event)
+  return (
+    <>
+      <p className="text-center my-5" style={{ fontSize: '1.2rem', color: '#666' }}>
+        {t('eventDetail.loadingEventDetails')}
+      </p>
+      <p className="text-center" style={{ color: '#999' }}>
+        <strong>{t('eventDetail.urlId')}:</strong> {id || t('eventDetail.notProvided')}
+      </p>
+    </>
+  );
+
   const {
     name,
     description,
@@ -144,26 +156,7 @@ function EventDetail() {
     };
     return new Date(dateStr).toLocaleDateString(undefined, options);
   };
-/*
 
-
-  if (error) return <p className="text-danger">{t('eventDetail.error')}: {error}</p>;
-  if (!event)
-    return (
-      <>
-        <p className="text-center my-5" style={{ fontSize: '1.2rem', color: '#666' }}>
-          {t('eventDetail.loadingEventDetails')}
-        </p>
-<<<<<<< HEAD
-        <p className="text-center" style={{ color: '#999' }}>
-          <strong>{t('eventDetail.urlId')}:</strong> {id || t('eventDetail.notProvided')}
-        </p>
-=======
->>>>>>> main
-      </>
-    );
-
-*/
   return (
     <div className="container my-2" style={{ position: 'relative', minHeight:'87vh' }}>
     
