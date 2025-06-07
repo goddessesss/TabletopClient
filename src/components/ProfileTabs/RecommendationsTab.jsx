@@ -282,7 +282,7 @@ function RecommendationsTab() {
           })}
         </div>
       ) : (
-        <p className="text-center text-muted mt-4 fs-5">No recommendations found.</p>
+        <p className="text-center text-muted mt-4 fs-5">No recommendations found. Try to add favourite board games to get recommendations.</p>
       )}
 
       <BoardGameModal

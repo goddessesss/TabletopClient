@@ -10,6 +10,7 @@ import EventCalendar from './pages/EventCalendar.jsx';
 import AdminPanel from './pages/AdminPanel.jsx';
 import EmailConfirmationPage from './pages/ConfirmEmail.jsx';
 import ResetPasswordConfirm from './pages/ResetPassword.jsx';
+import GameClubs from './pages/GameClubs.jsx';
 
 const AppRouter = () => {
   return (
@@ -23,6 +24,7 @@ const AppRouter = () => {
       <Route path="/events/:id" element={<EventDetail />} />
       <Route path="/calendar" element={<EventCalendar />} />
       <Route path="/adminpanel" element={<AdminPanel />} />
+      <Route path="/game-clubs" element={<GameClubs />} />
       <Route path="/confirm-email/confirm" element={<EmailConfirmationPage />} />
       <Route path="/reset-password/confirm" element={<ResetPasswordConfirm />} />
     </Routes>

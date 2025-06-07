@@ -2,8 +2,18 @@ import React from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaMoneyBillWave, FaWifi } from 'react-icons/fa';
 import { EventTypeEnum } from '../../enums/eventTypes.js';
+import { useAuth } from '../Context/AuthContext.jsx';
 
 const EventCard = ({ event, onClick }) => {
+  const { userId } = useAuth()
+
+  const formatPlayers = (registeredPlayers, maxPlayers) => {
+    if (maxPlayers == null) {
+      return `${registeredPlayers} players`;
+    }
+    return `${registeredPlayers}/${maxPlayers} players`;
+  }
+  
   return (
     <Card
       className="card-event shadow-sm h-100 border-0"
@@ -42,7 +52,7 @@ const EventCard = ({ event, onClick }) => {
             {EventTypeEnum[event.eventType] ?? event.eventType}
           </Badge>
           <Badge bg="warning" text="dark">
-            {event.registeredPlayer} / {event.maxPlayers} slots
+            {formatPlayers(event.registeredPlayer, event.maxPlayers)}
           </Badge>
         </div>
 

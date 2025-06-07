@@ -21,7 +21,7 @@ import RecommendationsTab from "../components/ProfileTabs/RecommendationsTab.jsx
 import FavoriteGames from "../components/ProfileTabs/FavoriteGamesTab.jsx";
 import { BreadCrumbs } from "../components/BreadCrumbs/BreadCrumbs.jsx";
 import { useNotifications } from "../components/NotificationsHandling/NotificationContext.jsx";
-import { Tab, Nav, Button } from "react-bootstrap";
+import { Tab, Nav, Button, Badge } from "react-bootstrap";
 import {
   FaRegCalendarCheck,
   FaCheckCircle,
@@ -248,10 +248,15 @@ function Profile() {
               />
             </div>
             <div className="profile-info-right">
-              <h3 className="profile-nickName" style={{ marginBottom: "20px" }}>
+              <h3 className="profile-nickName d-flex" style={{ marginBottom: "20px" }}>
                 <span>
                   {userProfile.nickname?.trim() ? userProfile.nickname : "User"}
                 </span>
+                {userProfile.role && (
+                  <Badge bg="light" text="dark" style={{ border: '1px solid #ccc', marginLeft:'10px' }}>
+                    {userProfile.role}
+                  </Badge>
+                )}
               </h3>
               {userProfile.email && (
                 <p className="profile-email">
