@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Form, Button, ListGroup, Spinner, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { BsStars } from "react-icons/bs";
 import {
   FaGlobe,
   FaMapMarkerAlt,
@@ -211,7 +212,7 @@ const EventFilter = ({
         variant="warning"
         onClick={applyRelevantSorting}
       >
-        Apply Relevant Sorting
+        <BsStars size={20} /> Apply Relevant Sorting
       </Button>
 
       <Form.Group>
