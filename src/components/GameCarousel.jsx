@@ -8,8 +8,8 @@ import ImageSlider1 from '../assets/ImageSlider1.png';
 import ImageSlider2 from '../assets/ImageSlider2.png';
 import ImageSlider3 from '../assets/ImageSlider3.png';
 import ImageSlider4 from '../assets/ImageSlider4.png';
-import ImageSlider5 from '../assets/ImageSlider4.png';
-import ImageSlider6 from '../assets/ImageSlider4.png';
+import ImageSlider5 from '../assets/ImageSlider5.png';
+import ImageSlider6 from '../assets/ImageSlider6.png';
 
 function GameCarousel() {
   const [isVisible, setIsVisible] = useState(false);
@@ -60,6 +60,14 @@ function GameCarousel() {
     };
   }, []);
 
+  const imageStyle = {
+    width: '250px',
+    height: '400px',
+    objectFit: 'cover',
+    display: 'block',
+    margin: '0 auto',
+  };
+
   return (
     <section className="carousel" id="game-carousel">
       <Container fluid>
@@ -78,27 +86,57 @@ function GameCarousel() {
                 className="game-slider"
               >
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider1} alt={t('carousel.alts.adventure')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <img
+                    src={ImageSlider1}
+                    alt={t('carousel.alts.adventure')}
+                    className={`carousel-image ${isVisible ? 'visible' : ''}`}
+                    style={imageStyle}
+                  />
                   <h5>{t('carousel.items.adventure')}</h5>
                 </div>
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider2} alt={t('carousel.alts.dice')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <img
+                    src={ImageSlider2}
+                    alt={t('carousel.alts.dice')}
+                    className={`carousel-image ${isVisible ? 'visible' : ''}`}
+                    style={imageStyle}
+                  />
                   <h5>{t('carousel.items.dice')}</h5>
                 </div>
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider3} alt={t('carousel.alts.strategy')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <img
+                    src={ImageSlider3}
+                    alt={t('carousel.alts.strategy')}
+                    className={`carousel-image ${isVisible ? 'visible' : ''}`}
+                    style={imageStyle}
+                  />
                   <h5>{t('carousel.items.strategy')}</h5>
                 </div>
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider4} alt={t('carousel.alts.family')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <img
+                    src={ImageSlider4}
+                    alt={t('carousel.alts.family')}
+                    className={`carousel-image ${isVisible ? 'visible' : ''}`}
+                    style={imageStyle}
+                  />
                   <h5>{t('carousel.items.family')}</h5>
                 </div>
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider5} alt={t('carousel.alts.adventure')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <img
+                    src={ImageSlider5}
+                    alt={t('carousel.alts.adventure')}
+                    className={`carousel-image ${isVisible ? 'visible' : ''}`}
+                    style={imageStyle}
+                  />
                   <h5>{t('carousel.items.adventure')}</h5>
                 </div>
                 <div className={`item ${isVisible ? 'visible' : ''}`}>
-                  <img src={ImageSlider6} alt={t('carousel.alts.party')} className={`carousel-image ${isVisible ? 'visible' : ''}`} />
+                  <img
+                    src={ImageSlider6}
+                    alt={t('carousel.alts.party')}
+                    className={`carousel-image ${isVisible ? 'visible' : ''}`}
+                    style={imageStyle}
+                  />
                   <h5>{t('carousel.items.party')}</h5>
                 </div>
               </Carousel>

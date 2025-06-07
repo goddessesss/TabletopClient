@@ -128,13 +128,109 @@
     },
     "description": "Easily track and plan your favorite board game events"
   },
-  "events":{
-    "events.home":"Home"
+  "events": {
+    "breadcrumbHome": "Home",
+    "pageTitle": "Events",
+    "createEvent": "Create Event",
+    "events.home": "Home"
   },
   "admin": {
-    "boardGames" : "Board Games",
-    "dashboard" : "Dashboard",
-    "classifiers" : "Classifiers",
-    "users" : "Users"
+    "boardGames": "Board Games",
+    "dashboard": "Dashboard",
+    "classifiers": "Classifiers",
+    "users": "Users"
+  },
+  "allBoardGamesPage": {
+    "breadcrumbHome": "Home",
+    "breadcrumbBoardGames": "Board Games",
+    "pageTitle": "Board Games",
+    "searchPlaceholder": "Search board game by name",
+    "filters": {
+      "title": "Filters",
+      "openFilters": "Open filters",
+      "selectedFilters": "Selected filters:",
+      "noFiltersSelected": "No filters selected"
+    },
+    "pagination": {
+      "gamesPerPage": "Games per page:"
+    },
+    "noResults": "🔍 No results found",
+    "errors": {
+      "fetchClassifiersFailed": "Failed to fetch classifiers",
+      "fetchGamesFailed": "Failed to fetch games"
+    }
+  },
+  "sidebarFilters": {
+    "filters": "Filters",
+    "categories": "Categories",
+    "families": "Families",
+    "mechanics": "Mechanics",
+    "themes": "Themes",
+    "clear": "Clear",
+    "noData": "No data"
+  },
+  "eventFilter": {
+    "eventFormat": "Event Format",
+    "eventFormatTooltip": "Filter events by format: All, Online, or Offline",
+    "all": "All",
+    "online": "Online",
+    "offline": "Offline",
+    "cityOptional": "City (optional)",
+    "cityOptionalTooltip": "Filter events by selected city (optional)",
+    "cityPlaceholder": "For example: Kyiv",
+    "minAvailableSlots": "Min Available Slots",
+    "minAvailableSlotsTooltip": "Minimum number of available slots for participants",
+    "minAvailableSlotsPlaceholder": "Minimum available slots",
+    "price": "Price",
+    "priceTooltip": "Maximum event price",
+    "pricePlaceholder": "Maximum price",
+    "fromDate": "From Date",
+    "fromDateTooltip": "Select minimum date and time to filter events",
+    "toDate": "To Date",
+    "toDateTooltip": "Select maximum date and time to filter events",
+    "sortBy": "Sort by",
+    "sortByTooltip": "Sort events by date, price, or participant count",
+    "date": "Date",
+    "participants": "Participants",
+    "clearAllFilters": "Clear All Filters"
+  },
+  
+  "eventCard": {
+    "online": "Online",
+    "offline": "Offline",
+    "noLocation": "No location",
+    "slots": "players",
+    "viewDetails": "View Details",
+    "clubEvent": "Club Event"
+  },
+  "eventTypes": {
+    "Tournament": "Tournament",
+    "Casual": "Casual",
+    "Workshop": "Workshop",
+    "Meetup": "Meetup"
+  },
+  "eventDetail": {
+    "userNotAuthorized": "User not authorized.",
+    "successfullyRegistered": "Successfully registered for the event!",
+    "failedToRegister": "Failed to register.",
+    "error": "Error",
+    "loadingEventDetails": "Loading event details...",
+    "urlId": "URL id",
+    "notProvided": "not provided",
+    "eventDetails": "Event Details",
+    "onlineEvent": "Online event",
+    "unknownLocation": "Unknown location",
+    "locationNotSpecified": "Location not specified",
+    "noDescription": "No description.",
+    "start": "Start",
+    "end": "End",
+    "game": "Game",
+    "na": "N/A",
+    "players": "Players",
+    "price": "Price",
+    "free": "Free",
+    "joinEvent": "Join Event",
+    "participants": "Participants"
   }
 }
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, ListGroup, Badge } from "react-bootstrap";
 import UpdateEventModal from "../Modals/UpdateEventModal.jsx";
 import ConfirmModal from "../Modals/ConfirmationModal.jsx";
@@ -169,182 +169,176 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
         })
       : "";
 
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center my-5">
-        <div className="spinner-border text-primary" role="status" />
-        <span className="ms-2">Loading events...</span>
-      </div>
-    );
-  }
-
-  if (!localEvents.length) {
-    return (
-      <p className="text-center text-muted mt-4 fs-5">No created events.</p>
-    );
-  }
-
   return (
     <>
       <div className="mb-4">
         <h2 className="fw-bold text-dark">Created Events</h2>
         <hr className="mb-4" />
       </div>
-      <ListGroup variant="flush">
-        {localEvents.map((event) => {
-          const participants = participantsMap[event.id] || [];
-          const hasParticipants = participants.length > 0;
-          const statusLower = event.statusName?.toLowerCase();
 
-          return (
-            <ListGroup.Item
-              key={event.id}
-              className="mb-3 p-4 rounded shadow-sm d-flex justify-content-between align-items-center"
-              style={{
-                background:
-                  "linear-gradient(135deg, #ffffff 0%, rgb(255, 245, 237) 100%)",
-                transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                cursor: "pointer",
-              }}
-              onClick={() => navigate(`/events/${event.id}`)}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = "0 12px 24px rgba(0,0,0,0.15)";
-                e.currentTarget.style.transform = "translateY(-3px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
-                e.currentTarget.style.transform = "none";
-              }}
-            >
-              <div style={{ flex: 1, marginRight: "20px" }}>
-                <h5 className="mb-2 fw-bold text-dark d-flex align-items-center gap-2">
-                  {event.title || event.name}
-                  {event.statusName && (
-                    <Badge
-                      bg={getStatusVariant(event.statusName)}
-                      className="text-capitalize shadow-sm"
-                    >
-                      {event.statusName}
-                    </Badge>
-                  )}
-                </h5>
-                <p
-                  className="mb-3 text-secondary"
-                  title={event.description}
-                >
-                  {event.description || "No description available"}
-                </p>
+      {loading ? (
+        <div className="d-flex justify-content-center my-5">
+          <div className="spinner-border text-primary" role="status" />
+          <span className="ms-2">Loading events...</span>
+        </div>
+      ) : localEvents.length === 0 ? (
+        <p className="text-center text-muted mt-4 fs-5">No created events.</p>
+      ) : (
+        <ListGroup variant="flush">
+          {localEvents.map((event) => {
+            const participants = participantsMap[event.id] || [];
+            const hasParticipants = participants.length > 0;
+            const statusLower = event.statusName?.toLowerCase();
 
-                <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
-                  {event.boardGameName && (
-                    <Badge
-                      bg="warning"
-                      className="d-flex align-items-center gap-1 shadow-sm"
-                    >
-                      <FaDice />
-                      {event.boardGameName}
-                    </Badge>
-                  )}
-                </div>
-
-                <div className="mt-2 d-flex flex-wrap gap-4 text-muted">
-                  {event.date && (
-                    <div className="d-flex align-items-center gap-2">
-                      <FaCalendarAlt />
-                      <span>
-                        <strong>Date:</strong> {formatDate(event.date)}
-                      </span>
-                    </div>
-                  )}
-                  {event.startDate && (
-                    <div className="d-flex align-items-center gap-2">
-                      <FaCalendarAlt />
-                      <span>
-                        <strong>Start:</strong> {formatDate(event.startDate)}
-                      </span>
-                    </div>
-                  )}
-                  {event.endDate && (
-                    <div className="d-flex align-items-center gap-2">
-                      <FaCalendarAlt />
-                      <span>
-                        <strong>End:</strong> {formatDate(event.endDate)}
-                      </span>
-                    </div>
-                  )}
-                  {hasParticipants && (
-                    <div className="d-flex align-items-center gap-2">
-                      <FaUsers />
-                      <span>
-                        <strong>Participants (via platform):</strong> {participants.length}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div
+            return (
+              <ListGroup.Item
+                key={event.id}
+                className="mb-3 p-4 rounded shadow-sm d-flex justify-content-between align-items-center"
                 style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.5rem",
-                  minWidth: "120px",
+                  background:
+                    "linear-gradient(135deg, #ffffff 0%, rgb(255, 245, 237) 100%)",
+                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                  cursor: "pointer",
                 }}
-                onClick={(e) => e.stopPropagation()}
+                onClick={() => navigate(`/events/${event.id}`)}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.boxShadow = "0 12px 24px rgba(0,0,0,0.15)";
+                  e.currentTarget.style.transform = "translateY(-3px)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.08)";
+                  e.currentTarget.style.transform = "none";
+                }}
               >
-                <Button
-                  variant="outline-primary"
-                  size="sm"
-                  onClick={() => navigate(`/events/${event.id}`)}
-                  disabled={deleting || loadingEvent || saving}
-                >
-                  <FaCalendarAlt className="me-2" />
-                  Details
-                </Button>
+                <div style={{ flex: 1, marginRight: "20px" }}>
+                  <h5 className="mb-2 fw-bold text-dark d-flex align-items-center gap-2">
+                    {event.title || event.name}
+                    {event.statusName && (
+                      <Badge
+                        bg={getStatusVariant(event.statusName)}
+                        className="text-capitalize shadow-sm"
+                      >
+                        {event.statusName}
+                      </Badge>
+                    )}
+                  </h5>
+                  <p
+                    className="mb-3 text-secondary"
+                    title={event.description}
+                  >
+                    {event.description || "No description available"}
+                  </p>
 
-                {statusLower !== "ended" && statusLower !== "canceled" && (
-                  <>
-                    <Button
-                      variant="outline-secondary"
-                      size="sm"
-                      onClick={() => handleOpenEditModal(event)}
-                      disabled={loadingEvent || deleting || saving}
-                    >
-                      <FaEdit className="me-2" />
-                      Edit
-                    </Button>
+                  <div className="d-flex flex-wrap align-items-center gap-2 mb-2">
+                    {event.boardGameName && (
+                      <Badge
+                        bg="warning"
+                        className="d-flex align-items-center gap-1 shadow-sm"
+                      >
+                        <FaDice />
+                        {event.boardGameName}
+                      </Badge>
+                    )}
+                  </div>
 
+                  <div className="mt-2 d-flex flex-wrap gap-4 text-muted">
+                    {event.date && (
+                      <div className="d-flex align-items-center gap-2">
+                        <FaCalendarAlt />
+                        <span>
+                          <strong>Date:</strong> {formatDate(event.date)}
+                        </span>
+                      </div>
+                    )}
+                    {event.startDate && (
+                      <div className="d-flex align-items-center gap-2">
+                        <FaCalendarAlt />
+                        <span>
+                          <strong>Start:</strong> {formatDate(event.startDate)}
+                        </span>
+                      </div>
+                    )}
+                    {event.endDate && (
+                      <div className="d-flex align-items-center gap-2">
+                        <FaCalendarAlt />
+                        <span>
+                          <strong>End:</strong> {formatDate(event.endDate)}
+                        </span>
+                      </div>
+                    )}
                     {hasParticipants && (
-                      <Button
-                        variant="outline-warning"
-                        size="sm"
-                        onClick={() => confirmCancel(event)}
-                        disabled={deleting || loadingEvent || saving}
-                      >
-                        <FaTimesCircle className="me-2" />
-                        Cancel
-                      </Button>
+                      <div className="d-flex align-items-center gap-2">
+                        <FaUsers />
+                        <span>
+                          <strong>Participants (via platform):</strong> {participants.length}
+                        </span>
+                      </div>
                     )}
+                  </div>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "0.5rem",
+                    minWidth: "120px",
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    onClick={() => navigate(`/events/${event.id}`)}
+                    disabled={deleting || loadingEvent || saving}
+                  >
+                    <FaCalendarAlt className="me-2" />
+                    Details
+                  </Button>
 
-                    {!hasParticipants && (
+                  {statusLower !== "ended" && statusLower !== "canceled" && (
+                    <>
                       <Button
-                        variant="outline-danger"
+                        variant="outline-secondary"
                         size="sm"
-                        onClick={() => confirmDelete(event)}
-                        disabled={deleting || loadingEvent || saving}
+                        onClick={() => handleOpenEditModal(event)}
+                        disabled={loadingEvent || deleting || saving}
                       >
-                        <FaTrashAlt className="me-2" />
-                        Delete
+                        <FaEdit className="me-2" />
+                        Edit
                       </Button>
-                    )}
-                  </>
-                )}
-              </div>
-            </ListGroup.Item>
-          );
-        })}
-      </ListGroup>
+
+                      {hasParticipants && (
+                        <Button
+                          variant="outline-warning"
+                          size="sm"
+                          onClick={() => confirmCancel(event)}
+                          disabled={deleting || loadingEvent || saving}
+                        >
+                          <FaTimesCircle className="me-2" />
+                          Cancel
+                        </Button>
+                      )}
+
+                      {!hasParticipants && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => confirmDelete(event)}
+                          disabled={deleting || loadingEvent || saving}
+                        >
+                          <FaTrashAlt className="me-2" />
+                          Delete
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </ListGroup.Item>
+            );
+          })}
+        </ListGroup>
+      )}
 
       {showEditModal && eventToEdit && (
         <UpdateEventModal

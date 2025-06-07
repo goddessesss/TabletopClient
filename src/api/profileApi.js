@@ -243,3 +243,84 @@ export async function removeFavouriteGame(boardGameId) {
     };
   }
 }
+
+export async function fetchCountries() {
+  const authToken = localStorage.getItem("authToken");
+
+  try {
+    const response = await axios.get(`${BASE_URL}/Geo/countries`, {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+    console.log("Countries fetched:", response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching countries:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.response?.statusText ||
+        error.message,
+    };
+  }
+}
+
+export async function updateCountryLocation(country) {
+  const authToken = localStorage.getItem("authToken");
+
+  try {
+    const response = await axios.put(
+      `${BASE_URL}/PlayerProfiles/location`,
+      country,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("Location updated:", response.data);
+
+    // Завжди повертай success: true, якщо status 200
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    console.error("Error updating location:", error);
+    return {
+      success: false,
+      message:
+        error.response?.data?.message ||
+        error.response?.statusText ||
+        error.message,
+    };
+  }
+}
+
+export async function fetchCities(countryCode, searchQuery) {
+  const authToken = localStorage.getItem("authToken");
+
+  try {
+    const response = await axios.get(`${BASE_URL}/Geo/cities`, {
+      params: {
+        countryCode,
+        searchQuery,
+        limit: 10,
+      },
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching cities:", error.response?.data || error.message);
+    return [];
+  }
+}

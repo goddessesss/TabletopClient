@@ -12,12 +12,14 @@ import {
 import { getEventById, joinEvents, getParticipants, unjoinEvents, updateEvents } from '../api/eventsApi.js';
 import { useAuth } from "../components/Context/AuthContext";
 import { BreadCrumbs } from '../components/BreadCrumbs/BreadCrumbs.jsx';
+import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../components/NotificationsHandling/NotificationContext.jsx';
 import EventPlayerCard from '../components/PlayerCard/EventPlayerCard.jsx';
 import { downloadEventParticipantsReport } from '../api/reportsApi.js';
 import UpdateEventModal from '../components/Modals/UpdateEventModal.jsx';
 
 function EventDetail() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const { userId } = useAuth();
 
@@ -35,6 +37,7 @@ function EventDetail() {
   const fetchEvent = async () => {
     const result = await getEventById(id);
     if (result.success) {
+      console.log(result.data)
       setEvent(result.data);
       if (result.data.organizerPlayer.playerProfileId === userId){
         setOrganizer(true);
@@ -70,36 +73,25 @@ function EventDetail() {
   const handleJoin = async () => {
     console.log(userId)
     if (!userId) {
-      addMessage('danger', 'User not authorized.');
+      addMessage('danger', t('eventDetail.userNotAuthorized'));
       return;
     }
 
     setLoading(true);
     const result = isJoined ? await unjoinEvents(id, userId) : await joinEvents(id, userId);
     if (result.success) {
-      addMessage('success', `You have successfully ${isJoined ? "joined" : "left" }  the event!`);
+      addMessage('success', t('eventDetail.successfullyRegistered'));
       await fetchEvent();
     } else {
-      addMessage('danger', result.message || `Failed to ${isJoined ? "join" : "leave" } the event`);
+      addMessage('danger', result.message || t('eventDetail.failedToRegister'));
     }
     setLoading(false);
   };
 
-  const handleGetParticipantsReport = async() => {
+    const handleGetParticipantsReport = async() => {
     await downloadEventParticipantsReport(event.id)
   }
- 
-  if (error) return <p className="text-danger">Error: {error}</p>;
-
-  if (!event)
-    return (
-      <>
-        <p className="text-center my-5" style={{ fontSize: '1.2rem', color: '#666' }}>
-          Loading event details...
-        </p>
-      </>
-    );
-
+  
   const handleOpenEditModal = () => {
     setShowEditModal(true);
   };
@@ -126,6 +118,18 @@ function EventDetail() {
       setSaving(false);
     }
   };
+
+  if (!event)
+  return (
+    <>
+      <p className="text-center my-5" style={{ fontSize: '1.2rem', color: '#666' }}>
+        {t('eventDetail.loadingEventDetails')}
+      </p>
+      <p className="text-center" style={{ color: '#999' }}>
+        <strong>{t('eventDetail.urlId')}:</strong> {id || t('eventDetail.notProvided')}
+      </p>
+    </>
+  );
 
   const {
     name,
@@ -159,14 +163,14 @@ function EventDetail() {
       <div className="pt-4">
         <BreadCrumbs
           items={[
-            { label: 'Home', path: '/' },
-            { label: 'Events', path: '/events' },
-            { label: 'Event Details' },
+            { label: t('events.breadcrumbHome'), path: '/' },
+            { label: t('events.pageTitle'), path: '/events' },
+            { label: t('eventDetail.eventDetails') },
           ]}
         />
       </div>
 
-      <h1 className="fw-bold mb-2 px-2">Event Details</h1>
+      <h1 className="fw-bold mb-2 px-2">{t('eventDetail.eventDetails')}</h1>
 
       <div className="details-container">
         <Card.Body className="event-card-body">
@@ -185,14 +189,14 @@ function EventDetail() {
               >
                 {isOnline ? (
                   <>
-                    <FaGlobe /> Online event
+                    <FaGlobe /> {t('eventDetail.onlineEvent')}
                   </>
                 ) : location ? (
                   <>
-                    <FaMapMarkerAlt /> {location.fullName || location.shortName || 'Unknown location'}
+                    <FaMapMarkerAlt /> {location.fullName || location.shortName || t('eventDetail.unknownLocation')}
                   </>
                 ) : (
-                  'Location not specified'
+                  t('eventDetail.locationNotSpecified')
                 )}
               </div>
 
@@ -204,7 +208,7 @@ function EventDetail() {
               </header>
 
               <p className="event-description" style={{ marginBottom: '2rem', textAlign: 'justify' }}>
-                {description || 'No description.'}
+                {description || t('eventDetail.noDescription')}
               </p>
 
               <div
@@ -220,7 +224,7 @@ function EventDetail() {
                   <FaCalendarAlt size={22} className="icon primary" />
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="label" style={{ fontWeight: 600, color: '#555', fontSize: '0.9rem' }}>
-                      Start
+                      {t('eventDetail.start')}
                     </span>
                     <span className="value" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#222' }}>
                       {formatDate(startDate)}
@@ -232,7 +236,7 @@ function EventDetail() {
                   <FaCalendarAlt size={22} className="icon secondary" />
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="label" style={{ fontWeight: 600, color: '#555', fontSize: '0.9rem' }}>
-                      End
+                      {t('eventDetail.end')}
                     </span>
                     <span className="value" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#222' }}>
                       {formatDate(endDate)}
@@ -244,10 +248,10 @@ function EventDetail() {
                   <FaGamepad size={22} className="icon warning" />
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="label" style={{ fontWeight: 600, color: '#555', fontSize: '0.9rem' }}>
-                      Game
+                      {t('eventDetail.game')}
                     </span>
                     <span className="value" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#222' }}>
-                      {boardGameName || 'N/A'}
+                      {boardGameName || t('eventDetail.na')}
                     </span>
                   </div>
                 </div>
@@ -256,7 +260,7 @@ function EventDetail() {
                   <FaUsers size={22} className="icon success" />
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="label" style={{ fontWeight: 600, color: '#555', fontSize: '0.9rem' }}>
-                      Players
+                      {t('eventDetail.players')}
                     </span>
                     <span className="value" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#222' }}>
                       {registeredPlayer} / {minPlayers} - {maxPlayers}
@@ -268,7 +272,7 @@ function EventDetail() {
                   <FaMoneyBillWave size={22} className="icon danger" />
                   <div style={{ display: 'flex', flexDirection: 'column' }}>
                     <span className="label" style={{ fontWeight: 600, color: '#555', fontSize: '0.9rem' }}>
-                      Price
+                      {t('eventDetail.price')}
                     </span>
                     <span className="value" style={{ fontSize: '1.1rem', fontWeight: 700, color: '#222' }}>
                       {(price !== null && price !== 0) ? `${price} ₴` : 'Free'}

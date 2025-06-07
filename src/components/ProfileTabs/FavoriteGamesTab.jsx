@@ -49,7 +49,7 @@ function FavouriteGames() {
   };
 
   const handleRemoveClick = (e, game) => {
-    e.stopPropagation(); // prevent modal from opening
+    e.stopPropagation(); 
     setGameToRemove(game);
     setShowConfirm(true);
   };

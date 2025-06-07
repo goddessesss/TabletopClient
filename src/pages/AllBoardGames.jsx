@@ -37,11 +37,11 @@ const AllBoardGames = () => {
         const data = await fetchClassifiers();
         setClassifiers(data);
       } catch (error) {
-        console.error('Failed to fetch classifiers:', error);
+        console.error(t('errors.fetchClassifiersFailed'), error);
       }
     };
     fetchClassifiersData();
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -50,11 +50,11 @@ const AllBoardGames = () => {
         setGames(data.boardGames || []);
         setTotalPages(Math.ceil(data.totalCount / pageSize));
       } catch (error) {
-        console.error('Failed to fetch games:', error);
+        console.error(t('errors.fetchGamesFailed'), error);
       }
     };
     fetchGames();
-  }, [currentPage, pageSize, search, filters]);
+  }, [currentPage, pageSize, search, filters, t]);
 
   const handleFilterChange = (key, newValues) => {
     updateFilter(key, newValues);
@@ -83,126 +83,128 @@ const AllBoardGames = () => {
       <div className="pt-4">
         <BreadCrumbs
           items={[
-            { label: 'Home', path: '/' },
-            { label: 'Board Games' },
+            { label: t('navbar.games'), path: '/' },
+            { label: t('navbar.allBoardgames') },
           ]}
         />
       </div>
-        <h1 className="fw-bold mb-2 px-2">Board Games</h1>
-        <div className="search-wrapper mb-3 d-flex align-items-center" style={{ gap: '1rem' }}>
-          <SearchBar 
-            value={search} 
-            onChange={(value) => setSearch(value)} 
-            placeholder={t('search.boardGamesPlaceholder')} 
-          />
-          <div className="d-md-none">
-            <Button
-              variant="warning"
-              onClick={() => setShowFiltersOffcanvas(true)} 
-              title={t('filters.openFilters')}
-            >
-              <FaFilter />
-            </Button>
-          </div>
+
+      <h1 className="fw-bold mb-2 px-2">{t('navbar.allBoardgames')}</h1>
+
+      <div className="search-wrapper mb-3 d-flex align-items-center" style={{ gap: '1rem' }}>
+        <SearchBar 
+          value={search} 
+          onChange={(value) => setSearch(value)} 
+          placeholder={t('search.boardGamesPlaceholder')} 
+        />
+        <div className="d-md-none">
+          <Button
+            variant="warning"
+            onClick={() => setShowFiltersOffcanvas(true)} 
+            title={t('filters.openFilters')}
+          >
+            <FaFilter />
+          </Button>
         </div>
+      </div>
 
-        <div className="mb-3">
-          <strong>{t('filters.selectedFilters')}</strong>
-          {hasSelectedFilters ? (
-            <div className="mt-2">
-              {Object.entries(filters).flatMap(([key, values]) =>
-                values.map((id) => (
-                  <Badge
-                    key={`${key}-${id}`}
-                    bg="warning"
-                    text="dark"
-                    className="me-2"
-                    style={{
-                      cursor: 'pointer',
-                      borderRadius: '20px',
-                      fontSize: '1rem',
-                      padding: '0.6rem 1rem',
-                    }}
-                    onClick={() => removeSingleFilter(key, id)}
-                  >
-                    {getFilterLabel(key, id)} <FaTimes className="ms-1" />
-                  </Badge>
-                ))
-              )}
-            </div>
-          ) : (
-            <span className="mt-2 d-block">{t('filters.noFiltersSelected')}</span>
-          )}
-        </div>
-
-        <div className="d-flex justify-content-between mb-3">
-          <div></div>
-          <div style={{ marginLeft: 'auto' }}>
-            <label htmlFor="pageSize">{t('pagination.gamesPerPage')} </label>
-            <select
-              id="pageSize"
-              className="form-select"
-              value={pageSize}
-              onChange={(e) => {
-                const newSize = Number(e.target.value);
-                if (newSize < 9) return;
-                setPageSize(newSize);
-                setCurrentPage(1);
-              }}
-              style={{ width: 'auto', display: 'inline-block' }}
-            >
-              <option value={9}>9</option>
-              <option value={12}>12</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="d-flex" style={{ gap: '1rem' }}>
-          <div className="col-md-3 d-none d-md-block" style={{ minWidth: '320px' }}>
-            <SidebarFilters
-              classifiers={classifiers}
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onClearFilters={clearFilters}
-            />
-          </div>
-
-          <div className="games-content" style={{ flexGrow: 1 }}>
-            {games.length === 0 ? (
-              <div className="text-center" style={{ fontSize: '1.25rem' }}>
-                {t('search.noResultsFound')}
-              </div>
-            ) : (
-              <>
-                <BoardGameList games={games} onGameClick={handleGameClick} />
-                <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
-              </>
+      <div className="mb-3">
+        <strong>{t('filters.selectedFilters')}</strong>
+        {hasSelectedFilters ? (
+          <div className="mt-2">
+            {Object.entries(filters).flatMap(([key, values]) =>
+              values.map((id) => (
+                <Badge
+                  key={`${key}-${id}`}
+                  bg="warning"
+                  text="dark"
+                  className="me-2"
+                  style={{
+                    cursor: 'pointer',
+                    borderRadius: '20px',
+                    fontSize: '1rem',
+                    padding: '0.6rem 1rem',
+                  }}
+                  onClick={() => removeSingleFilter(key, id)}
+                >
+                  {getFilterLabel(key, id)} <FaTimes className="ms-1" />
+                </Badge>
+              ))
             )}
           </div>
+        ) : (
+          <span className="mt-2 d-block">{t('filters.noFiltersSelected')}</span>
+        )}
+      </div>
+
+      <div className="d-flex justify-content-between mb-3">
+        <div></div>
+        <div style={{ marginLeft: 'auto' }}>
+          <label htmlFor="pageSize">{t('pagination.gamesPerPage')} </label>
+          <select
+            id="pageSize"
+            className="form-select"
+            value={pageSize}
+            onChange={(e) => {
+              const newSize = Number(e.target.value);
+              if (newSize < 9) return;
+              setPageSize(newSize);
+              setCurrentPage(1);
+            }}
+            style={{ width: 'auto', display: 'inline-block' }}
+          >
+            <option value={9}>9</option>
+            <option value={12}>12</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="d-flex" style={{ gap: '1rem' }}>
+        <div className="col-md-3 d-none d-md-block" style={{ minWidth: '320px' }}>
+          <SidebarFilters
+            classifiers={classifiers}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={clearFilters}
+          />
         </div>
 
-        <BoardGameModal show={showModal} onHide={() => setShowModal(false)} gameId={selectedGameId} />
-
-        <Offcanvas
-          show={showFiltersOffcanvas}
-          onHide={() => setShowFiltersOffcanvas(false)}
-          placement="start"
-          scroll={true}
-          backdrop={true}
-        >
-          <Offcanvas.Header closeButton>
-            <Offcanvas.Title>{t('filters.title')}</Offcanvas.Title>
-          </Offcanvas.Header>
-          <Offcanvas.Body>
-            <SidebarFilters
-              classifiers={classifiers}
-              filters={filters}
-              onFilterChange={handleFilterChange}
-              onClearFilters={clearFilters}
-            />
-          </Offcanvas.Body>
-        </Offcanvas>
+        <div className="games-content" style={{ flexGrow: 1 }}>
+          {games.length === 0 ? (
+            <div className="text-center" style={{ fontSize: '1.25rem' }}>
+              {t('search.noResultsFound')}
+            </div>
+          ) : (
+            <>
+              <BoardGameList games={games} onGameClick={handleGameClick} />
+              <CustomPagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+            </>
+          )}
+        </div>
       </div>
+
+      <BoardGameModal show={showModal} onHide={() => setShowModal(false)} gameId={selectedGameId} />
+
+      <Offcanvas
+        show={showFiltersOffcanvas}
+        onHide={() => setShowFiltersOffcanvas(false)}
+        placement="start"
+        scroll={true}
+        backdrop={true}
+      >
+        <Offcanvas.Header closeButton>
+          <Offcanvas.Title>{t('filters.title')}</Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body>
+          <SidebarFilters
+            classifiers={classifiers}
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={clearFilters}
+          />
+        </Offcanvas.Body>
+      </Offcanvas>
+    </div>
   );
 };
 

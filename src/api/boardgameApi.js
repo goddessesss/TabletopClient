@@ -251,7 +251,8 @@ export const getBoardGameFromBggSearch = async (search = "") => {
           'accept': '*/*',
         }
       }
-    );   
+    );
+
     if (response.status === 200 && response.data && Array.isArray(response.data))
       return { success: true, data: response.data };
     else

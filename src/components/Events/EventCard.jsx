@@ -1,17 +1,19 @@
 import React from 'react';
+import { useAuth } from '../Context/AuthContext.jsx';
 import { Card, Button, Badge } from 'react-bootstrap';
 import { FaCalendarAlt, FaMapMarkerAlt, FaMoneyBillWave, FaWifi } from 'react-icons/fa';
 import { EventTypeEnum } from '../../enums/eventTypes.js';
-import { useAuth } from '../Context/AuthContext.jsx';
+import { useTranslation } from 'react-i18next';
 
 const EventCard = ({ event, onClick }) => {
+  const { t } = useTranslation();
   const { userId } = useAuth()
 
   const formatPlayers = (registeredPlayers, maxPlayers) => {
     if (maxPlayers == null) {
-      return `${registeredPlayers} players`;
+      return `${registeredPlayers} ${t('eventCard.slots')}`;
     }
-    return `${registeredPlayers}/${maxPlayers} players`;
+    return `${registeredPlayers}/${maxPlayers} ${t('eventCard.slots')}`;
   }
   
   return (
@@ -29,7 +31,7 @@ const EventCard = ({ event, onClick }) => {
           </div>
           <div className="text-muted small d-flex align-items-center mt-1">
             <FaMapMarkerAlt className="me-2" />
-            {event.location?.shortName ?? event.location?.fullName ?? "No location"}
+            {event.location?.shortName ?? event.location?.fullName ?? t('eventCard.noLocation')}
           </div>
           <div className="text-muted small d-flex align-items-center mt-1">
             <FaMoneyBillWave className="me-2" />
@@ -42,18 +44,25 @@ const EventCard = ({ event, onClick }) => {
             {event.isOnline ? (
               <>
                 <FaWifi className="me-1" />
-                Online
+                {t('eventCard.online')}
               </>
             ) : (
-              'Offline'
+              t('eventCard.offline')
             )}
           </Badge>
           <Badge bg="info">
-            {EventTypeEnum[event.eventType] ?? event.eventType}
+            {EventTypeEnum[event.eventType] ? t(`eventTypes.${EventTypeEnum[event.eventType]}`) : event.eventType}
           </Badge>
           <Badge bg="warning" text="dark">
             {formatPlayers(event.registeredPlayer, event.maxPlayers)}
           </Badge>
+          {
+            event.gameClubId != null && (
+              <Badge text="white">
+                {t('eventCard.clubEvent')}
+              </Badge>
+            )
+          }
         </div>
 
         <Button
@@ -64,7 +73,7 @@ const EventCard = ({ event, onClick }) => {
             onClick(event.id);
           }}
         >
-          View Details
+          {t('eventCard.viewDetails')}
         </Button>
       </Card.Body>
     </Card>
