@@ -106,7 +106,7 @@ function JoinedEventsTab({ events, loading, error }) {
               </h5>
 
               <p
-                className="mb-3 text-truncate text-secondary"
+                className="mb-3 text-secondary"
                 style={{
                   fontSize: "1rem",
                   lineHeight: 1.5,

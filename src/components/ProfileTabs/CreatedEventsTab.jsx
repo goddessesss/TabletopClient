@@ -230,7 +230,7 @@ function CreatedEventsTab({ loading, events = [], onDelete, onUpdate, onCancel }
                   )}
                 </h5>
                 <p
-                  className="mb-3 text-truncate text-secondary"
+                  className="mb-3 text-secondary"
                   title={event.description}
                 >
                   {event.description || "No description available"}

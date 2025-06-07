@@ -123,6 +123,16 @@ const EventFilter = ({
     setMaxDate(null);
   };
 
+  const applyRelevantSorting = () => {
+    console.log('applying relevants');
+    setIsOnlineFilter(null);
+    setMinAvailableSlots(null);
+    setMaxPrice(null);
+    setSorting({ startDate: null, price: null, participantsCount: null });
+    setMinDate(null);
+    setMaxDate(null);
+  }
+
   const renderTooltip = (props, text) => (
     <Tooltip id="tooltip" {...props}>
       {text}
@@ -155,37 +165,6 @@ const EventFilter = ({
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
       }}
     >
-      <Form.Group>
-        <LabelWithTooltip
-          icon={<FaFilter />}
-          text="Event Format"
-          tooltipText="Filter events by format: All, Online, or Offline"
-        />
-        <div className="d-flex gap-2 flex-wrap">
-          <Button
-            variant={isOnlineFilter === null ? 'secondary' : 'outline-secondary'}
-            className="rounded-pill px-3 py-1"
-            onClick={() => setIsOnlineFilter(null)}
-          >
-            All
-          </Button>
-          <Button
-            variant={isOnlineFilter === true ? 'success' : 'outline-success'}
-            className="rounded-pill px-3 py-1"
-            onClick={() => setIsOnlineFilter(true)}
-          >
-            <FaGlobe className="me-1" /> Online
-          </Button>
-          <Button
-            variant={isOnlineFilter === false ? 'primary' : 'outline-primary'}
-            className="rounded-pill px-3 py-1"
-            onClick={() => setIsOnlineFilter(false)}
-          >
-            <FaMapMarkerAlt className="me-1" /> Offline
-          </Button>
-        </div>
-      </Form.Group>
-
       <Form.Group style={{ position: 'relative' }}>
         <LabelWithTooltip
           icon={<FaMapMarkerAlt />}
@@ -226,6 +205,44 @@ const EventFilter = ({
             ))}
           </ListGroup>
         )}
+      </Form.Group>
+
+      <Button
+        variant="warning"
+        onClick={applyRelevantSorting}
+      >
+        Apply Relevant Sorting
+      </Button>
+
+      <Form.Group>
+        <LabelWithTooltip
+          icon={<FaFilter />}
+          text="Event Format"
+          tooltipText="Filter events by format: All, Online, or Offline"
+        />
+        <div className="d-flex gap-2 flex-wrap">
+          <Button
+            variant={isOnlineFilter === null ? 'secondary' : 'outline-secondary'}
+            className="rounded-pill px-3 py-1"
+            onClick={() => setIsOnlineFilter(null)}
+          >
+            All
+          </Button>
+          <Button
+            variant={isOnlineFilter === true ? 'success' : 'outline-success'}
+            className="rounded-pill px-3 py-1"
+            onClick={() => setIsOnlineFilter(true)}
+          >
+            <FaGlobe className="me-1" /> Online
+          </Button>
+          <Button
+            variant={isOnlineFilter === false ? 'primary' : 'outline-primary'}
+            className="rounded-pill px-3 py-1"
+            onClick={() => setIsOnlineFilter(false)}
+          >
+            <FaMapMarkerAlt className="me-1" /> Offline
+          </Button>
+        </div>
       </Form.Group>
 
       <Form.Group>
