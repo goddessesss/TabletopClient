@@ -893,77 +893,31 @@ $text-shadow-hover: rgba(0, 0, 0, 0.15);
     font-weight: 600;
   }
 }
-
-.profile-tabs-container {
-  margin-top: 40px;
-
-  .profile-tabs-nav {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-
-    .nav-item {
-      font-size: 1rem;
-    }
-
-    .nav-link {
-      color: $text-color;
-      font-weight: 600;
-      background-color: transparent;
-      border: none;
-      padding: 10px 15px;
-      transition: all 0.3s ease;
-      text-align: center;
-      width: 100%;
-      border-bottom: 2px solid transparent;
-
-      &:hover {
-        background-color: $secondary-color;
-        color: $white-color;
-      }
-
-      &.active {
-        color: $white-color !important;
-        background-color: $secondary-color !important;
-        transform: scale(1.05);
-
-        &:hover {
-          background-color: $secondary-color;
-          color: $white-color;
-          transform: scale(1.05);
-        }
-      }
-    }
-  }
-}
-
-.profile-tabs-content {
-  padding-top: 20px;
-}
-
-.profile-details-title {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: $text-color-dark;
+.profile-nav {
+  display: flex;
+  padding: 0;
+  margin-top: 2rem;
+  border-bottom: 1px solid #ddd;
   margin-bottom: 20px;
+
 }
 
-.profile-form {
-  background-color: $secondary-color;
-  padding: 30px;
-  border-radius: $border-radius;
-  box-shadow: $box-shadow;
+.profile-nav .nav-item {
+  flex: 1;
+  text-align: center;
+}
 
-  .form-control {
-    border-radius: $border-radius;
-    box-shadow: 0 2px 5px $text-color(0, 0, 0, 0.1);
-    margin-bottom: 15px;
-  }
+.profile-nav .nav-link {
+  width: 100%;
+  color: orange;
+  margin: 0 2px;
+  border-radius: 10px 10px 0 0; 
+  transition: background-color 0.3s, color 0.3s;}
 
-  .form-label {
-    font-weight: 600;
-    color: $text-color-light;
-  }
+.profile-nav .nav-link.active {
+  background-color: orange;
+  color: white;
+  border-radius: 10px 10px 0 0; 
 }
 
 

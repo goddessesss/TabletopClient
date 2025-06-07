@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Form, Button, Card } from 'react-bootstrap';
 import { FaTimes, FaTags, FaUsers, FaCogs, FaPalette } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
 
 const iconMap = {
   categoryIds: <FaTags />,
@@ -10,7 +11,7 @@ const iconMap = {
 };
 
 const SidebarFilters = ({ classifiers, filters, onFilterChange, onClearFilters, showFilters }) => {
-  const [hoveredCard, setHoveredCard] = useState(null);
+  const { t } = useTranslation();
 
   const renderMultiSelect = (label, key, items) => (
     <Card
@@ -46,23 +47,25 @@ const SidebarFilters = ({ classifiers, filters, onFilterChange, onClearFilters, 
               );
             })
           ) : (
-            <div>No data</div>
+            <div>{t('sidebarFilters.noData')}</div>
           )}
         </div>
       </Card.Body>
     </Card>
   );
 
+  const [hoveredCard, setHoveredCard] = useState(null);
+
   return (
     <div className={`sidebar-container ${showFilters ? 'show' : 'hide'}`}>
-      <div className="sidebar-header">Filters</div>
-      {renderMultiSelect('Categories', 'categoryIds', classifiers.genres)}
-      {renderMultiSelect('Families', 'familiesIds', classifiers.families)}
-      {renderMultiSelect('Mechanics', 'mechanicsIds', classifiers.mechanics)}
-      {renderMultiSelect('Themes', 'themeIds', classifiers.themes)}
+      <div className="sidebar-header">{t('sidebarFilters.filters')}</div>
+      {renderMultiSelect(t('sidebarFilters.categories'), 'categoryIds', classifiers.genres)}
+      {renderMultiSelect(t('sidebarFilters.families'), 'familiesIds', classifiers.families)}
+      {renderMultiSelect(t('sidebarFilters.mechanics'), 'mechanicsIds', classifiers.mechanics)}
+      {renderMultiSelect(t('sidebarFilters.themes'), 'themeIds', classifiers.themes)}
       <div className="clear-button-wrapper">
         <Button variant="outline-warning" size="sm" className="clear-button" onClick={onClearFilters}>
-          <FaTimes /> Clear
+          <FaTimes /> {t('sidebarFilters.clear')}
         </Button>
       </div>
     </div>

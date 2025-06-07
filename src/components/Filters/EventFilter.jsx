@@ -13,6 +13,7 @@ import {
   FaQuestionCircle,
 } from 'react-icons/fa';
 import { getCitiesBySearch } from '../../api/eventsApi.js';
+import { useTranslation } from 'react-i18next';
 
 const EventFilter = ({
   isOnlineFilter,
@@ -30,6 +31,8 @@ const EventFilter = ({
   maxDate,
   setMaxDate,
 }) => {
+  const { t } = useTranslation();
+
   const [searchTerm, setSearchTerm] = useState('');
   const [citySuggestions, setCitySuggestions] = useState([]);
   const [loadingCities, setLoadingCities] = useState(false);
@@ -72,7 +75,7 @@ const EventFilter = ({
     }, 500);
 
     return () => clearTimeout(debounceTimeout.current);
-  }, [searchTerm, selectedCityName, hasUserSelectedCity]);
+  }, [searchTerm, selectedCityName, hasUserSelectedCity, setSelectedCity]);
 
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
@@ -158,8 +161,8 @@ const EventFilter = ({
       <Form.Group>
         <LabelWithTooltip
           icon={<FaFilter />}
-          text="Event Format"
-          tooltipText="Filter events by format: All, Online, or Offline"
+          text={t('eventFilter.eventFormat')}
+          tooltipText={t('eventFilter.eventFormatTooltip')}
         />
         <div className="d-flex gap-2 flex-wrap">
           <Button
@@ -167,21 +170,21 @@ const EventFilter = ({
             className="rounded-pill px-3 py-1"
             onClick={() => setIsOnlineFilter(null)}
           >
-            All
+            {t('eventFilter.all')}
           </Button>
           <Button
             variant={isOnlineFilter === true ? 'success' : 'outline-success'}
             className="rounded-pill px-3 py-1"
             onClick={() => setIsOnlineFilter(true)}
           >
-            <FaGlobe className="me-1" /> Online
+            <FaGlobe className="me-1" /> {t('eventFilter.online')}
           </Button>
           <Button
             variant={isOnlineFilter === false ? 'primary' : 'outline-primary'}
             className="rounded-pill px-3 py-1"
             onClick={() => setIsOnlineFilter(false)}
           >
-            <FaMapMarkerAlt className="me-1" /> Offline
+            <FaMapMarkerAlt className="me-1" /> {t('eventFilter.offline')}
           </Button>
         </div>
       </Form.Group>
@@ -189,12 +192,12 @@ const EventFilter = ({
       <Form.Group style={{ position: 'relative' }}>
         <LabelWithTooltip
           icon={<FaMapMarkerAlt />}
-          text="City (optional)"
-          tooltipText="Filter events by selected city (optional)"
+          text={t('eventFilter.cityOptional')}
+          tooltipText={t('eventFilter.cityOptionalTooltip')}
         />
         <Form.Control
           type="text"
-          placeholder="For example: Kyiv"
+          placeholder={t('eventFilter.cityPlaceholder')}
           value={searchTerm}
           onChange={handleInputChange}
           onFocus={() => {
@@ -231,13 +234,13 @@ const EventFilter = ({
       <Form.Group>
         <LabelWithTooltip
           icon={<FaUsers />}
-          text="Min Available Slots"
-          tooltipText="Minimum number of available slots for participants"
+          text={t('eventFilter.minAvailableSlots')}
+          tooltipText={t('eventFilter.minAvailableSlotsTooltip')}
         />
         <Form.Control
           type="number"
           min={0}
-          placeholder="Minimum available slots"
+          placeholder={t('eventFilter.minAvailableSlotsPlaceholder')}
           value={minAvaliableSlots ?? ''}
           onChange={(e) => {
             const val = e.target.value;
@@ -249,13 +252,13 @@ const EventFilter = ({
       <Form.Group>
         <LabelWithTooltip
           icon={<FaDollarSign />}
-          text="Price"
-          tooltipText="Maximum event price"
+          text={t('eventFilter.price')}
+          tooltipText={t('eventFilter.priceTooltip')}
         />
         <Form.Control
           type="number"
           min={0}
-          placeholder="Maximum price"
+          placeholder={t('eventFilter.pricePlaceholder')}
           value={maxPrice ?? ''}
           onChange={(e) => {
             const val = e.target.value;
@@ -267,8 +270,8 @@ const EventFilter = ({
       <Form.Group controlId="minDateTime">
         <LabelWithTooltip
           icon={<FaCalendarAlt />}
-          text="From Date"
-          tooltipText="Select minimum date and time to filter events"
+          text={t('eventFilter.fromDate')}
+          tooltipText={t('eventFilter.fromDateTooltip')}
         />
         <Form.Control
           type="datetime-local"
@@ -282,8 +285,8 @@ const EventFilter = ({
       <Form.Group controlId="maxDateTime">
         <LabelWithTooltip
           icon={<FaCalendarAlt />}
-          text="To Date"
-          tooltipText="Select maximum date and time to filter events"
+          text={t('eventFilter.toDate')}
+          tooltipText={t('eventFilter.toDateTooltip')}
         />
         <Form.Control
           type="datetime-local"
@@ -297,8 +300,8 @@ const EventFilter = ({
       <Form.Group>
         <LabelWithTooltip
           icon={<FaSort />}
-          text="Sort by"
-          tooltipText="Sort events by date, price, or participant count"
+          text={t('eventFilter.sortBy')}
+          tooltipText={t('eventFilter.sortByTooltip')}
         />
         <div className="d-flex gap-2 flex-wrap">
           <Button
@@ -307,7 +310,7 @@ const EventFilter = ({
             onClick={() => toggleSort('startDate')}
           >
             <FaCalendarAlt />
-            Date {renderSortIcon('startDate')}
+            {t('eventFilter.date')} {renderSortIcon('startDate')}
           </Button>
           <Button
             variant={sorting.price !== null ? 'info' : 'outline-info'}
@@ -315,7 +318,7 @@ const EventFilter = ({
             onClick={() => toggleSort('price')}
           >
             <FaDollarSign />
-            Price {renderSortIcon('price')}
+            {t('eventFilter.price')} {renderSortIcon('price')}
           </Button>
           <Button
             variant={sorting.participantsCount !== null ? 'info' : 'outline-info'}
@@ -323,7 +326,7 @@ const EventFilter = ({
             onClick={() => toggleSort('participantsCount')}
           >
             <FaUsers />
-            Participants {renderSortIcon('participantsCount')}
+            {t('eventFilter.participants')} {renderSortIcon('participantsCount')}
           </Button>
         </div>
       </Form.Group>
@@ -333,7 +336,7 @@ const EventFilter = ({
         onClick={clearFilters}
         className="mt-3"
       >
-        Clear All Filters
+        {t('eventFilter.clearAllFilters')}
       </Button>
     </div>
   );
